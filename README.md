@@ -15,11 +15,9 @@ See [cores/picorv32/](cores/picorv32/) for example bindings for the PicoRV32 pro
 
 A processor core usually will implement RVFI as an optional feature that is only enabled for verification. Sequential equivalence check can be used to prove equivalence of the processor versions with and without RVFI.
 
-RVFI in its current form supports multiple-issue in-order processors, but current work focuses on single-issue in-order cores. RVFI will need to be extended to support end-to-end verification of out-of-order cores.
+RVFI in its current form supports multiple-issue in-order processors, but current work focuses on single-issue in-order cores. Out-of-order cores must be able to generate an in-order sequence of retired instructions.
 
 The current RVFI specification does not support verification memory load and store operations.
-
-Support for out-of-order cores and memory access will be added after implementation of a full verification flow for the currently supported features.
 
 The current focus is on implementing formal models of all (non-ld/st) instructions from the RISC-V RV32I and RV64I ISAs, and formally verifying those models agains the models used in the RISC-V "Spike" ISA simulator.
 
