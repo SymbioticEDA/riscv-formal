@@ -1,0 +1,6 @@
+memcheck.smt2
+regcheck.smt2
+insncheck.smt2
+output.vcd
+disasm.o
+disasm.s
