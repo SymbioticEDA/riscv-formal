@@ -1,6 +1,7 @@
 memcheck.smt2
 regcheck.smt2
 insncheck.smt2
+insncheck.blif
 output.vcd
 disasm.o
 disasm.s
