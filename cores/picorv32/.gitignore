@@ -1,7 +1,9 @@
 memcheck.smt2
 regcheck.smt2
-insncheck.smt2
-insncheck.blif
+insn_*.log
+insncheck_*.smt2
+insncheck_*.blif
+insncheck_run.mk
 output.vcd
 disasm.o
 disasm.s

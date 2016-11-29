@@ -26,15 +26,15 @@ case "$solver" in
 			setattr -unset keep
 			memory_map; opt -full; techmap
 			opt -fast; abc -fast;; stat
-			write_blif insncheck.blif
+			write_blif insncheck_${insn}.blif
 		"
-		solver_cmd="yosys-abc -c 'read_blif insncheck.blif; undc; strash; zero; bmc3 -F 25 -v'"
+		solver_cmd="yosys-abc -c 'read_blif insncheck_${insn}.blif; undc; strash; zero; bmc3 -F 25 -v'"
 		;;
 	*)
 		yosys_script="$yosys_script
-			write_smt2 -wires insncheck.smt2
+			write_smt2 -wires insncheck_${insn}.smt2
 		"
-		solver_cmd="yosys-smtbmc -s $solver -t 25 --dump-vcd output.vcd insncheck.smt2"
+		solver_cmd="yosys-smtbmc -s $solver -t 25 --dump-vcd output.vcd insncheck_${insn}.smt2"
 		;;
 esac
 
