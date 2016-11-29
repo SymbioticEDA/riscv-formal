@@ -26,7 +26,7 @@ The current focus is on implementing formal models of all (non-ld/st) instructio
 Related Work
 ------------
 
-ARM's [ISA-Formal Framework](https://alastairreid.github.io/papers/cav2016_isa_formal.pdf) follows a similar set of ideas and has inspiried the work on `riscv-formal`.
+ARM's [ISA-Formal Framework](https://alastairreid.github.io/papers/cav2016_isa_formal.pdf) follows a similar set of ideas and has inspired the work on `riscv-formal`.
 
 Test Procedure
 --------------
@@ -37,24 +37,24 @@ The following formal test are performed to verify ISA complience of a RISC-V pro
 
 The core is embedded in a formal test bench that connects the core to a read-only instruction memory. For all retired instructions output through the RVFI port of the core, the fetched instruction is compared to the actual instruction word in the memory location pointed to by the pre-state program counter (pc).
 
-See `memcheck.sh` in [cores/picorv32/](cores/picorv32/) for an example implementation.
+See `memcheck.v` in [cores/picorv32/](cores/picorv32/) for an example implementation.
 
 ### Verifying consistency between instructions
 
 The core is embedded in a formal test bench with an unconstrained memory interface (i.e. memory is outside of the formal test bench, no modelling of memory is neccessary). A sequence of instruction is generated and it is checked if pre- and post-states of this instruction sequence are consistent, i.e. when a register is written by one instruction, and read by a later instruction (without other writes to the same register between those two instructions), then the written value must be the value that is read back. This test checks for consistency of all `x` registers and the program counter.
 
-See `regcheck.sh` in [cores/picorv32/](cores/picorv32/) for one possible implementation of this test.
+See `regcheck.v` in [cores/picorv32/](cores/picorv32/) for one possible implementation of this test.
 
 ### Verifying correctness of individual instructions
 
 The core is embedded in a formal test bench with an unconstrained memory interface and connected to the generic (core-independent) `insn_checker` core. The `insn_checker` core is configured (using Verilog defines) to a specific channel and instruction. The testbench enables the `insn_checker` core in one specific cycle. This test is repeated for each instruction in the ISA specification, proving that the core implements all instructions from the ISA correctly.
 
-See `insncheck.sh` in [cores/picorv32/](cores/picorv32/) for an example implementation that checks the `ADDI` instruction.
+See `insncheck.v` in [cores/picorv32/](cores/picorv32/) for an example implementation.
 
 RISC-V Formal Interface (RVFI)
 ------------------------------
 
-In the following specification the term `XLEN` to refer to the width of an `x` register in bits, as described in the RISC-V ISA specification. The term `NRET` refers to the maximum number of instructions that the core under test can retire in one cycle. If more than one of the retired instruction writes the the same register, the channel with the highest index contains the instruction that wins the conflict.
+In the following specification the term `XLEN` refers to the width of an `x` register in bits, as described in the RISC-V ISA specification. The term `NRET` refers to the maximum number of instructions that the core under test can retire in one cycle. If more than one of the retired instruction writes the the same register, the channel with the highest index contains the instruction that wins the conflict.
 
 The Interface consists only of output signals. Each signal is a concatenation of `NRET` values of constant width, effectively creating `NRET` channels. For simplicity, the following descriptions refer to one such channel. For example, we refer to `rvfi_valid` as a 1-bit signal, not a `NRET`-bits signal.
 
