@@ -19,9 +19,9 @@ A processor core usually will implement RVFI as an optional feature that is only
 
 RVFI in its current form supports multiple-issue in-order processors, but current work focuses on single-issue in-order cores. Out-of-order cores must be able to generate an in-order sequence of retired instructions.
 
-The current RVFI specification does not support verification memory load and store operations.
+The current RVFI specification does not support verification of memory load and store operations.
 
-The current focus is on implementing formal models of all (non-ld/st) instructions from the RISC-V RV32I and RV64I ISAs, and formally verifying those models agains the models used in the RISC-V "Spike" ISA simulator.
+The current focus is on implementing formal models of all (non-ld/st) instructions from the RISC-V RV32I and RV64I ISAs, and formally verifying those models against the models used in the RISC-V "Spike" ISA simulator.
 
 `riscv-formal` uses the FOSS Yosys-SMTBMC Verilog verification flow. All properties are expressed using immediate assertions/assumptions for maximal compatibility with other tools.
 
@@ -33,7 +33,7 @@ ARM's [ISA-Formal Framework](https://alastairreid.github.io/papers/cav2016_isa_f
 Test Procedure
 --------------
 
-The following formal test are performed to verify ISA complience of a RISC-V processors with `riscv-formal`. Depending on aspects like the strenght of safety properties present in the core, the overall complexity of the core, and the verification requirements for the given application, the following tests might be set up as bounded model chacks or as unbounded verification tasks.
+The following formal test are performed to verify ISA compliance of RISC-V processors with `riscv-formal`. Depending on aspects like the strength of safety properties present in the core, the overall complexity of the core, and the verification requirements for the given application, the following tests might be set up as bounded model checks or as unbounded verification tasks.
 
 ### Verifying correct instruction fetch
 
@@ -43,7 +43,7 @@ See `memcheck.v` in [cores/picorv32/](cores/picorv32/) for an example implementa
 
 ### Verifying consistency between instructions
 
-The core is embedded in a formal test bench with an unconstrained memory interface (i.e. memory is outside of the formal test bench, no modelling of memory is neccessary). A sequence of instruction is generated and it is checked if pre- and post-states of this instruction sequence are consistent, i.e. when a register is written by one instruction, and read by a later instruction (without other writes to the same register between those two instructions), then the written value must be the value that is read back. This test checks for consistency of all `x` registers and the program counter.
+The core is embedded in a formal test bench with an unconstrained memory interface (i.e. memory is outside of the formal test bench, no modelling of memory is necessary). A sequence of instruction is generated and it is checked if pre- and post-states of this instruction sequence are consistent, i.e. when a register is written by one instruction, and read by a later instruction (without other writes to the same register between those two instructions), then the written value must be the value that is read back. This test checks for consistency of all `x` registers and the program counter.
 
 See `regcheck.v` in [cores/picorv32/](cores/picorv32/) for one possible implementation of this test.
 
@@ -56,7 +56,7 @@ See `insncheck.v` in [cores/picorv32/](cores/picorv32/) for an example implement
 RISC-V Formal Interface (RVFI)
 ------------------------------
 
-In the following specification the term `XLEN` refers to the width of an `x` register in bits, as described in the RISC-V ISA specification. The term `NRET` refers to the maximum number of instructions that the core under test can retire in one cycle. If more than one of the retired instruction writes the the same register, the channel with the highest index contains the instruction that wins the conflict.
+In the following specification the term `XLEN` refers to the width of an `x` register in bits, as described in the RISC-V ISA specification. The term `NRET` refers to the maximum number of instructions that the core under test can retire in one cycle. If more than one of the retired instruction writes the same register, the channel with the highest index contains the instruction that wins the conflict.
 
 The Interface consists only of output signals. Each signal is a concatenation of `NRET` values of constant width, effectively creating `NRET` channels. For simplicity, the following descriptions refer to one such channel. For example, we refer to `rvfi_valid` as a 1-bit signal, not a `NRET`-bits signal.
 
@@ -94,7 +94,7 @@ This is the value of the `x` register addressed by `rs2` before execution of thi
 
 ### `output [NRET * XLEN - 1 : 0] rvfi_post_pc`
 
-This is the value of the program counter after execution of this instruction. For a non-banching 32-bit instruction this is `rvfi_pre_pc + 4`.
+This is the value of the program counter after execution of this instruction. For a non-branching 32-bit instruction this is `rvfi_pre_pc + 4`.
 
 ### `output [NRET * XLEN - 1 : 0] rvfi_post_rd`
 
