@@ -1,6 +1,8 @@
 RISC-V Formal Verification Framework
 ====================================
 
+**This is work in progress. The interfaces described below are likely to change and the current implementation of everything mentioned below is incomplete.**
+
 About
 -----
 
