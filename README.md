@@ -53,6 +53,12 @@ The core is embedded in a formal test bench with an unconstrained memory interfa
 
 See `insncheck.v` in [cores/picorv32/](cores/picorv32/) for an example implementation.
 
+### Checking for equivalence of core with and without RVFI
+
+An equivalence check of the core with and without RVFI (with respect to the non-RVFI outputs) is performed. This proves that the verification results for the core with enabled RVFI also prove that the (non-RVFI) production core is correct without extra burden on the core designer to isolate the RVFI implementation from the rest of the core.
+
+See `equiv.sh` in [cores/picorv32/](cores/picorv32/) for an example implementation.
+
 RISC-V Formal Interface (RVFI)
 ------------------------------
 
