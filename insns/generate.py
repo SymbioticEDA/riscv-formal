@@ -42,6 +42,73 @@ def format_sb(f):
     print("wire [6:0] insn_opcode = insn[6:0];", file=f)
     print("", file=f)
 
+def format_u(f):
+    print("// U-type instruction format", file=f)
+    print("wire [XLEN-1:0] insn_imm = $signed({insn[31:12], 12'b0});", file=f)
+    print("wire [4:0] insn_rd = insn[11:7];", file=f)
+    print("wire [6:0] insn_opcode = insn[6:0];", file=f)
+    print("", file=f)
+
+def format_uj(f):
+    print("// UJ-type instruction format", file=f)
+    print("wire [XLEN-1:0] insn_imm = $signed({insn[31], insn[19:12], insn[20], insn[30:21], 1'b0});", file=f)
+    print("wire [4:0] insn_rd = insn[11:7];", file=f)
+    print("wire [6:0] insn_opcode = insn[6:0];", file=f)
+    print("", file=f)
+
+def insn_lui(insn = "lui"):
+	with open("%s.vh" % insn, "w") as f:
+		header(f)
+		format_u(f)
+		print("// %s instruction" % insn.upper(), file=f)
+		print("always @(posedge clk) begin", file=f)
+		print("  if (valid && insn_opcode == 7'b 0110111) begin", file=f)
+		print("    assert(rd == insn_rd);", file=f)
+		print("    assert(post_rd == (rd ? insn_imm : 0));", file=f)
+		print("    assert(post_pc == pre_pc + 4);", file=f)
+		print("  end", file=f)
+		print("end", file=f)
+
+def insn_auipc(insn = "auipc"):
+	with open("%s.vh" % insn, "w") as f:
+		header(f)
+		format_u(f)
+		print("// %s instruction" % insn.upper(), file=f)
+		print("always @(posedge clk) begin", file=f)
+		print("  if (valid && insn_opcode == 7'b 0010111) begin", file=f)
+		print("    assert(rd == insn_rd);", file=f)
+		print("    assert(post_rd == (rd ? pre_pc + insn_imm : 0));", file=f)
+		print("    assert(post_pc == pre_pc + 4);", file=f)
+		print("  end", file=f)
+		print("end", file=f)
+
+def insn_jal(insn = "jal"):
+	with open("%s.vh" % insn, "w") as f:
+		header(f)
+		format_uj(f)
+		print("// %s instruction" % insn.upper(), file=f)
+		print("always @(posedge clk) begin", file=f)
+		print("  if (valid && insn_opcode == 7'b 1101111) begin", file=f)
+		print("    assert(rd == insn_rd);", file=f)
+		print("    assert(post_rd == (rd ? pre_pc + 4 : 0));", file=f)
+		print("    assert(post_pc == pre_pc + insn_imm);", file=f)
+		print("  end", file=f)
+		print("end", file=f)
+
+def insn_jalr(insn = "jalr"):
+	with open("%s.vh" % insn, "w") as f:
+		header(f)
+		format_i(f)
+		print("// %s instruction" % insn.upper(), file=f)
+		print("always @(posedge clk) begin", file=f)
+		print("  if (valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 1100111) begin", file=f)
+		print("    assert(rs1 == insn_rs1);", file=f)
+		print("    assert(rd == insn_rd);", file=f)
+		print("    assert(post_rd == (rd ? pre_pc + 4 : 0));", file=f)
+		print("    assert(post_pc == pre_rs1 + insn_imm);", file=f)
+		print("  end", file=f)
+		print("end", file=f)
+
 def insn_b(insn, funct3, expr):
 	with open("%s.vh" % insn, "w") as f:
 		header(f)
@@ -102,6 +169,11 @@ def insn_alu(insn, funct7, funct3, expr):
 		print("    assert(post_rd == (rd ? result : 0));", file=f)
 		print("  end", file=f)
 		print("end", file=f)
+
+insn_lui()
+insn_auipc()
+insn_jal()
+insn_jalr()
 
 insn_b("beq",  "000", "pre_rs1 == pre_rs2")
 insn_b("bne",  "001", "pre_rs1 != pre_rs2")
