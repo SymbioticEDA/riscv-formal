@@ -33,6 +33,30 @@ def format_i_shift(f):
     print("wire [6:0] insn_opcode = insn[6:0];", file=f)
     print("", file=f)
 
+def format_sb(f):
+    print("// SB-type instruction format", file=f)
+    print("wire [XLEN-1:0] insn_imm = $signed({insn[31], insn[7], insn[30:25], insn[11:8], 1'b0});", file=f)
+    print("wire [4:0] insn_rs2 = insn[24:20];", file=f)
+    print("wire [4:0] insn_rs1 = insn[19:15];", file=f)
+    print("wire [4:0] insn_funct3 = insn[14:12];", file=f)
+    print("wire [6:0] insn_opcode = insn[6:0];", file=f)
+    print("", file=f)
+
+def insn_b(insn, funct3, expr):
+	with open("%s.vh" % insn, "w") as f:
+		header(f)
+		format_sb(f)
+		print("// %s instruction" % insn.upper(), file=f)
+		print("wire cond = %s;" % expr, file=f)
+		print("always @(posedge clk) begin", file=f)
+		print("  if (valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 1100011) begin" % funct3, file=f)
+		print("    assert(rs1 == insn_rs1);", file=f)
+		print("    assert(rs2 == insn_rs2);", file=f)
+		print("    assert(rd == 0);", file=f)
+		print("    assert(post_pc == (cond ? pre_pc + insn_imm : pre_pc + 4));", file=f)
+		print("  end", file=f)
+		print("end", file=f)
+
 def insn_imm(insn, funct3, expr):
 	with open("%s.vh" % insn, "w") as f:
 		header(f)
@@ -78,6 +102,13 @@ def insn_alu(insn, funct7, funct3, expr):
 		print("    assert(post_rd == (rd ? result : 0));", file=f)
 		print("  end", file=f)
 		print("end", file=f)
+
+insn_b("beq",  "000", "pre_rs1 == pre_rs2")
+insn_b("bne",  "001", "pre_rs1 != pre_rs2")
+insn_b("blt",  "100", "$signed(pre_rs1) < $signed(pre_rs2)")
+insn_b("bge",  "101", "$signed(pre_rs1) >= $signed(pre_rs2)")
+insn_b("bltu", "110", "pre_rs1 < pre_rs2")
+insn_b("bgeu", "111", "pre_rs1 >= pre_rs2")
 
 insn_imm("addi",  "000", "pre_rs1 + insn_imm")
 insn_imm("slti",  "010", "$signed(pre_rs1) < $signed(insn_imm)")
