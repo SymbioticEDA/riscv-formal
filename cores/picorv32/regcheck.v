@@ -1,5 +1,6 @@
 module testbench (
 	input clk,
+	input [4:0] regselect,
 
 	input         mem_ready,
 	output        mem_valid,
@@ -27,6 +28,7 @@ module testbench (
 	wire [31:0] rvfi_post_pc;
 	wire [31:0] rvfi_post_rd;
 
+`ifdef NAIVE_IMPLEMENTATION
 	integer i;
 	reg [31:0] pc = 0;
 	reg [31:0] cpuregs [0:31];
@@ -46,6 +48,31 @@ module testbench (
 			cpuregs[rvfi_rd] <= rvfi_post_rd;
 		end
 	end
+`else
+	reg [31:0] pc = 0;
+	reg [4:0] selected_reg = 0;
+	reg [31:0] selected_reg_val = 0;
+
+	always @(posedge clk) begin
+		if (!resetn) begin
+			selected_reg <= regselect;
+		end else
+		if (rvfi_valid) begin
+			assert(pc == rvfi_pre_pc);
+
+			if (rvfi_rs1 == selected_reg)
+				assert(selected_reg_val == rvfi_pre_rs1);
+
+			if (rvfi_rs2 == selected_reg)
+				assert(selected_reg_val == rvfi_pre_rs2);
+
+			pc <= rvfi_post_pc;
+
+			if (rvfi_rd == selected_reg)
+				selected_reg_val <= rvfi_post_rd;
+		end
+	end
+`endif
 
 	picorv32 #(
 		.REGS_INIT_ZERO(1),
