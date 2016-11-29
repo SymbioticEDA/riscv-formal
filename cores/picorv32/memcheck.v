@@ -1,6 +1,7 @@
 module testbench (
 	input clk,
-	input mem_ready
+	input mem_ready,
+	input [31:0] any_rdata
 );
 	reg resetn = 0;
 	wire trap;
@@ -28,7 +29,7 @@ module testbench (
 
 	reg [15:0] memory [0:1023];
 
-	assign mem_rdata = (mem_ready && mem_valid) ? {memory[mem_addr[10:1]+10'd1], memory[mem_addr[10:1]]} : 32'b0;
+	assign mem_rdata = (mem_ready && mem_valid) ? {memory[mem_addr[10:1]+10'd1], memory[mem_addr[10:1]]} : any_rdata;
 
 	always @(posedge clk) begin
 		if (resetn && rvfi_valid) begin
