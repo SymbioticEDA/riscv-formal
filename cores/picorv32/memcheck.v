@@ -27,6 +27,7 @@ module testbench (
 	wire [31:0] rvfi_post_pc;
 	wire [31:0] rvfi_post_rd;
 
+`ifdef NAIVE_IMPLEMENTATION
 	reg [15:0] memory [0:1023];
 
 	assign mem_rdata = (mem_ready && mem_valid) ? {memory[mem_addr[10:1]+10'd1], memory[mem_addr[10:1]]} : any_rdata;
@@ -38,6 +39,27 @@ module testbench (
 			assert(rvfi_insn[15:0] == memory[rvfi_pre_pc[10:1]]);
 		end
 	end
+`else
+	reg [15:0] selected_halfword_value = $anyconst;
+	reg [31:0] selected_halfword_addr = $anyconst;
+
+	always @(posedge clk) begin
+		if (resetn) begin
+			if (mem_ready && mem_valid) begin
+				if (mem_addr == selected_halfword_addr)
+					assume(selected_halfword_value == mem_rdata[15:0]);
+				if (mem_addr+2 == selected_halfword_addr)
+					assume(selected_halfword_value == mem_rdata[31:16]);
+			end
+			if (rvfi_valid) begin
+				if (rvfi_pre_pc == selected_halfword_addr)
+					assert(selected_halfword_value == rvfi_insn[15:0]);
+				if (rvfi_pre_pc+2 == selected_halfword_addr && rvfi_insn[1:0] == 2'b11)
+					assert(selected_halfword_value == rvfi_insn[31:16]);
+			end
+		end
+	end
+`endif
 
 	picorv32 #(
 		.COMPRESSED_ISA(0),
