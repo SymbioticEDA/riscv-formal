@@ -1,7 +1,11 @@
 module testbench (
 	input clk,
 	input mem_ready,
+`ifdef NAIVE_IMPLEMENTATION
 	input [31:0] any_rdata
+`else
+	input [31:0] mem_rdata
+`endif
 );
 	reg resetn = 0;
 	wire trap;
@@ -62,7 +66,7 @@ module testbench (
 `endif
 
 	picorv32 #(
-		.COMPRESSED_ISA(0),
+		.COMPRESSED_ISA(1),
 		.BARREL_SHIFTER(1)
 	) uut (
 		.clk          (clk         ),

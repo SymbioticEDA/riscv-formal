@@ -37,9 +37,9 @@ case "$solver" in
 			delete -output
 			memory_map; opt -full; techmap
 			opt -fast; abc -g AND -fast;; stat
-			write_aiger insncheck_${insn}.aig
+			write_aiger -zinit insncheck_${insn}.aig
 		"
-		solver_cmd="yosys-abc -c 'read_aiger insncheck_${insn}.aig; fold; logic; undc; strash; zero; bmc3 -F $((n+5)) -v'"
+		solver_cmd="yosys-abc -c 'read_aiger insncheck_${insn}.aig; fold; strash; bmc3 -F $((n+5)) -v'"
 		;;
 	bmc3_blif)
 		yosys_script="$yosys_script

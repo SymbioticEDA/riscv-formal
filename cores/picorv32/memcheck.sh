@@ -1,7 +1,7 @@
 #!/bin/bash
 
 assume_picorv32_asserts=false
-solver="z3"
+solver="bmc3_aig"
 n=50
 
 while getopts as:n: opt; do
@@ -32,9 +32,9 @@ case "$solver" in
 			delete -output
 			memory_map; opt -full; techmap
 			opt -fast; abc -g AND -fast;; stat
-			write_aiger memcheck.aig
+			write_aiger -zinit memcheck.aig
 		"
-		solver_cmd="yosys-abc -c 'read_aiger memcheck.aig; fold; logic; undc; strash; zero; bmc3 -F $n -v'"
+		solver_cmd="yosys-abc -c 'read_aiger memcheck.aig; fold; strash; bmc3 -F $n -v'"
 		;;
 	bmc3_blif)
 		yosys_script="$yosys_script
