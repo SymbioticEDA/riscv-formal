@@ -9,6 +9,8 @@ module testbench (
 	input  [31:0] mem_rdata,
 
 );
+	parameter integer N = 20;
+
 	reg resetn = 0;
 	wire trap;
 
@@ -27,11 +29,12 @@ module testbench (
 	wire [31:0] rvfi_post_rd;
 
 	reg enable = 0;
-	reg [4:0] cycle = 0;
+	reg [7:0] cycle = 0;
 
 	always @(posedge clk) begin
-		cycle <= cycle + 1;
-		enable <= cycle == 20;
+		if (~cycle)
+			cycle <= cycle + 1;
+		enable <= cycle == N;
 	end
 
 	riscv_formal_insn_checker #(

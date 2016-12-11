@@ -1,6 +1,5 @@
 module testbench (
 	input clk,
-	input [4:0] regselect,
 
 	input         mem_ready,
 	output        mem_valid,
@@ -50,14 +49,11 @@ module testbench (
 	end
 `else
 	reg [31:0] pc = 0;
-	reg [4:0] selected_reg = 0;
+	reg [4:0] selected_reg = $anyconst;
 	reg [31:0] selected_reg_val = 0;
 
 	always @(posedge clk) begin
-		if (!resetn) begin
-			selected_reg <= regselect;
-		end else
-		if (rvfi_valid) begin
+		if (resetn && rvfi_valid) begin
 			assert(pc == rvfi_pre_pc);
 
 			if (rvfi_rs1 == selected_reg)
