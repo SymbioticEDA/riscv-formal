@@ -106,6 +106,10 @@ This is the value of the program counter after execution of this instruction. Fo
 
 This is the value of the `x` register addressed by `rd` after execution of this instruction. This output must be zero when `rd` is zero.
 
+### `output [NRET        - 1 : 0] rvfi_post_trap`
+
+The `rvfi_post_trap` signal that is high for an instruction that traps and low otherwise. The other `rvfi_post_*` signals may have arbitrary values when `rvfi_post_trap` is asserted. `rvfi_rs1` and `rvfi_rs2` may have arbitrary values when `rvfi_post_trap` is asserted, but `rvfi_pre_rs1` and `rvfi_pre_rs2` must be consistent with the register file for nonzero `rvfi_rs1` and `rvfi_rs2` (and zero when `x0` is addressed). Which instruction traps depends on the implemented ISA. Make sure to configure riscv-formal to match the ISA implemented by the core under test.
+
 RVFI TODOs and Requests for Comments
 ------------------------------------
 
@@ -116,12 +120,6 @@ Models for RV64I-only instructions are still missing. They will be added as soon
 ### Support for Compressed ISAs
 
 There are no models for the compressed instructions yet. The proposal is to verify them as if they where seperate instructions, i.e. not merge them with the models for uncompressed instructions.
-
-### Modelling of traps
-
-The current RVFI spec has no way of outputting a trap state. The PicoRV32 processor simply does not create a RVFI output for an instruction that traps. This is bad because it prohibits verification of trap behavior.
-
-Suggestion: Add a `rvfi_post_trap` signal that is high for an instruction that traps and low otherwise. The other `rvfi_post_*` signals may have arbitrary values when `rvfi_post_trap` is asserted. `rvfi_rs1` and `rvfi_rs2` may have arbitrary values when `rvfi_post_trap` is asserted, but `rvfi_pre_rs1` and `rvfi_pre_rs2` must be consistent with the register file for nonzero `rvfi_rs1` and `rvfi_rs2` (and zero when `x0` is addressed). Which instruction traps depends on the implemented ISA. Use Verilog macros or parameters to configure the models accordingly.
 
 ### Modelling of Floating-Point State
 

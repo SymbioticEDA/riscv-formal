@@ -12,7 +12,8 @@ module riscv_formal_insn_checker #(
 	input [NRET * XLEN - 1 : 0] rvfi_pre_rs1,
 	input [NRET * XLEN - 1 : 0] rvfi_pre_rs2,
 	input [NRET * XLEN - 1 : 0] rvfi_post_pc,
-	input [NRET * XLEN - 1 : 0] rvfi_post_rd
+	input [NRET * XLEN - 1 : 0] rvfi_post_rd,
+	input [NRET        - 1 : 0] rvfi_post_trap
 );
 `ifdef CHANNEL_IDX
 	localparam integer channel_idx = `CHANNEL_IDX;
@@ -30,6 +31,7 @@ module riscv_formal_insn_checker #(
 		wire [XLEN-1:0] pre_rs2 = rvfi_pre_rs2[channel_idx*XLEN +: XLEN];
 		wire [XLEN-1:0] post_pc = rvfi_post_pc[channel_idx*XLEN +: XLEN];
 		wire [XLEN-1:0] post_rd = rvfi_post_rd[channel_idx*XLEN +: XLEN];
+		wire [XLEN-1:0] post_trap = rvfi_post_trap[channel_idx*XLEN];
 		`include `INSN_VH
 `ifndef CHANNEL_IDX
 	end endgenerate

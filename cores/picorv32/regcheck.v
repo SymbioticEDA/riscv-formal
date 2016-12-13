@@ -26,6 +26,7 @@ module testbench (
 	wire [31:0] rvfi_pre_rs2;
 	wire [31:0] rvfi_post_pc;
 	wire [31:0] rvfi_post_rd;
+	wire        rvfi_post_trap;
 
 `ifdef NAIVE_IMPLEMENTATION
 	integer i;
@@ -75,28 +76,29 @@ module testbench (
 		.COMPRESSED_ISA(0),
 		.BARREL_SHIFTER(1)
 	) uut (
-		.clk          (clk         ),
-		.resetn       (resetn      ),
-		.trap         (trap        ),
+		.clk            (clk           ),
+		.resetn         (resetn        ),
+		.trap           (trap          ),
 
-		.mem_valid    (mem_valid   ),
-		.mem_instr    (mem_instr   ),
-		.mem_ready    (mem_ready   ),
-		.mem_addr     (mem_addr    ),
-		.mem_wdata    (mem_wdata   ),
-		.mem_wstrb    (mem_wstrb   ),
-		.mem_rdata    (mem_rdata   ),
+		.mem_valid      (mem_valid     ),
+		.mem_instr      (mem_instr     ),
+		.mem_ready      (mem_ready     ),
+		.mem_addr       (mem_addr      ),
+		.mem_wdata      (mem_wdata     ),
+		.mem_wstrb      (mem_wstrb     ),
+		.mem_rdata      (mem_rdata     ),
 
-		.rvfi_valid   (rvfi_valid  ),
-		.rvfi_rs1     (rvfi_rs1    ),
-		.rvfi_rs2     (rvfi_rs2    ),
-		.rvfi_rd      (rvfi_rd     ),
-		.rvfi_insn    (rvfi_insn   ),
-		.rvfi_pre_pc  (rvfi_pre_pc ),
-		.rvfi_pre_rs1 (rvfi_pre_rs1),
-		.rvfi_pre_rs2 (rvfi_pre_rs2),
-		.rvfi_post_pc (rvfi_post_pc),
-		.rvfi_post_rd (rvfi_post_rd)
+		.rvfi_valid     (rvfi_valid    ),
+		.rvfi_rs1       (rvfi_rs1      ),
+		.rvfi_rs2       (rvfi_rs2      ),
+		.rvfi_rd        (rvfi_rd       ),
+		.rvfi_insn      (rvfi_insn     ),
+		.rvfi_pre_pc    (rvfi_pre_pc   ),
+		.rvfi_pre_rs1   (rvfi_pre_rs1  ),
+		.rvfi_pre_rs2   (rvfi_pre_rs2  ),
+		.rvfi_post_pc   (rvfi_post_pc  ),
+		.rvfi_post_rd   (rvfi_post_rd  ),
+		.rvfi_post_trap (rvfi_post_trap)
 	);
 
 	reg [4:0] mem_wait = 0;

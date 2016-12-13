@@ -11,5 +11,6 @@ always @(posedge clk) begin
     assert(rd == insn_rd);
     assert(post_rd == (rd ? insn_imm : 0));
     assert(post_pc == pre_pc + 4);
+    assert(!post_trap);
   end
 end

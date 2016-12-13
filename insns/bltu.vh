@@ -9,11 +9,21 @@ wire [6:0] insn_opcode = insn[6:0];
 
 // BLTU instruction
 wire cond = pre_rs1 < pre_rs2;
+wire [XLEN-1:0] result = (cond ? pre_pc + insn_imm : pre_pc + 4);
 always @(posedge clk) begin
   if (valid && insn_funct3 == 3'b 110 && insn_opcode == 7'b 1100011) begin
     assert(rs1 == insn_rs1);
     assert(rs2 == insn_rs2);
     assert(rd == 0);
-    assert(post_pc == (cond ? pre_pc + insn_imm : pre_pc + 4));
+`ifdef RISCV_FORMAL_COMPRESSED
+    if (result[0] == 0) begin
+`else
+    if (result[1:0] == 0) begin
+`endif
+      assert(post_pc == result);
+      assert(!post_trap);
+    end else begin
+      assert(post_trap);
+    end
   end
 end
