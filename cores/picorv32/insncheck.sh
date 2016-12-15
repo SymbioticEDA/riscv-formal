@@ -22,10 +22,16 @@ fi
 
 
 yosys_script="
-	read_verilog -formal insncheck.v
-	read_verilog $read_verilog_picorv32_opts -D RISCV_FORMAL ../../../picorv32/picorv32.v
-	read_verilog -formal -D INSN_VH=\"../insns/insn_${insn}.vh\" -D CHANNEL_IDX=0 ../../checkers/riscv_formal_insn_checker.v
-	chparam -set N $n testbench
+	verilog_defines -D RISCV_FORMAL
+	verilog_defines -D RISCV_FORMAL_NRET=1
+	verilog_defines -D RISCV_FORMAL_XLEN=32
+	verilog_defines -D RISCV_FORMAL_BMC_DEPTH=$n
+	verilog_defines -D RISCV_FORMAL_INSN_VH=\"../insns/insn_${insn}.vh\"
+	verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=0
+	read_verilog ../../checks/rvfi_macros.vh
+
+	read_verilog $read_verilog_picorv32_opts ../../../picorv32/picorv32.v
+	read_verilog -formal insncheck.v ../../checks/rvfi_insn_check.v
 	prep -nordff -top testbench
 "
 
