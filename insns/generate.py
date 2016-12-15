@@ -57,7 +57,7 @@ def format_uj(f):
     print("", file=f)
 
 def insn_lui(insn = "lui"):
-	with open("%s.vh" % insn, "w") as f:
+	with open("insn_%s.vh" % insn, "w") as f:
 		header(f)
 		format_u(f)
 		print("// %s instruction" % insn.upper(), file=f)
@@ -71,7 +71,7 @@ def insn_lui(insn = "lui"):
 		print("end", file=f)
 
 def insn_auipc(insn = "auipc"):
-	with open("%s.vh" % insn, "w") as f:
+	with open("insn_%s.vh" % insn, "w") as f:
 		header(f)
 		format_u(f)
 		print("// %s instruction" % insn.upper(), file=f)
@@ -85,7 +85,7 @@ def insn_auipc(insn = "auipc"):
 		print("end", file=f)
 
 def insn_jal(insn = "jal"):
-	with open("%s.vh" % insn, "w") as f:
+	with open("insn_%s.vh" % insn, "w") as f:
 		header(f)
 		format_uj(f)
 		print("// %s instruction" % insn.upper(), file=f)
@@ -104,7 +104,7 @@ def insn_jal(insn = "jal"):
 		print("end", file=f)
 
 def insn_jalr(insn = "jalr"):
-	with open("%s.vh" % insn, "w") as f:
+	with open("insn_%s.vh" % insn, "w") as f:
 		header(f)
 		format_i(f)
 		print("// %s instruction" % insn.upper(), file=f)
@@ -124,7 +124,7 @@ def insn_jalr(insn = "jalr"):
 		print("end", file=f)
 
 def insn_b(insn, funct3, expr):
-	with open("%s.vh" % insn, "w") as f:
+	with open("insn_%s.vh" % insn, "w") as f:
 		header(f)
 		format_sb(f)
 		print("// %s instruction" % insn.upper(), file=f)
@@ -145,7 +145,7 @@ def insn_b(insn, funct3, expr):
 		print("end", file=f)
 
 def insn_imm(insn, funct3, expr):
-	with open("%s.vh" % insn, "w") as f:
+	with open("insn_%s.vh" % insn, "w") as f:
 		header(f)
 		format_i(f)
 		print("// %s instruction" % insn.upper(), file=f)
@@ -161,7 +161,7 @@ def insn_imm(insn, funct3, expr):
 		print("end", file=f)
 
 def insn_shimm(insn, funct7, funct3, expr):
-	with open("%s.vh" % insn, "w") as f:
+	with open("insn_%s.vh" % insn, "w") as f:
 		header(f)
 		format_i_shift(f)
 		print("// %s instruction" % insn.upper(), file=f)
@@ -177,7 +177,7 @@ def insn_shimm(insn, funct7, funct3, expr):
 		print("end", file=f)
 
 def insn_alu(insn, funct7, funct3, expr):
-	with open("%s.vh" % insn, "w") as f:
+	with open("insn_%s.vh" % insn, "w") as f:
 		header(f)
 		format_r(f)
 		print("// %s instruction" % insn.upper(), file=f)

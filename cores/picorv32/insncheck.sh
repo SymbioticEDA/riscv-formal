@@ -24,7 +24,7 @@ fi
 yosys_script="
 	read_verilog -formal insncheck.v
 	read_verilog $read_verilog_picorv32_opts -D RISCV_FORMAL ../../../picorv32/picorv32.v
-	read_verilog -formal -D INSN_VH=\"../insns/${insn}.vh\" -D CHANNEL_IDX=0 ../../checkers/riscv_formal_insn_checker.v
+	read_verilog -formal -D INSN_VH=\"../insns/insn_${insn}.vh\" -D CHANNEL_IDX=0 ../../checkers/riscv_formal_insn_checker.v
 	chparam -set N $n testbench
 	prep -nordff -top testbench
 "
