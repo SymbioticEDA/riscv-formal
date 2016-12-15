@@ -16,6 +16,6 @@ if (valid && insn_funct7 == 7'b 0100000 && insn_funct3 == 3'b 101 && insn_opcode
   ref_rs1 = insn_rs1;
   ref_rd = insn_rd;
   ref_post_rd = ref_rd ? result : 0;
-  ref_post_pc = pre_pc + 4);
+  ref_post_pc = pre_pc + 4;
   ref_post_trap = 0;
 end

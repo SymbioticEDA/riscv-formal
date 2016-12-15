@@ -172,7 +172,7 @@ def insn_shimm(insn, funct7, funct3, expr):
 		print("  ref_rs1 = insn_rs1;", file=f)
 		print("  ref_rd = insn_rd;", file=f)
 		print("  ref_post_rd = ref_rd ? result : 0;", file=f)
-		print("  ref_post_pc = pre_pc + 4);", file=f)
+		print("  ref_post_pc = pre_pc + 4;", file=f)
 		print("  ref_post_trap = 0;", file=f)
 		print("end", file=f)
 
