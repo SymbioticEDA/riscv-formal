@@ -24,7 +24,7 @@ fi
 yosys_script="
 	read_verilog -formal insncheck.v
 	read_verilog $read_verilog_picorv32_opts -D RISCV_FORMAL ../../../picorv32/picorv32.v
-	read_verilog -formal -D INSN_VH=\"${insn}.vh\" -D CHANNEL_IDX=0 ../../insns/checker.v
+	read_verilog -formal -D INSN_VH=\"../insns/${insn}.vh\" -D CHANNEL_IDX=0 ../../checkers/riscv_formal_insn_checker.v
 	chparam -set N $n testbench
 	prep -nordff -top testbench
 "
@@ -36,7 +36,8 @@ case "$solver" in
 			setattr -unset keep
 			delete -output
 			memory_map; opt -full; techmap
-			opt -fast; abc -g AND -fast;; stat
+			setundef -zero; opt -fast
+			abc -g AND -fast;; stat
 			write_aiger -zinit insncheck_${insn}.aig
 		"
 		solver_cmd="yosys-abc -c 'read_aiger insncheck_${insn}.aig; fold; strash; bmc3 -F $((n+5)) -v'"

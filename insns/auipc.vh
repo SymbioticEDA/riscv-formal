@@ -1,16 +1,16 @@
 // DO NOT EDIT -- auto-generated from generate.py
 
 // U-type instruction format
-wire [XLEN-1:0] insn_imm = $signed({insn[31:12], 12'b0});
-wire [4:0] insn_rd = insn[11:7];
-wire [6:0] insn_opcode = insn[6:0];
+insn_imm = $signed({insn[31:12], 12'b0});
+insn_rd = insn[11:7];
+insn_opcode = insn[6:0];
 
 // AUIPC instruction
-always @(posedge clk) begin
-  if (valid && insn_opcode == 7'b 0010111) begin
-    assert(rd == insn_rd);
-    assert(post_rd == (rd ? pre_pc + insn_imm : 0));
-    assert(post_pc == pre_pc + 4);
-    assert(!post_trap);
-  end
+if (valid && insn_opcode == 7'b 0010111) begin
+  assert(!ref_valid);
+  ref_valid = 1;
+  ref_rd = insn_rd;
+  ref_post_rd = ref_rd ? pre_pc + insn_imm : 0;
+  ref_post_pc = pre_pc + 4;
+  ref_post_trap = 0;
 end
