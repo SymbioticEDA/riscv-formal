@@ -14,8 +14,8 @@ if (valid && insn_opcode == 7'b 1101111) begin
   ref_post_rd = ref_rd ? pre_pc + 4 : 0;
   ref_post_pc = result;
 `ifdef RISCV_FORMAL_COMPRESSED
-  ref_post_trap = result[0] == 0;
+  ref_post_trap = result[0] != 0;
 `else
-  ref_post_trap = result[1:0] == 0;
+  ref_post_trap = result[1:0] != 0;
 `endif
 end

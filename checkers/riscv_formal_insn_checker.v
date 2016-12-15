@@ -31,7 +31,7 @@ module riscv_formal_insn_checker #(
 		wire [XLEN-1:0] pre_rs2 = rvfi_pre_rs2[channel_idx*XLEN +: XLEN];
 		wire [XLEN-1:0] post_pc = rvfi_post_pc[channel_idx*XLEN +: XLEN];
 		wire [XLEN-1:0] post_rd = rvfi_post_rd[channel_idx*XLEN +: XLEN];
-		wire [XLEN-1:0] post_trap = rvfi_post_trap[channel_idx*XLEN];
+		wire post_trap = rvfi_post_trap[channel_idx*XLEN];
 
 		reg ref_valid;
 		reg [4:0] ref_rs1;

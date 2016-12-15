@@ -18,8 +18,8 @@ if (valid && insn_funct3 == 3'b 111 && insn_opcode == 7'b 1100011) begin
   ref_rd = 0;
   ref_post_pc = result;
 `ifdef RISCV_FORMAL_COMPRESSED
-  ref_post_trap = result[0] == 0;
+  ref_post_trap = result[0] != 0;
 `else
-  ref_post_trap = result[1:0] == 0;
+  ref_post_trap = result[1:0] != 0;
 `endif
 end
