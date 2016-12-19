@@ -2,12 +2,14 @@
 
 assume_picorv32_asserts=false
 solver="bmc3_aig"
-n=50
+check="reg"
+n=20
 
-while getopts as:n: opt; do
+while getopts as:c:n: opt; do
 	case "$opt" in
 		a) assume_picorv32_asserts=true;;
 		s) solver="$OPTARG";;
+		c) check="$OPTARG";;
 		n) n="$OPTARG";;
 		*) exit 1
 	esac
@@ -19,8 +21,13 @@ if $assume_picorv32_asserts; then
 fi
 
 yosys_script="
-	read_verilog -formal memcheck.v
-	read_verilog $read_verilog_picorv32_opts -D RISCV_FORMAL ../../../picorv32/picorv32.v
+	verilog_defines -D RISCV_FORMAL
+	verilog_defines -D RISCV_FORMAL_NRET=1
+	verilog_defines -D RISCV_FORMAL_XLEN=32
+	read_verilog ../../checks/rvfi_macros.vh
+
+	read_verilog $read_verilog_picorv32_opts ../../../picorv32/picorv32.v
+	read_verilog -formal ${check}check.v ../../checks/rvfi_${check}_check.v
 	prep -nordff -top testbench
 "
 
@@ -32,9 +39,9 @@ case "$solver" in
 			delete -output
 			memory_map; opt -full; techmap
 			opt -fast; abc -g AND -fast;; stat
-			write_aiger -zinit memcheck.aig
+			write_aiger -zinit ${check}check.aig
 		"
-		solver_cmd="yosys-abc -c 'read_aiger memcheck.aig; fold; strash; bmc3 -F $n -v'"
+		solver_cmd="yosys-abc -c 'read_aiger ${check}check.aig; fold; strash; bmc3 -F $n -v'"
 		;;
 	bmc3_blif)
 		yosys_script="$yosys_script
@@ -43,15 +50,15 @@ case "$solver" in
 			setattr -unset keep
 			memory_map; opt -full; techmap
 			opt -fast; abc -fast;; stat
-			write_blif memcheck.blif
+			write_blif ${check}check.blif
 		"
-		solver_cmd="yosys-abc -c 'read_blif memcheck.blif; undc; strash; zero; bmc3 -F $n -v'"
+		solver_cmd="yosys-abc -c 'read_blif ${check}check.blif; undc; strash; zero; bmc3 -F $n -v'"
 		;;
 	*)
 		yosys_script="$yosys_script
-			write_smt2 -wires memcheck.smt2
+			write_smt2 -wires ${check}check.smt2
 		"
-		solver_cmd="yosys-smtbmc -s $solver -t $n --dump-vcd output.vcd memcheck.smt2"
+		solver_cmd="yosys-smtbmc -s $solver -t $n --dump-vcd output.vcd ${check}check.smt2"
 		;;
 esac
 

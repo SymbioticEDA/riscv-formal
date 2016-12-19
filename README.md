@@ -35,13 +35,19 @@ The following formal test are performed to verify ISA compliance of RISC-V proce
 
 The core is embedded in a formal test bench that connects the core to a read-only instruction memory. For all retired instructions output through the RVFI port of the core, the fetched instruction is compared to the actual instruction word in the memory location pointed to by the pre-state program counter (pc).
 
-See `memcheck.v` in [cores/picorv32/](cores/picorv32/) for an example implementation.
+See `imemcheck.v` in [cores/picorv32/](cores/picorv32/) for an example implementation.
 
 ### Verifying consistency between instructions
 
 The core is embedded in a formal test bench with an unconstrained memory interface (i.e. memory is outside of the formal test bench, no modelling of memory is necessary). A sequence of instruction is generated and it is checked if pre- and post-states of this instruction sequence are consistent, i.e. when a register is written by one instruction, and read by a later instruction (without other writes to the same register between those two instructions), then the written value must be the value that is read back. This test checks for consistency of all `x` registers and the program counter.
 
-See `regcheck.v` in [cores/picorv32/](cores/picorv32/) for one possible implementation of this test.
+See `regcheck.v` and `pccheck.v` in [cores/picorv32/](cores/picorv32/) for one possible implementation of this test.
+
+### Verifying consistency of memory operations
+
+The core is embedded in a formal test bench and a sequence of instruction is generated. It is checked if memory writes and later memory reads to the same memory address is consistent.
+
+See `dmemcheck.v` in [cores/picorv32/](cores/picorv32/) for one possible implementation of this test.
 
 ### Verifying correctness of individual instructions
 
@@ -68,7 +74,7 @@ When the core retires an instruction, it asserts the `rvfi_valid` signal and use
 
 ### `output [NRET *    8 - 1 : 0] rvfi_order`
 
-Cores that retire all instructions in-order may set this field to constant zero. Cores that retire instructions out-of-order must set this field to the instruction index so that they can be sorted within `riscv-formal` test-benches when needed.
+Cores that retire all instructions in-order may set this field to constant zero. Cores that retire instructions out-of-order must set this field to the instruction index so that they can be sorted within `riscv-formal` test-benches when needed. Right now no such sorter is implemented and cores that retire instructions out-of-order are not supported.
 
 ### `output [NRET *   32 - 1 : 0] rvfi_insn`
 

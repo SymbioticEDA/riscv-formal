@@ -18,9 +18,7 @@ module testbench (
 
 	`RFVI_WIRES
 
-	rvfi_reg_check #(
-		.ZERO_INIT(1)
-	) checker (
+	rvfi_pc_check checker (
 		.clk    (clk   ),
 		.resetn (resetn),
 		`RFVI_CONN

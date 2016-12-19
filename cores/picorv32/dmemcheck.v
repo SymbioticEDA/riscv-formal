@@ -18,13 +18,29 @@ module testbench (
 
 	`RFVI_WIRES
 
-	rvfi_reg_check #(
-		.ZERO_INIT(1)
-	) checker (
-		.clk    (clk   ),
-		.resetn (resetn),
+	wire [31:0] dmem_addr;
+	reg [31:0] dmem_data;
+
+	rvfi_dmem_check checker (
+		.clk       (clk      ),
+		.resetn    (resetn   ),
+		.dmem_addr (dmem_addr),
 		`RFVI_CONN
 	);
+
+	always @(posedge clk) begin
+		if (resetn && mem_valid && mem_ready && mem_addr == dmem_addr) begin
+			if (mem_wstrb[0]) dmem_data[ 7: 0] <= mem_wdata[ 7: 0];
+			if (mem_wstrb[1]) dmem_data[15: 8] <= mem_wdata[15: 8];
+			if (mem_wstrb[2]) dmem_data[23:16] <= mem_wdata[23:16];
+			if (mem_wstrb[3]) dmem_data[31:24] <= mem_wdata[31:24];
+		end
+	end
+
+	always @* begin
+		if (resetn && mem_valid && mem_ready && mem_addr == dmem_addr && !mem_wstrb)
+			assume(dmem_data == mem_rdata);
+	end
 
 	picorv32 #(
 		.REGS_INIT_ZERO(1),
