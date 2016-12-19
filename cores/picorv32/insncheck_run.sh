@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for insn in ../../insns/*.vh; do
+for insn in ../../insns/insn_*.vh; do
 	insn=${insn##*/insn_}
 	insn=${insn%.vh}
 	echo "all:: insn_${insn}.log"

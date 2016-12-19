@@ -33,6 +33,15 @@ def format_i_shift(f):
     print("insn_opcode = insn[6:0];", file=f)
     print("", file=f)
 
+def format_s(f):
+    print("// S-type instruction format", file=f)
+    print("insn_imm = $signed({insn[31:25], insn[11:7]});", file=f)
+    print("insn_rs2 = insn[24:20];", file=f)
+    print("insn_rs1 = insn[19:15];", file=f)
+    print("insn_funct3 = insn[14:12];", file=f)
+    print("insn_opcode = insn[6:0];", file=f)
+    print("", file=f)
+
 def format_sb(f):
     print("// SB-type instruction format", file=f)
     print("insn_imm = $signed({insn[31], insn[7], insn[30:25], insn[11:8], 1'b0});", file=f)
@@ -144,6 +153,53 @@ def insn_b(insn, funct3, expr):
 		print("`endif", file=f)
 		print("end", file=f)
 
+def insn_l(insn, funct3, numbytes, signext):
+	with open("insn_%s.vh" % insn, "w") as f:
+		header(f)
+		format_i(f)
+		print("// %s instruction" % insn.upper(), file=f)
+		print("if (valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0000011) begin" % funct3, file=f)
+		print("  assert(!ref_valid);", file=f)
+		print("  addr = pre_rs1 + insn_imm;", file=f)
+		print("  ref_valid = 1;", file=f)
+		print("  ref_rs1 = insn_rs1;", file=f)
+		print("  ref_rd = insn_rd;", file=f)
+		print("  if ((addr & (%d-1)) == 0) begin" % numbytes, file=f)
+		print("    ref_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);", file=f)
+		print("    ref_mem_rmask = ((1 << %d)-1) << (addr-ref_mem_addr);" % numbytes, file=f)
+		print("    result = mem_rdata >> (8*(addr-ref_mem_addr));", file=f)
+		print("    ref_post_rd = ref_rd ? $%ssigned(result[%d:0]) : 0;" % ("" if signext else "un", 8*numbytes-1), file=f)
+		print("    ref_post_pc = pre_pc + 4;", file=f)
+		print("    ref_post_trap = 0;", file=f)
+		print("  end else begin", file=f)
+		print("    ref_post_trap = 1;", file=f)
+		print("  end", file=f)
+		print("end", file=f)
+
+def insn_s(insn, funct3, numbytes):
+	with open("insn_%s.vh" % insn, "w") as f:
+		header(f)
+		format_s(f)
+		print("// %s instruction" % insn.upper(), file=f)
+		print("if (valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0100011) begin" % funct3, file=f)
+		print("  assert(!ref_valid);", file=f)
+		print("  addr = pre_rs1 + insn_imm;", file=f)
+		print("  ref_valid = 1;", file=f)
+		print("  ref_rs1 = insn_rs1;", file=f)
+		print("  ref_rs2 = insn_rs2;", file=f)
+		print("  ref_rd = 0;", file=f)
+		print("  if ((addr & (%d-1)) == 0) begin" % numbytes, file=f)
+		print("    ref_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);", file=f)
+		print("    ref_mem_wmask = ((1 << %d)-1) << (addr-ref_mem_addr);" % numbytes, file=f)
+		print("    ref_mem_wdata = pre_rs2 << (8*(addr-ref_mem_addr));", file=f)
+		print("    ref_post_rd = 0;", file=f)
+		print("    ref_post_pc = pre_pc + 4;", file=f)
+		print("    ref_post_trap = 0;", file=f)
+		print("  end else begin", file=f)
+		print("    ref_post_trap = 1;", file=f)
+		print("  end", file=f)
+		print("end", file=f)
+
 def insn_imm(insn, funct3, expr):
 	with open("insn_%s.vh" % insn, "w") as f:
 		header(f)
@@ -204,6 +260,16 @@ insn_b("blt",  "100", "$signed(pre_rs1) < $signed(pre_rs2)")
 insn_b("bge",  "101", "$signed(pre_rs1) >= $signed(pre_rs2)")
 insn_b("bltu", "110", "pre_rs1 < pre_rs2")
 insn_b("bgeu", "111", "pre_rs1 >= pre_rs2")
+
+insn_l("lb",  "000", 1, True)
+insn_l("lh",  "001", 2, True)
+insn_l("lw",  "010", 4, True)
+insn_l("lbu", "100", 1, False)
+insn_l("lhu", "101", 2, False)
+
+insn_s("sb",  "000", 1)
+insn_s("sh",  "001", 2)
+insn_s("sw",  "010", 4)
 
 insn_imm("addi",  "000", "pre_rs1 + insn_imm")
 insn_imm("slti",  "010", "$signed(pre_rs1) < $signed(insn_imm)")

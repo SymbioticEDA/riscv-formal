@@ -17,11 +17,7 @@ See [cores/picorv32/](cores/picorv32/) for example bindings for the PicoRV32 pro
 
 A processor core usually will implement RVFI as an optional feature that is only enabled for verification. Sequential equivalence check can be used to prove equivalence of the processor versions with and without RVFI.
 
-RVFI in its current form supports multiple-issue in-order processors, but current work focuses on single-issue in-order cores. Out-of-order cores must be able to generate an in-order sequence of retired instructions.
-
-The current RVFI specification does not support verification of memory load and store operations.
-
-The current focus is on implementing formal models of all (non-ld/st) instructions from the RISC-V RV32I and RV64I ISAs, and formally verifying those models against the models used in the RISC-V "Spike" ISA simulator.
+The current focus is on implementing formal models of all instructions from the RISC-V RV32I and RV64I ISAs, and formally verifying those models against the models used in the RISC-V "Spike" ISA simulator.
 
 `riscv-formal` uses the FOSS Yosys-SMTBMC Verilog verification flow. All properties are expressed using immediate assertions/assumptions for maximal compatibility with other tools.
 
@@ -70,6 +66,10 @@ The Interface consists only of output signals. Each signal is a concatenation of
 
 When the core retires an instruction, it asserts the `rvfi_valid` signal and uses the signals described below to output the details of the retired instruction. The signals below are only valid during such a cycle and can be driven to arbitrary values in a cycle in which `rvfi_valid` is not asserted.
 
+### `output [NRET *    8 - 1 : 0] rvfi_order`
+
+Cores that retire all instructions in-order may set this field to constant zero. Cores that retire instructions out-of-order must set this field to the instruction index so that they can be sorted within `riscv-formal` test-benches when needed.
+
 ### `output [NRET *   32 - 1 : 0] rvfi_insn`
 
 This is the 32-bit or 16-bit instruction word. In case of a 16-bit instruction the upper 16-bits of this output may carry an arbitrary bit pattern. The current RVFI specification does not support instructions wider than 32 bits.
@@ -110,6 +110,26 @@ This is the value of the `x` register addressed by `rd` after execution of this 
 
 The `rvfi_post_trap` signal that is high for an instruction that traps and low otherwise. The other `rvfi_post_*` signals may have arbitrary values when `rvfi_post_trap` is asserted. `rvfi_rs1` and `rvfi_rs2` may have arbitrary values when `rvfi_post_trap` is asserted, but `rvfi_pre_rs1` and `rvfi_pre_rs2` must be consistent with the register file for nonzero `rvfi_rs1` and `rvfi_rs2` (and zero when `x0` is addressed). Which instruction traps depends on the implemented ISA. Make sure to configure riscv-formal to match the ISA implemented by the core under test.
 
+### `output [NRET * XLEN - 1 : 0] rvfi_mem_addr`
+
+For memory operations (`rvfi_mem_rmask` and/or `rvfi_mem_wmask` are non-zero) this fields holds the accessed memory location. The address must have a 4-byte alignment for `XLEN=32` and an 8-byte alignment for `XLEN=64`.
+
+### `output [NRET * XLEN/8 - 1 : 0] rvfi_mem_rmask`
+
+A bitmask that specifies which bytes in `rvfi_mem_rdata` contain valid read data from `rvfi_mem_addr`.
+
+### `output [NRET * XLEN/8 - 1 : 0] rvfi_mem_wmask`
+
+A bitmask that specifies which bytes in `rvfi_mem_wdata` contain valid data that is written to `rvfi_mem_addr`.
+
+### `output [NRET * XLEN - 1 : 0] rvfi_mem_rdata`
+
+The pre-state data read from `rvfi_mem_addr`. `rvfi_mem_rmask` specifies which bytes are valid.
+
+### `output [NRET * XLEN - 1 : 0] rvfi_mem_wdata`
+
+The post-state data written to `rvfi_mem_addr`. `rvfi_mem_wmask` specifies which bytes are valid.
+
 RVFI TODOs and Requests for Comments
 ------------------------------------
 
@@ -125,7 +145,7 @@ There are no models for the compressed instructions yet. The proposal is to veri
 
 TBD
 
-### Modelling of Memory Accesses
+### Modelling of Atomic Memory Operations
 
 TBD
 
