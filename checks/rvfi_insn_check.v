@@ -61,11 +61,7 @@ module rvfi_insn_check (
 			.rvfi_pre_pc   (pre_pc   ),
 			.rvfi_pre_rs1  (pre_rs1  ),
 			.rvfi_pre_rs2  (pre_rs2  ),
-			.rvfi_mem_addr (mem_addr ),
-			.rvfi_mem_rmask(mem_rmask),
-			.rvfi_mem_wmask(mem_wmask),
 			.rvfi_mem_rdata(mem_rdata),
-			.rvfi_mem_wdata(mem_wdata),
 
 			.spec_valid    (spec_valid    ),
 			.spec_rs1      (spec_rs1      ),

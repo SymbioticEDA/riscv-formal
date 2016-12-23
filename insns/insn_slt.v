@@ -6,11 +6,7 @@ module rvfi_insn_slt (
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs1,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs2,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_addr,
-  input [`RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_rmask,
-  input [`RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_wmask,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata,
 
   output                                spec_valid,
   output [                       4 : 0] spec_rs1,

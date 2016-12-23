@@ -6,11 +6,7 @@ module rvfi_insn_lh (
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs1,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs2,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_addr,
-  input [`RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_rmask,
-  input [`RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_wmask,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata,
 
   output                                spec_valid,
   output [                       4 : 0] spec_rs1,
@@ -34,7 +30,7 @@ module rvfi_insn_lh (
 
   // LH instruction
   wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_pre_rs1 + insn_imm;
-  wire [15-1:0] result = rvfi_mem_rdata >> (8*(addr-spec_mem_addr));
+  wire [15:0] result = rvfi_mem_rdata >> (8*(addr-spec_mem_addr));
   assign spec_valid = rvfi_valid && insn_funct3 == 3'b 001 && insn_opcode == 7'b 0000011;
   assign spec_rs1 = insn_rs1;
   assign spec_rd = insn_rd;
