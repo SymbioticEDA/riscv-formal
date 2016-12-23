@@ -26,6 +26,8 @@ Related Work
 
 ARM's [ISA-Formal Framework](https://alastairreid.github.io/papers/cav2016_isa_formal.pdf) follows a similar set of ideas and has inspired the work on `riscv-formal`.
 
+Please [open an issue](https://github.com/cliffordwolf/riscv-formal/issues/new) if you kown of other RISC-V formal verification projects I should link to in this section.
+
 Verification Procedure
 ----------------------
 
