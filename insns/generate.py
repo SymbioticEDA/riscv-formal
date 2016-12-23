@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
+defaults_cache = None
+
 def header(f, insn):
+    global defaults_cache
+    defaults_cache = dict()
+
     print("// DO NOT EDIT -- auto-generated from generate.py", file=f)
     print("", file=f)
     print("module rvfi_insn_%s (" % insn, file=f)
@@ -27,7 +32,45 @@ def header(f, insn):
 
     print(");", file=f)
 
+    defaults_cache["spec_valid"] = "0"
+    defaults_cache["spec_rs1"] = "0"
+    defaults_cache["spec_rs2"] = "0"
+    defaults_cache["spec_rd"] = "0"
+    defaults_cache["spec_post_rd"] = "0"
+    defaults_cache["spec_post_pc"] = "0"
+    defaults_cache["spec_post_trap"] = "0"
+    defaults_cache["spec_mem_addr"] = "0"
+    defaults_cache["spec_mem_rmask"] = "0"
+    defaults_cache["spec_mem_wmask"] = "0"
+    defaults_cache["spec_mem_wdata"] = "0"
+
+def assign(f, sig, val):
+    print("  assign %s = %s;" % (sig, val), file=f)
+
+    if sig in defaults_cache:
+        del defaults_cache[sig]
+
 def footer(f):
+    def default_assign(sig):
+        if sig in defaults_cache:
+            print("  assign %s = %s;" % (sig, defaults_cache[sig]), file=f)
+
+    if len(defaults_cache) != 0:
+        print("", file=f)
+        print("  // default assignments", file=f)
+
+        default_assign("spec_valid")
+        default_assign("spec_rs1")
+        default_assign("spec_rs2")
+        default_assign("spec_rd")
+        default_assign("spec_post_rd")
+        default_assign("spec_post_pc")
+        default_assign("spec_post_trap")
+        default_assign("spec_mem_addr")
+        default_assign("spec_mem_rmask")
+        default_assign("spec_mem_wmask")
+        default_assign("spec_mem_wdata")
+
     print("endmodule", file=f)
 
 def format_r(f):
@@ -98,21 +141,10 @@ def insn_lui(insn = "lui"):
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
-        print("  assign spec_valid = rvfi_valid && insn_opcode == 7'b 0110111;", file=f)
-        print("  assign spec_rd = insn_rd;", file=f)
-        print("  assign spec_post_rd = spec_rd ? insn_imm : 0;", file=f)
-        print("  assign spec_post_pc = rvfi_pre_pc + 4;", file=f)
-
-        print("", file=f)
-        print("  // default assignments", file=f)
-        print("  assign spec_rs1 = 0;", file=f)
-        print("  assign spec_rs2 = 0;", file=f)
-        print("  assign spec_post_rd = 0;", file=f)
-        print("  assign spec_post_trap = 0;", file=f)
-        print("  assign spec_mem_addr = 0;", file=f)
-        print("  assign spec_mem_rmask = 0;", file=f)
-        print("  assign spec_mem_wmask = 0;", file=f)
-        print("  assign spec_mem_wdata = 0;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_opcode == 7'b 0110111")
+        assign(f, "spec_rd", "insn_rd")
+        assign(f, "spec_post_rd", "spec_rd ? insn_imm : 0")
+        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
 
         footer(f)
 
@@ -120,24 +152,13 @@ def insn_auipc(insn = "auipc"):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_u(f)
-        print("", file=f)
-        print("  // %s instruction" % insn.upper(), file=f)
-        print("  assign spec_valid = rvfi_valid && insn_opcode == 7'b 0010111;", file=f)
-        print("  assign spec_rd = insn_rd;", file=f)
-        print("  assign spec_post_rd = spec_rd ? rvfi_pre_pc + insn_imm : 0;", file=f)
-        print("  assign spec_post_pc = rvfi_pre_pc + 4;", file=f)
 
         print("", file=f)
-        print("  // default assignments", file=f)
-        print("  assign spec_rs1 = 0;", file=f)
-        print("  assign spec_rs2 = 0;", file=f)
-        print("  assign spec_post_rd = 0;", file=f)
-        print("  assign spec_post_pc = 0;", file=f)
-        print("  assign spec_post_trap = 0;", file=f)
-        print("  assign spec_mem_addr = 0;", file=f)
-        print("  assign spec_mem_rmask = 0;", file=f)
-        print("  assign spec_mem_wmask = 0;", file=f)
-        print("  assign spec_mem_wdata = 0;", file=f)
+        print("  // %s instruction" % insn.upper(), file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_opcode == 7'b 0010111")
+        assign(f, "spec_rd", "insn_rd")
+        assign(f, "spec_post_rd", "spec_rd ? rvfi_pre_pc + insn_imm : 0")
+        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
 
         footer(f)
 
@@ -145,27 +166,19 @@ def insn_jal(insn = "jal"):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_uj(f)
+
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_pre_pc + insn_imm;", file=f)
-        print("  assign spec_valid = rvfi_valid && insn_opcode == 7'b 1101111;", file=f)
-        print("  assign spec_rd = insn_rd;", file=f)
-        print("  assign spec_post_rd = spec_rd ? rvfi_pre_pc + 4 : 0;", file=f)
-        print("  assign spec_post_pc = next_pc;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_opcode == 7'b 1101111")
+        assign(f, "spec_rd", "insn_rd")
+        assign(f, "spec_post_rd", "spec_rd ? rvfi_pre_pc + 4 : 0")
+        assign(f, "spec_post_pc", "next_pc")
         print("`ifdef RISCV_FORMAL_COMPRESSED", file=f)
-        print("  assign spec_post_trap = next_pc[0] != 0;", file=f)
+        assign(f, "spec_post_trap", "next_pc[0] != 0")
         print("`else", file=f)
-        print("  assign spec_post_trap = next_pc[1:0] != 0;", file=f)
+        assign(f, "spec_post_trap", "next_pc[1:0] != 0")
         print("`endif", file=f)
-
-        print("", file=f)
-        print("  // default assignments", file=f)
-        print("  assign spec_rs1 = 0;", file=f)
-        print("  assign spec_rs2 = 0;", file=f)
-        print("  assign spec_mem_addr = 0;", file=f)
-        print("  assign spec_mem_rmask = 0;", file=f)
-        print("  assign spec_mem_wmask = 0;", file=f)
-        print("  assign spec_mem_wdata = 0;", file=f)
 
         footer(f)
 
@@ -173,27 +186,20 @@ def insn_jalr(insn = "jalr"):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_i(f)
+
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_pre_rs1 + insn_imm;", file=f)
-        print("  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 1100111;", file=f)
-        print("  assign spec_rs1 = insn_rs1;", file=f)
-        print("  assign spec_rd = insn_rd;", file=f)
-        print("  assign spec_post_rd = spec_rd ? rvfi_pre_pc + 4 : 0;", file=f)
-        print("  assign spec_post_pc = next_pc;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 1100111")
+        assign(f, "spec_rs1", "insn_rs1")
+        assign(f, "spec_rd", "insn_rd")
+        assign(f, "spec_post_rd", "spec_rd ? rvfi_pre_pc + 4 : 0")
+        assign(f, "spec_post_pc", "next_pc")
         print("`ifdef RISCV_FORMAL_COMPRESSED", file=f)
-        print("  assign spec_post_trap = next_pc[0] != 0;", file=f)
+        assign(f, "spec_post_trap", "next_pc[0] != 0")
         print("`else", file=f)
-        print("  assign spec_post_trap = next_pc[1:0] != 0;", file=f)
+        assign(f, "spec_post_trap", "next_pc[1:0] != 0")
         print("`endif", file=f)
-
-        print("", file=f)
-        print("  // default assignments", file=f)
-        print("  assign spec_rs2 = 0;", file=f)
-        print("  assign spec_mem_addr = 0;", file=f)
-        print("  assign spec_mem_rmask = 0;", file=f)
-        print("  assign spec_mem_wmask = 0;", file=f)
-        print("  assign spec_mem_wdata = 0;", file=f)
 
         footer(f)
 
@@ -201,28 +207,20 @@ def insn_b(insn, funct3, expr):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_sb(f)
+
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         print("  wire cond = %s;" % expr, file=f)
         print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = cond ? rvfi_pre_pc + insn_imm : rvfi_pre_pc + 4;", file=f)
-        print("  assign spec_valid = rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 1100011;" % funct3, file=f)
-        print("  assign spec_rs1 = insn_rs1;", file=f)
-        print("  assign spec_rs2 = insn_rs2;", file=f)
-        print("  assign spec_post_pc = next_pc;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 1100011" % funct3)
+        assign(f, "spec_rs1", "insn_rs1")
+        assign(f, "spec_rs2", "insn_rs2")
+        assign(f, "spec_post_pc", "next_pc")
         print("`ifdef RISCV_FORMAL_COMPRESSED", file=f)
-        print("  assign spec_post_trap = next_pc[0] != 0;", file=f)
+        assign(f, "spec_post_trap", "next_pc[0] != 0")
         print("`else", file=f)
-        print("  assign spec_post_trap = next_pc[1:0] != 0;", file=f)
+        assign(f, "spec_post_trap", "next_pc[1:0] != 0")
         print("`endif", file=f)
-
-        print("", file=f)
-        print("  // default assignments", file=f)
-        print("  assign spec_rd = 0;", file=f)
-        print("  assign spec_post_rd = 0;", file=f)
-        print("  assign spec_mem_addr = 0;", file=f)
-        print("  assign spec_mem_rmask = 0;", file=f)
-        print("  assign spec_mem_wmask = 0;", file=f)
-        print("  assign spec_mem_wdata = 0;", file=f)
 
         footer(f)
 
@@ -230,27 +228,22 @@ def insn_l(insn, funct3, numbytes, signext):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_i(f)
+
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_pre_rs1 + insn_imm;", file=f)
         print("  wire [%d:0] result = rvfi_mem_rdata >> (8*(addr-spec_mem_addr));" % (8*numbytes-1), file=f)
-        print("  assign spec_valid = rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0000011;" % funct3, file=f)
-        print("  assign spec_rs1 = insn_rs1;", file=f)
-        print("  assign spec_rd = insn_rd;", file=f)
-        print("  assign spec_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);", file=f)
-        print("  assign spec_mem_rmask = ((1 << %d)-1) << (addr-spec_mem_addr);" % numbytes, file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0000011" % funct3)
+        assign(f, "spec_rs1", "insn_rs1")
+        assign(f, "spec_rd", "insn_rd")
+        assign(f, "spec_mem_addr", "addr & ~(`RISCV_FORMAL_XLEN/8-1)")
+        assign(f, "spec_mem_rmask", "((1 << %d)-1) << (addr-spec_mem_addr)" % numbytes)
         if signext:
-            print("  assign spec_post_rd = spec_rd ? $signed(result) : 0;", file=f)
+            assign(f, "spec_post_rd", "spec_rd ? $signed(result) : 0")
         else:
-            print("  assign spec_post_rd = spec_rd ? result : 0;", file=f)
-        print("  assign spec_post_pc = rvfi_pre_pc + 4;", file=f)
-        print("  assign spec_post_trap = (addr & (%d-1)) != 0;" % numbytes, file=f)
-
-        print("", file=f)
-        print("  // default assignments", file=f)
-        print("  assign spec_rs2 = 0;", file=f)
-        print("  assign spec_mem_wmask = 0;", file=f)
-        print("  assign spec_mem_wdata = 0;", file=f)
+            assign(f, "spec_post_rd", "spec_rd ? result : 0")
+        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
+        assign(f, "spec_post_trap", "(addr & (%d-1)) != 0" % numbytes)
 
         footer(f)
 
@@ -258,23 +251,18 @@ def insn_s(insn, funct3, numbytes):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_s(f)
+
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_pre_rs1 + insn_imm;", file=f)
-        print("  assign spec_valid = rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0100011;" % funct3, file=f)
-        print("  assign spec_rs1 = insn_rs1;", file=f)
-        print("  assign spec_rs2 = insn_rs2;", file=f)
-        print("  assign spec_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);", file=f)
-        print("  assign spec_mem_wmask = ((1 << %d)-1) << (addr-spec_mem_addr);" % numbytes, file=f)
-        print("  assign spec_mem_wdata = rvfi_pre_rs2 << (8*(addr-spec_mem_addr));", file=f)
-        print("  assign spec_post_pc = rvfi_pre_pc + 4;", file=f)
-        print("  assign spec_post_trap = (addr & (%d-1)) != 0;" % numbytes, file=f)
-
-        print("", file=f)
-        print("  // default assignments", file=f)
-        print("  assign spec_rd = 0;", file=f)
-        print("  assign spec_post_rd = 0;", file=f)
-        print("  assign spec_mem_rmask = 0;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0100011" % funct3)
+        assign(f, "spec_rs1", "insn_rs1")
+        assign(f, "spec_rs2", "insn_rs2")
+        assign(f, "spec_mem_addr", "addr & ~(`RISCV_FORMAL_XLEN/8-1)")
+        assign(f, "spec_mem_wmask", "((1 << %d)-1) << (addr-spec_mem_addr)" % numbytes)
+        assign(f, "spec_mem_wdata", "rvfi_pre_rs2 << (8*(addr-spec_mem_addr))")
+        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
+        assign(f, "spec_post_trap", "(addr & (%d-1)) != 0" % numbytes)
 
         footer(f)
 
@@ -282,23 +270,15 @@ def insn_imm(insn, funct3, expr):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_i(f)
+
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
-        print("  assign spec_valid = rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0010011;" % funct3, file=f)
-        print("  assign spec_rs1 = insn_rs1;", file=f)
-        print("  assign spec_rd = insn_rd;", file=f)
-        print("  assign spec_post_rd = spec_rd ? result : 0;", file=f)
-        print("  assign spec_post_pc = rvfi_pre_pc + 4;", file=f)
-
-        print("", file=f)
-        print("  // default assignments", file=f)
-        print("  assign spec_rs2 = 0;", file=f)
-        print("  assign spec_post_trap = 0;", file=f)
-        print("  assign spec_mem_addr = 0;", file=f)
-        print("  assign spec_mem_rmask = 0;", file=f)
-        print("  assign spec_mem_wmask = 0;", file=f)
-        print("  assign spec_mem_wdata = 0;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0010011" % funct3)
+        assign(f, "spec_rs1", "insn_rs1")
+        assign(f, "spec_rd", "insn_rd")
+        assign(f, "spec_post_rd", "spec_rd ? result : 0")
+        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
 
         footer(f)
 
@@ -306,23 +286,15 @@ def insn_shimm(insn, funct7, funct3, expr):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_i_shift(f)
+
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
-        print("  assign spec_valid = rvfi_valid && insn_funct7 == 7'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b 0010011;" % (funct7, funct3), file=f)
-        print("  assign spec_rs1 = insn_rs1;", file=f)
-        print("  assign spec_rd = insn_rd;", file=f)
-        print("  assign spec_post_rd = spec_rd ? result : 0;", file=f)
-        print("  assign spec_post_pc = rvfi_pre_pc + 4;", file=f)
-
-        print("", file=f)
-        print("  // default assignments", file=f)
-        print("  assign spec_rs2 = 0;", file=f)
-        print("  assign spec_post_trap = 0;", file=f)
-        print("  assign spec_mem_addr = 0;", file=f)
-        print("  assign spec_mem_rmask = 0;", file=f)
-        print("  assign spec_mem_wmask = 0;", file=f)
-        print("  assign spec_mem_wdata = 0;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct7 == 7'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b 0010011" % (funct7, funct3))
+        assign(f, "spec_rs1", "insn_rs1")
+        assign(f, "spec_rd", "insn_rd")
+        assign(f, "spec_post_rd", "spec_rd ? result : 0")
+        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
 
         footer(f)
 
@@ -330,23 +302,16 @@ def insn_alu(insn, funct7, funct3, expr):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_r(f)
+
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
-        print("  assign spec_valid = rvfi_valid && insn_funct7 == 7'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b 0110011;" % (funct7, funct3), file=f)
-        print("  assign spec_rs1 = insn_rs1;", file=f)
-        print("  assign spec_rs2 = insn_rs2;", file=f)
-        print("  assign spec_rd = insn_rd;", file=f)
-        print("  assign spec_post_rd = spec_rd ? result : 0;", file=f)
-        print("  assign spec_post_pc = rvfi_pre_pc + 4;", file=f)
-
-        print("", file=f)
-        print("  // default assignments", file=f)
-        print("  assign spec_post_trap = 0;", file=f)
-        print("  assign spec_mem_addr = 0;", file=f)
-        print("  assign spec_mem_rmask = 0;", file=f)
-        print("  assign spec_mem_wmask = 0;", file=f)
-        print("  assign spec_mem_wdata = 0;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct7 == 7'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b 0110011" % (funct7, funct3))
+        assign(f, "spec_rs1", "insn_rs1")
+        assign(f, "spec_rs2", "insn_rs2")
+        assign(f, "spec_rd", "insn_rd")
+        assign(f, "spec_post_rd", "spec_rd ? result : 0")
+        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
 
         footer(f)
 

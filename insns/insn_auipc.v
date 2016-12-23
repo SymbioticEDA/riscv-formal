@@ -35,8 +35,6 @@ module rvfi_insn_auipc (
   // default assignments
   assign spec_rs1 = 0;
   assign spec_rs2 = 0;
-  assign spec_post_rd = 0;
-  assign spec_post_pc = 0;
   assign spec_post_trap = 0;
   assign spec_mem_addr = 0;
   assign spec_mem_rmask = 0;
