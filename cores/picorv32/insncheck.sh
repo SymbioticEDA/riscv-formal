@@ -26,12 +26,14 @@ yosys_script="
 	verilog_defines -D RISCV_FORMAL_NRET=1
 	verilog_defines -D RISCV_FORMAL_XLEN=32
 	verilog_defines -D RISCV_FORMAL_BMC_DEPTH=$n
-	verilog_defines -D RISCV_FORMAL_INSN_VH=\"../insns/insn_${insn}.vh\"
+	verilog_defines -D RISCV_FORMAL_INSN=${insn}
 	verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=0
 	read_verilog ../../checks/rvfi_macros.vh
 
 	read_verilog $read_verilog_picorv32_opts ../../../picorv32/picorv32.v
-	read_verilog -formal insncheck.v ../../checks/rvfi_insn_check.v
+	read_verilog -formal insncheck.v
+	read_verilog -formal ../../checks/rvfi_insn_check.v
+	read_verilog ../../insns/insn_${insn}.v
 	prep -nordff -top testbench
 "
 

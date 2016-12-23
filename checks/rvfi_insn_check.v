@@ -26,111 +26,94 @@ module rvfi_insn_check (
 	generate for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin:channel
 `endif
 		(* keep *) wire valid = enable && rvfi_valid[channel_idx];
-		(* keep *) wire [31:0] insn = rvfi_insn[channel_idx*32 +: 32];
-		(* keep *) wire [4:0] rs1 = rvfi_rs1[channel_idx*5 +: 5];
-		(* keep *) wire [4:0] rs2 = rvfi_rs2[channel_idx*5 +: 5];
-		(* keep *) wire [4:0] rd = rvfi_rd[channel_idx*5 +: 5];
-		(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] pre_pc = rvfi_pre_pc[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
-		(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] pre_rs1 = rvfi_pre_rs1[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
-		(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] pre_rs2 = rvfi_pre_rs2[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
-		(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] post_pc = rvfi_post_pc[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
-		(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] post_rd = rvfi_post_rd[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
-		(* keep *) wire post_trap = rvfi_post_trap[channel_idx];
+		(* keep *) wire [                      31 : 0] insn      = rvfi_insn     [channel_idx*32 +: 32];
+		(* keep *) wire [                       4 : 0] rs1       = rvfi_rs1      [channel_idx*5  +:  5];
+		(* keep *) wire [                       4 : 0] rs2       = rvfi_rs2      [channel_idx*5  +:  5];
+		(* keep *) wire [                       4 : 0] rd        = rvfi_rd       [channel_idx*5  +:  5];
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] pre_pc    = rvfi_pre_pc   [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] pre_rs1   = rvfi_pre_rs1  [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] pre_rs2   = rvfi_pre_rs2  [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] post_pc   = rvfi_post_pc  [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] post_rd   = rvfi_post_rd  [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
+		(* keep *) wire                                post_trap = rvfi_post_trap[channel_idx];
 
-		(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] mem_addr = rvfi_mem_addr[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
-		(* keep *) wire [`RISCV_FORMAL_XLEN/8-1:0] mem_rmask = rvfi_mem_rmask[channel_idx*`RISCV_FORMAL_XLEN/8 +: `RISCV_FORMAL_XLEN/8];
-		(* keep *) wire [`RISCV_FORMAL_XLEN/8-1:0] mem_wmask = rvfi_mem_wmask[channel_idx*`RISCV_FORMAL_XLEN/8 +: `RISCV_FORMAL_XLEN/8];
-		(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] mem_rdata = rvfi_mem_rdata[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
-		(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] mem_wdata = rvfi_mem_wdata[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] mem_addr  = rvfi_mem_addr [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
+		(* keep *) wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] mem_rmask = rvfi_mem_rmask[channel_idx*`RISCV_FORMAL_XLEN/8 +: `RISCV_FORMAL_XLEN/8];
+		(* keep *) wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] mem_wmask = rvfi_mem_wmask[channel_idx*`RISCV_FORMAL_XLEN/8 +: `RISCV_FORMAL_XLEN/8];
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] mem_rdata = rvfi_mem_rdata[channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] mem_wdata = rvfi_mem_wdata[channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
 
-		(* keep *) reg ref_valid;
-		(* keep *) reg [4:0] ref_rs1;
-		(* keep *) reg [4:0] ref_rs2;
-		(* keep *) reg [4:0] ref_rd;
-		(* keep *) reg [`RISCV_FORMAL_XLEN-1:0] ref_post_rd;
-		(* keep *) reg [`RISCV_FORMAL_XLEN-1:0] ref_post_pc;
-		(* keep *) reg ref_post_trap;
+		(* keep *) wire                                spec_valid;
+		(* keep *) wire [                       4 : 0] spec_rs1;
+		(* keep *) wire [                       4 : 0] spec_rs2;
+		(* keep *) wire [                       4 : 0] spec_rd;
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd;
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc;
+		(* keep *) wire                                spec_post_trap;
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_mem_addr;
+		(* keep *) wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_rmask;
+		(* keep *) wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_wmask;
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_mem_wdata;
 
-		(* keep *) reg [`RISCV_FORMAL_XLEN-1:0] ref_mem_addr;
-		(* keep *) reg [`RISCV_FORMAL_XLEN/8-1:0] ref_mem_rmask;
-		(* keep *) reg [`RISCV_FORMAL_XLEN/8-1:0] ref_mem_wmask;
-		(* keep *) reg [`RISCV_FORMAL_XLEN-1:0] ref_mem_wdata;
+		rvfi_insn_`RISCV_FORMAL_INSN insn_spec (
+			.rvfi_valid    (valid    ),
+			.rvfi_insn     (insn     ),
+			.rvfi_pre_pc   (pre_pc   ),
+			.rvfi_pre_rs1  (pre_rs1  ),
+			.rvfi_pre_rs2  (pre_rs2  ),
+			.rvfi_mem_addr (mem_addr ),
+			.rvfi_mem_rmask(mem_rmask),
+			.rvfi_mem_wmask(mem_wmask),
+			.rvfi_mem_rdata(mem_rdata),
+			.rvfi_mem_wdata(mem_wdata),
 
-		(* keep *) reg [`RISCV_FORMAL_XLEN-1:0] insn_imm;
-		(* keep *) reg [4:0] insn_rs1;
-		(* keep *) reg [4:0] insn_rs2;
-		(* keep *) reg [4:0] insn_rd;
-		(* keep *) reg [6:0] insn_opcode;
-		(* keep *) reg [4:0] insn_funct3;
-		(* keep *) reg [6:0] insn_funct7;
-		(* keep *) reg [4:0] insn_shamt;
-
-		(* keep *) reg [`RISCV_FORMAL_XLEN-1:0] addr;
-		(* keep *) reg [`RISCV_FORMAL_XLEN-1:0] result;
-		(* keep *) reg cond;
+			.spec_valid    (spec_valid    ),
+			.spec_rs1      (spec_rs1      ),
+			.spec_rs2      (spec_rs2      ),
+			.spec_rd       (spec_rd       ),
+			.spec_post_rd  (spec_post_rd  ),
+			.spec_post_pc  (spec_post_pc  ),
+			.spec_post_trap(spec_post_trap),
+			.spec_mem_addr (spec_mem_addr ),
+			.spec_mem_rmask(spec_mem_rmask),
+			.spec_mem_wmask(spec_mem_wmask),
+			.spec_mem_wdata(spec_mem_wdata)
+		);
 
 		integer i;
 
 		always @* begin
-			ref_valid = 0;
-			ref_rs1 = 0;
-			ref_rs2 = 0;
-			ref_rd = 0;
-			ref_post_pc = 0;
-			ref_post_rd = 0;
-			ref_post_trap = 0;
+			if (spec_valid) begin
+				if (spec_rs1)
+					assert(spec_rs1 == rs1);
 
-			ref_mem_addr = 0;
-			ref_mem_rmask = 0;
-			ref_mem_wmask = 0;
-			ref_mem_wdata = 0;
+				if (spec_rs2)
+					assert(spec_rs2 == rs2);
 
-			insn_imm = 'bx;
-			insn_rs1 = 'bx;
-			insn_rs2 = 'bx;
-			insn_rd = 'bx;
-			insn_opcode = 'bx;
-			insn_funct3 = 'bx;
-			insn_funct7 = 'bx;
-			insn_shamt = 'bx;
+				if (!spec_post_trap) begin
+					assert(spec_rd == rd);
+					assert(spec_post_rd == post_rd);
+					assert(spec_post_pc == post_pc);
 
-			addr = 'bx;
-			result = 'bx;
-			cond = 'bx;
-
-			`include `RISCV_FORMAL_INSN_VH
-
-			if (ref_valid) begin
-				if (ref_rs1)
-					assert(ref_rs1 == rs1);
-
-				if (ref_rs2)
-					assert(ref_rs2 == rs2);
-
-				if (!ref_post_trap) begin
-					assert(ref_rd == rd);
-					assert(ref_post_rd == post_rd);
-					assert(ref_post_pc == post_pc);
-
-					if (ref_mem_wmask || ref_mem_rmask) begin
-						assert(ref_mem_addr == mem_addr);
+					if (spec_mem_wmask || spec_mem_rmask) begin
+						assert(spec_mem_addr == mem_addr);
 					end
 
 					for (i = 0; i < `RISCV_FORMAL_XLEN/8; i = i+1) begin
-						if (ref_mem_wmask[i]) begin
+						if (spec_mem_wmask[i]) begin
 							assert(mem_wmask[i]);
-							assert(ref_mem_wdata[i*8 +: 8] == mem_wdata[i*8 +: 8]);
+							assert(spec_mem_wdata[i*8 +: 8] == mem_wdata[i*8 +: 8]);
 						end else if (mem_wmask[i]) begin
 							assert(mem_rmask[i]);
 							assert(mem_rdata[i*8 +: 8] == mem_wdata[i*8 +: 8]);
 						end
-						if (ref_mem_rmask[i]) begin
+						if (spec_mem_rmask[i]) begin
 							assert(mem_rmask[i]);
 						end
 					end
 				end
 
-				assert(ref_post_trap == post_trap);
+				assert(spec_post_trap == post_trap);
 			end
 		end
 `ifndef RISCV_FORMAL_CHANNEL_IDX

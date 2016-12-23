@@ -1,8 +1,8 @@
 #!/bin/bash
 
-for insn in ../../insns/insn_*.vh; do
+for insn in ../../insns/insn_*.v; do
 	insn=${insn##*/insn_}
-	insn=${insn%.vh}
+	insn=${insn%.v}
 	echo "all:: insn_${insn}.log"
 	echo "insn_${insn}.log:"
 	echo "	bash insncheck.sh -i ${insn} > insn_${insn}.log"
