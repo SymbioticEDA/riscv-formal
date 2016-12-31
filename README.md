@@ -26,6 +26,11 @@ Related Work
 
 ARM's [ISA-Formal Framework](https://alastairreid.github.io/papers/cav2016_isa_formal.pdf) follows a similar set of ideas and has inspired the work on `riscv-formal`.
 
+Other RISC-V formal verification projects and related materials:
+
+- [Kami: A Framework for (RISC-V) HW Verification](https://riscv.org/wp-content/uploads/2016/07/Wed1130_Kami_Framework_Murali_Vijayaraghavan.pdf)
+- [Verifying a RISC-V Processor, Nirav Dave, Prashanth Mundkur, SRI International](https://riscv.org/wp-content/uploads/2015/06/riscv-verification-workshop-june2015.pdf)
+
 Please [open an issue](https://github.com/cliffordwolf/riscv-formal/issues/new) if you kown of other RISC-V formal verification projects I should link to in this section.
 
 Verification Procedure
@@ -148,6 +153,32 @@ Models for RV64I-only instructions are still missing. They will be added as soon
 ### Support for Compressed ISAs
 
 There are no models for the compressed instructions yet. The proposal is to verify them as if they where seperate instructions, i.e. not merge them with the models for uncompressed instructions.
+
+### Proposed renaming of RVFI ports
+
+I think I will rename some of the RVFI ports in an effort to move towards a more systematic naming scheme.
+
+| Old Port Name    | New Port Name    |
+| ---------------- | ---------------- |
+| `rvfi_valid`     | `rvfi_valid`     |
+| `rvfi_order`     | `rvfi_order`     |
+| `rvfi_insn`      | `rvfi_insn`      |
+| `rvfi_post_trap` | `rvfi_trap`      |
+| `rvfi_rs1`       | `rvfi_rs1_addr`  |
+| `rvfi_pre_rs1`   | `rvfi_rs1_rdata` |
+| `rvfi_rs2`       | `rvfi_rs2_addr`  |
+| `rvfi_pre_rs2`   | `rvfi_rs2_rdata` |
+| `rvfi_rd`        | `rvfi_rd_addr`   |
+| `rvfi_post_rd`   | `rvfi_rd_wdata`  |
+| `rvfi_pre_pc`    | `rvfi_pc_rdata`  |
+| `rvfi_post_pc`   | `rvfi_pc_wdata`  |
+| `rvfi_mem_addr`  | `rvfi_mem_addr`  |
+| `rvfi_mem_rmask` | `rvfi_mem_rmask` |
+| `rvfi_mem_wmask` | `rvfi_mem_wmask` |
+| `rvfi_mem_rdata` | `rvfi_mem_rdata` |
+| `rvfi_mem_wdata` | `rvfi_mem_wdata` |
+
+This is a request for comments. Please [open an issue](https://github.com/cliffordwolf/riscv-formal/issues/new) if you have an opinion that you would like to share.
 
 ### Modelling of Floating-Point State
 
