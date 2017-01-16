@@ -209,17 +209,54 @@ The signal `rvfi_post_sfflags` has the bits set that this instruction sets in th
 
 The FPU model in `riscv-formal` will be swapable (using a Verilog define) with with a pseudo-model that is using cheaper operations instead of proper floating point math. This enables efficient verification of cores that can be configured to support a similar FPU model. (A similar functionality will be provided for M-extension instructions.)
 
+### RVFI Peep Interface
+
+The RVFI Peep Interface is an optional list of additional RVFI ports that significantly simplify the formal proofs to verify consistency between instructions.
+
+```
+input  [NRET *    5 - 1 : 0] rvfi_peep_rx_addr,
+output [NRET * XLEN - 1 : 0] rvfi_peep_rx_rdata,
+output [NRET * XLEN - 1 : 0] rvfi_peep_rx_wdata,
+```
+
+The `_addr` port is guaranteed to be driven to a constant value by the formal test-bench. The `_rdata` and `_wdata` ports will be driven to the pre- and post-state values for the specified register, independent of if the current instruction reads or modifies the specified register.
+
+A similar interface is proposed for floating point registers:
+
+```
+input  [NRET *    5 - 1 : 0] rvfi_peep_rf_addr,
+output [NRET * FLEN - 1 : 0] rvfi_peep_rf_rdata,
+output [NRET * FLEN - 1 : 0] rvfi_peep_rf_wdata,
+```
+
 ### Modelling of Atomic Memory Operations
 
 AMO instructions (`AMOSWAP.W`, etc.) can be modelled using the existing `rvfi_mem_*` interface by asserting bits in both `rvfi_mem_rmask` and `rvfi_mem_wmask`.
 
 The is also no extension to the RVFI port neccessary to accommodate the `LR`, `SC`, `FENCE` and `FENCE.I` instructions.
 
-Verification of this instructions for a single-core systems is trivial. A strategy must be defined to verify their correct behavior in multicore systems. This is TBD.
+Verification of this instructions for a single-core systems can be done using the RVFI port only. A strategy must be defined to verify their correct behavior in multicore systems. This is TBD.
 
 ### Modelling of CSRs and Privileged Machine State
 
-TBD
+The current thinking is along the following lines: At least two CSR peep ports are added as well as a port for the privilege mode in pre- and post-state.
+
+```
+input  [NRET *   12 - 1 : 0] rvfi_peep_csr0_addr,
+output [NRET * XLEN - 1 : 0] rvfi_peep_csr0_rdata,
+output [NRET * XLEN - 1 : 0] rvfi_peep_csr0_wdata,
+
+input  [NRET *   12 - 1 : 0] rvfi_peep_csr1_addr,
+output [NRET * XLEN - 1 : 0] rvfi_peep_csr1_rdata,
+output [NRET * XLEN - 1 : 0] rvfi_peep_csr1_wdata,
+
+output [NRET *    2 - 1 : 0] rvfi_mode_rdata,
+output [NRET *    2 - 1 : 0] rvfi_mode_wdata,
+```
+
+Like there is an individual proof for each instruction, individual proofs (or set of proofs) can be added for each processor feature using CSRs.
+
+A careful investigation of the draft privileged spec is required to determine if two CSR peep ports are sufficient to prove all features described in the spec. For some CSRs, such as `mstatus`, it might be desirable to add a dedicated RVFI port, similar to the `rvfi_mode_rdata` and `rvfi_mode_wdata` ports.
 
 ### Verification of riscv-formal models against spike models
 
