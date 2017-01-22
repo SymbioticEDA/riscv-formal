@@ -19,7 +19,7 @@ A processor core usually will implement RVFI as an optional feature that is only
 
 The current focus is on implementing formal models of all instructions from the RISC-V RV32I and RV64I ISAs, and formally verifying those models against the models used in the RISC-V "Spike" ISA simulator.
 
-`riscv-formal` uses the FOSS Yosys-SMTBMC Verilog verification flow. All properties are expressed using immediate assertions/assumptions for maximal compatibility with other tools.
+`riscv-formal` uses the FOSS SymbiYosys formal verification flow. All properties are expressed using immediate assertions/assumptions for maximal compatibility with other tools.
 
 Related Work
 ------------
