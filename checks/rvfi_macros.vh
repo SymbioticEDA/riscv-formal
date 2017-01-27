@@ -11,7 +11,7 @@ wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs1;    \
 wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs2;    \
 wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_post_pc;    \
 wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_post_rd;    \
-wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_post_trap;  \
+wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap;  \
 wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_addr;   \
 wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_rmask;  \
 wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_wmask;  \
@@ -30,7 +30,7 @@ wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata;
 .rvfi_pre_rs2   (rvfi_pre_rs2  ),  \
 .rvfi_post_pc   (rvfi_post_pc  ),  \
 .rvfi_post_rd   (rvfi_post_rd  ),  \
-.rvfi_post_trap (rvfi_post_trap),  \
+.rvfi_trap      (rvfi_trap     ),  \
 .rvfi_mem_addr  (rvfi_mem_addr ),  \
 .rvfi_mem_rmask (rvfi_mem_rmask),  \
 .rvfi_mem_wmask (rvfi_mem_wmask),  \

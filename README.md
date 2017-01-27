@@ -78,7 +78,7 @@ The Interface consists only of output signals. Each signal is a concatenation of
     output [NRET        - 1 : 0] rvfi_valid
     output [NRET *    8 - 1 : 0] rvfi_order
     output [NRET *   32 - 1 : 0] rvfi_insn
-    output [NRET        - 1 : 0] rvfi_post_trap
+    output [NRET        - 1 : 0] rvfi_trap
 
 When the core retires an instruction, it asserts the `rvfi_valid` signal and uses the signals described below to output the details of the retired instruction. The signals below are only valid during such a cycle and can be driven to arbitrary values in a cycle in which `rvfi_valid` is not asserted.
 
@@ -86,7 +86,7 @@ Cores that retire all instructions in-order may set `rvfi_order` to constant zer
 
 `rvfi_insn` is the 32-bit or 16-bit instruction word. In case of a 16-bit instruction the upper 16-bits of this output may carry an arbitrary bit pattern. The current RVFI specification does not support instructions wider than 32 bits.
 
-The `rvfi_post_trap` signal that is high for an instruction that traps and low otherwise. The other `rvfi_post_*` signals may have arbitrary values when `rvfi_post_trap` is asserted. `rvfi_rs1` and `rvfi_rs2` may have arbitrary values when `rvfi_post_trap` is asserted, but `rvfi_pre_rs1` and `rvfi_pre_rs2` must be consistent with the register file for nonzero `rvfi_rs1` and `rvfi_rs2` (and zero when `x0` is addressed). Which instruction traps depends on the implemented ISA. Make sure to configure riscv-formal to match the ISA implemented by the core under test.
+The `rvfi_trap` signal that is high for an instruction that traps and low otherwise. The signals associated with the post-state may have arbitrary values when `rvfi_trap` is asserted. `rvfi_rs1` and `rvfi_rs2` may have arbitrary values when `rvfi_trap` is asserted, but `rvfi_pre_rs1` and `rvfi_pre_rs2` must be consistent with the register file for nonzero `rvfi_rs1` and `rvfi_rs2` (and zero when `x0` is addressed). Which instruction traps depends on the implemented ISA. Make sure to configure riscv-formal to match the ISA implemented by the core under test.
 
     output [NRET *    5 - 1 : 0] rvfi_rs1
     output [NRET *    5 - 1 : 0] rvfi_rs2
@@ -147,7 +147,7 @@ I think I will rename some of the RVFI ports in an effort to move towards a more
 | `rvfi_valid`     | `rvfi_valid`     |
 | `rvfi_order`     | `rvfi_order`     |
 | `rvfi_insn`      | `rvfi_insn`      |
-| `rvfi_post_trap` | `rvfi_trap`      |
+| `rvfi_trap` | `rvfi_trap`      |
 | `rvfi_rs1`       | `rvfi_rs1_addr`  |
 | `rvfi_pre_rs1`   | `rvfi_rs1_rdata` |
 | `rvfi_rs2`       | `rvfi_rs2_addr`  |
