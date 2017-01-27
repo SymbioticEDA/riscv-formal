@@ -7,8 +7,8 @@ wire [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr;        \
 wire [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr;        \
 wire [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rd;         \
 wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc;     \
-wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs1;    \
-wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs2;    \
+wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata;    \
+wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata;    \
 wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_post_pc;    \
 wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_post_rd;    \
 wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap;  \
@@ -26,8 +26,8 @@ wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata;
 .rvfi_rs2_addr  (rvfi_rs2_addr ),  \
 .rvfi_rd        (rvfi_rd       ),  \
 .rvfi_pre_pc    (rvfi_pre_pc   ),  \
-.rvfi_pre_rs1   (rvfi_pre_rs1  ),  \
-.rvfi_pre_rs2   (rvfi_pre_rs2  ),  \
+.rvfi_rs1_rdata (rvfi_rs1_rdata),  \
+.rvfi_rs2_rdata (rvfi_rs2_rdata),  \
 .rvfi_post_pc   (rvfi_post_pc  ),  \
 .rvfi_post_rd   (rvfi_post_rd  ),  \
 .rvfi_trap      (rvfi_trap     ),  \

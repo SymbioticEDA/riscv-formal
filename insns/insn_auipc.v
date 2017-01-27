@@ -4,8 +4,8 @@ module rvfi_insn_auipc (
   input                                rvfi_valid,
   input [                32   - 1 : 0] rvfi_insn,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs1,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs2,
+  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
+  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 
   output                                spec_valid,

@@ -4,8 +4,8 @@ module rvfi_insn_sb (
   input                                rvfi_valid,
   input [                32   - 1 : 0] rvfi_insn,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs1,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs2,
+  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
+  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 
   output                                spec_valid,
@@ -29,13 +29,13 @@ module rvfi_insn_sb (
   wire [6:0] insn_opcode = rvfi_insn[ 6: 0];
 
   // SB instruction
-  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_pre_rs1 + insn_imm;
+  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;
   assign spec_valid = rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 0100011;
   assign spec_rs1_addr = insn_rs1;
   assign spec_rs2_addr = insn_rs2;
   assign spec_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);
   assign spec_mem_wmask = ((1 << 1)-1) << (addr-spec_mem_addr);
-  assign spec_mem_wdata = rvfi_pre_rs2 << (8*(addr-spec_mem_addr));
+  assign spec_mem_wdata = rvfi_rs2_rdata << (8*(addr-spec_mem_addr));
   assign spec_post_pc = rvfi_pre_pc + 4;
   assign spec_post_trap = (addr & (1-1)) != 0;
 
