@@ -3,7 +3,7 @@
 module rvfi_insn_lb (
   input                                rvfi_valid,
   input [                32   - 1 : 0] rvfi_insn,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc,
+  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
@@ -37,7 +37,7 @@ module rvfi_insn_lb (
   assign spec_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);
   assign spec_mem_rmask = ((1 << 1)-1) << (addr-spec_mem_addr);
   assign spec_rd_wdata = spec_rd_addr ? $signed(result) : 0;
-  assign spec_post_pc = rvfi_pre_pc + 4;
+  assign spec_post_pc = rvfi_pc_rdata + 4;
   assign spec_post_trap = (addr & (1-1)) != 0;
 
   // default assignments

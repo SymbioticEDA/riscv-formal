@@ -7,7 +7,7 @@ module rvfi_insn_check (
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rd_addr,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc,
+	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_post_pc,
@@ -30,7 +30,7 @@ module rvfi_insn_check (
 		(* keep *) wire [                       4 : 0] rs1_addr  = rvfi_rs1_addr [channel_idx*5  +:  5];
 		(* keep *) wire [                       4 : 0] rs2_addr  = rvfi_rs2_addr [channel_idx*5  +:  5];
 		(* keep *) wire [                       4 : 0] rd        = rvfi_rd_addr       [channel_idx*5  +:  5];
-		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] pre_pc    = rvfi_pre_pc   [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] pc_rdata    = rvfi_pc_rdata   [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] rs1_rdata = rvfi_rs1_rdata[channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] rs2_rdata = rvfi_rs2_rdata[channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] post_pc   = rvfi_post_pc  [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
@@ -58,7 +58,7 @@ module rvfi_insn_check (
 		rvfi_insn_`RISCV_FORMAL_INSN insn_spec (
 			.rvfi_valid    (valid    ),
 			.rvfi_insn     (insn     ),
-			.rvfi_pre_pc   (pre_pc   ),
+			.rvfi_pc_rdata   (pc_rdata   ),
 			.rvfi_rs1_rdata(rs1_rdata),
 			.rvfi_rs2_rdata(rs2_rdata),
 			.rvfi_mem_rdata(mem_rdata),

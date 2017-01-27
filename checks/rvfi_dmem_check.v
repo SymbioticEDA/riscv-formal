@@ -8,7 +8,7 @@ module rvfi_dmem_check (
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rd_addr,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc,
+	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_post_pc,

@@ -12,7 +12,7 @@ def header(f, insn):
 
     print("  input                                rvfi_valid,", file=f)
     print("  input [                32   - 1 : 0] rvfi_insn,", file=f)
-    print("  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc,", file=f)
+    print("  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,", file=f)
     print("  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,", file=f)
     print("  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,", file=f)
     print("  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,", file=f)
@@ -144,7 +144,7 @@ def insn_lui(insn = "lui"):
         assign(f, "spec_valid", "rvfi_valid && insn_opcode == 7'b 0110111")
         assign(f, "spec_rd_addr", "insn_rd")
         assign(f, "spec_rd_wdata", "spec_rd_addr ? insn_imm : 0")
-        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
+        assign(f, "spec_post_pc", "rvfi_pc_rdata + 4")
 
         footer(f)
 
@@ -157,8 +157,8 @@ def insn_auipc(insn = "auipc"):
         print("  // %s instruction" % insn.upper(), file=f)
         assign(f, "spec_valid", "rvfi_valid && insn_opcode == 7'b 0010111")
         assign(f, "spec_rd_addr", "insn_rd")
-        assign(f, "spec_rd_wdata", "spec_rd_addr ? rvfi_pre_pc + insn_imm : 0")
-        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
+        assign(f, "spec_rd_wdata", "spec_rd_addr ? rvfi_pc_rdata + insn_imm : 0")
+        assign(f, "spec_post_pc", "rvfi_pc_rdata + 4")
 
         footer(f)
 
@@ -169,10 +169,10 @@ def insn_jal(insn = "jal"):
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
-        print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_pre_pc + insn_imm;", file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_pc_rdata + insn_imm;", file=f)
         assign(f, "spec_valid", "rvfi_valid && insn_opcode == 7'b 1101111")
         assign(f, "spec_rd_addr", "insn_rd")
-        assign(f, "spec_rd_wdata", "spec_rd_addr ? rvfi_pre_pc + 4 : 0")
+        assign(f, "spec_rd_wdata", "spec_rd_addr ? rvfi_pc_rdata + 4 : 0")
         assign(f, "spec_post_pc", "next_pc")
         print("`ifdef RISCV_FORMAL_COMPRESSED", file=f)
         assign(f, "spec_post_trap", "next_pc[0] != 0")
@@ -193,7 +193,7 @@ def insn_jalr(insn = "jalr"):
         assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 1100111")
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rd_addr", "insn_rd")
-        assign(f, "spec_rd_wdata", "spec_rd_addr ? rvfi_pre_pc + 4 : 0")
+        assign(f, "spec_rd_wdata", "spec_rd_addr ? rvfi_pc_rdata + 4 : 0")
         assign(f, "spec_post_pc", "next_pc")
         print("`ifdef RISCV_FORMAL_COMPRESSED", file=f)
         assign(f, "spec_post_trap", "next_pc[0] != 0")
@@ -211,7 +211,7 @@ def insn_b(insn, funct3, expr):
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         print("  wire cond = %s;" % expr, file=f)
-        print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = cond ? rvfi_pre_pc + insn_imm : rvfi_pre_pc + 4;", file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = cond ? rvfi_pc_rdata + insn_imm : rvfi_pc_rdata + 4;", file=f)
         assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 1100011" % funct3)
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rs2_addr", "insn_rs2")
@@ -242,7 +242,7 @@ def insn_l(insn, funct3, numbytes, signext):
             assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(result) : 0")
         else:
             assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
-        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
+        assign(f, "spec_post_pc", "rvfi_pc_rdata + 4")
         assign(f, "spec_post_trap", "(addr & (%d-1)) != 0" % numbytes)
 
         footer(f)
@@ -261,7 +261,7 @@ def insn_s(insn, funct3, numbytes):
         assign(f, "spec_mem_addr", "addr & ~(`RISCV_FORMAL_XLEN/8-1)")
         assign(f, "spec_mem_wmask", "((1 << %d)-1) << (addr-spec_mem_addr)" % numbytes)
         assign(f, "spec_mem_wdata", "rvfi_rs2_rdata << (8*(addr-spec_mem_addr))")
-        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
+        assign(f, "spec_post_pc", "rvfi_pc_rdata + 4")
         assign(f, "spec_post_trap", "(addr & (%d-1)) != 0" % numbytes)
 
         footer(f)
@@ -278,7 +278,7 @@ def insn_imm(insn, funct3, expr):
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rd_addr", "insn_rd")
         assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
-        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
+        assign(f, "spec_post_pc", "rvfi_pc_rdata + 4")
 
         footer(f)
 
@@ -294,7 +294,7 @@ def insn_shimm(insn, funct7, funct3, expr):
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rd_addr", "insn_rd")
         assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
-        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
+        assign(f, "spec_post_pc", "rvfi_pc_rdata + 4")
 
         footer(f)
 
@@ -311,7 +311,7 @@ def insn_alu(insn, funct7, funct3, expr):
         assign(f, "spec_rs2_addr", "insn_rs2")
         assign(f, "spec_rd_addr", "insn_rd")
         assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
-        assign(f, "spec_post_pc", "rvfi_pre_pc + 4")
+        assign(f, "spec_post_pc", "rvfi_pc_rdata + 4")
 
         footer(f)
 
