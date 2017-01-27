@@ -143,27 +143,27 @@ There are no models for the compressed instructions yet. The proposal is to veri
 The following is the proposed RVFI extension for floating point ISAs:
 
 ```
-output [NRET *    5 - 1 : 0] rvfi_frs1,
-output [NRET *    5 - 1 : 0] rvfi_frs2,
-output [NRET *    5 - 1 : 0] rvfi_frs3,
-output [NRET *    5 - 1 : 0] rvfi_frd,
+output [NRET *    5 - 1 : 0] rvfi_frs1_addr,
+output [NRET *    5 - 1 : 0] rvfi_frs2_addr,
+output [NRET *    5 - 1 : 0] rvfi_frs3_addr,
+output [NRET *    5 - 1 : 0] rvfi_frd_addr,
 output [NRET        - 1 : 0] rvfi_frs1_valid,
 output [NRET        - 1 : 0] rvfi_frs2_valid,
 output [NRET        - 1 : 0] rvfi_frs3_valid,
 output [NRET        - 1 : 0] rvfi_frd_valid,
-output [NRET * FLEN - 1 : 0] rvfi_pre_frs1,
-output [NRET * FLEN - 1 : 0] rvfi_pre_frs2,
-output [NRET * FLEN - 1 : 0] rvfi_pre_frs3,
-output [NRET *    3 - 1 : 0] rvfi_pre_frm,
-output [NRET * FLEN - 1 : 0] rvfi_post_frd,
-output [NRET *    5 - 1 : 0] rvfi_post_sfflags,
+output [NRET * FLEN - 1 : 0] rvfi_frs1_rdata,
+output [NRET * FLEN - 1 : 0] rvfi_frs2_rdata,
+output [NRET * FLEN - 1 : 0] rvfi_frs3_rdata,
+output [NRET *    3 - 1 : 0] rvfi_frm_rdata,
+output [NRET * FLEN - 1 : 0] rvfi_frd_wdata,
+output [NRET *    5 - 1 : 0] rvfi_sfflags,
 ```
 
 Since `f0` is not a zero register, additional `*_valid` signals are required to indicate if `frs1`, `frs2`, `frs3`, and `frd` and their corresponding pre- or post-values are valid.
 
-For instructions that do not use the floating point rounding mode the signal `rvfi_pre_frm` may be set to `3'b111` instead of the current rounding mode.
+For instructions that do not use the floating point rounding mode the signal `rvfi_frm_rdata` may be set to `3'b111` instead of the current rounding mode.
 
-The signal `rvfi_post_sfflags` has the bits set that this instruction sets in the `fflags` CSR. A bit in `fflags` that was already set in the pre-state, and is not set again by this instruction, must not be set in `rvfi_post_sfflags`.
+The signal `rvfi_sfflags` has the bits set that this instruction sets in the `fflags` CSR. A bit in `fflags` that was already set in the pre-state, and is not set again by this instruction, must not be set in `rvfi_sfflags`.
 
 The FPU model in `riscv-formal` will be swappable (using a Verilog define) with with a pseudo-model that is using cheaper operations instead of proper floating point math. This enables efficient verification of cores that can be configured to support a similar FPU model. (A similar functionality will be provided for M-extension instructions.)
 
