@@ -8,7 +8,7 @@ module rvfi_reg_check #(
 	input [`RISCV_FORMAL_NRET *                 32   - 1 : 0] rvfi_insn,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,
-	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rd,
+	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rd_addr,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
@@ -35,7 +35,7 @@ module rvfi_reg_check #(
 					if (register_index == rvfi_rs2_addr[channel_idx*5 +: 5])
 						assert(register_shadow == rvfi_rs2_rdata[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN]);
 				end
-				if (register_index == rvfi_rd[channel_idx*5 +: 5]) begin
+				if (register_index == rvfi_rd_addr[channel_idx*5 +: 5]) begin
 					register_shadow = rvfi_post_rd[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
 					register_written = 1;
 				end

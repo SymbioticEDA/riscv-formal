@@ -11,7 +11,7 @@ module rvfi_insn_lui (
   output                                spec_valid,
   output [                       4 : 0] spec_rs1_addr,
   output [                       4 : 0] spec_rs2_addr,
-  output [                       4 : 0] spec_rd,
+  output [                       4 : 0] spec_rd_addr,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
   output                                spec_post_trap,
@@ -28,8 +28,8 @@ module rvfi_insn_lui (
 
   // LUI instruction
   assign spec_valid = rvfi_valid && insn_opcode == 7'b 0110111;
-  assign spec_rd = insn_rd;
-  assign spec_post_rd = spec_rd ? insn_imm : 0;
+  assign spec_rd_addr = insn_rd;
+  assign spec_post_rd = spec_rd_addr ? insn_imm : 0;
   assign spec_post_pc = rvfi_pre_pc + 4;
 
   // default assignments

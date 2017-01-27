@@ -11,7 +11,7 @@ module rvfi_insn_lh (
   output                                spec_valid,
   output [                       4 : 0] spec_rs1_addr,
   output [                       4 : 0] spec_rs2_addr,
-  output [                       4 : 0] spec_rd,
+  output [                       4 : 0] spec_rd_addr,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
   output                                spec_post_trap,
@@ -33,10 +33,10 @@ module rvfi_insn_lh (
   wire [15:0] result = rvfi_mem_rdata >> (8*(addr-spec_mem_addr));
   assign spec_valid = rvfi_valid && insn_funct3 == 3'b 001 && insn_opcode == 7'b 0000011;
   assign spec_rs1_addr = insn_rs1;
-  assign spec_rd = insn_rd;
+  assign spec_rd_addr = insn_rd;
   assign spec_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);
   assign spec_mem_rmask = ((1 << 2)-1) << (addr-spec_mem_addr);
-  assign spec_post_rd = spec_rd ? $signed(result) : 0;
+  assign spec_post_rd = spec_rd_addr ? $signed(result) : 0;
   assign spec_post_pc = rvfi_pre_pc + 4;
   assign spec_post_trap = (addr & (2-1)) != 0;
 

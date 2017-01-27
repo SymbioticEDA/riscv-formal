@@ -100,7 +100,7 @@ The `rvfi_trap` signal that is high for an instruction that traps and low otherw
     output [NRET *    5 - 1 : 0] rvfi_rd
     output [NRET * XLEN - 1 : 0] rvfi_post_rd
 
-`rvfi_rd` is the decoded `rd` register address for the retired instruction. For an instruction that writes no `rd` register, this output must always be zero.
+`rvfi_rd_addr` is the decoded `rd` register address for the retired instruction. For an instruction that writes no `rd` register, this output must always be zero.
 
 `rvfi_post_rd` is the value of the `x` register addressed by `rd` after execution of this instruction. This output must be zero when `rd` is zero.
 
@@ -152,7 +152,7 @@ I think I will rename some of the RVFI ports in an effort to move towards a more
 | `rvfi_rs1_rdata` | `rvfi_rs1_rdata` |
 | `rvfi_rs2_addr`  | `rvfi_rs2_addr`  |
 | `rvfi_rs2_rdata` | `rvfi_rs2_rdata` |
-| `rvfi_rd`        | `rvfi_rd_addr`   |
+| `rvfi_rd_addr`   | `rvfi_rd_addr`   |
 | `rvfi_post_rd`   | `rvfi_rd_wdata`  |
 | `rvfi_pre_pc`    | `rvfi_pc_rdata`  |
 | `rvfi_post_pc`   | `rvfi_pc_wdata`  |

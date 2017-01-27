@@ -11,7 +11,7 @@ module rvfi_insn_jal (
   output                                spec_valid,
   output [                       4 : 0] spec_rs1_addr,
   output [                       4 : 0] spec_rs2_addr,
-  output [                       4 : 0] spec_rd,
+  output [                       4 : 0] spec_rd_addr,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
   output                                spec_post_trap,
@@ -29,8 +29,8 @@ module rvfi_insn_jal (
   // JAL instruction
   wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_pre_pc + insn_imm;
   assign spec_valid = rvfi_valid && insn_opcode == 7'b 1101111;
-  assign spec_rd = insn_rd;
-  assign spec_post_rd = spec_rd ? rvfi_pre_pc + 4 : 0;
+  assign spec_rd_addr = insn_rd;
+  assign spec_post_rd = spec_rd_addr ? rvfi_pre_pc + 4 : 0;
   assign spec_post_pc = next_pc;
 `ifdef RISCV_FORMAL_COMPRESSED
   assign spec_post_trap = next_pc[0] != 0;

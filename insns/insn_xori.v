@@ -11,7 +11,7 @@ module rvfi_insn_xori (
   output                                spec_valid,
   output [                       4 : 0] spec_rs1_addr,
   output [                       4 : 0] spec_rs2_addr,
-  output [                       4 : 0] spec_rd,
+  output [                       4 : 0] spec_rd_addr,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
   output                                spec_post_trap,
@@ -32,8 +32,8 @@ module rvfi_insn_xori (
   wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata ^ insn_imm;
   assign spec_valid = rvfi_valid && insn_funct3 == 3'b 100 && insn_opcode == 7'b 0010011;
   assign spec_rs1_addr = insn_rs1;
-  assign spec_rd = insn_rd;
-  assign spec_post_rd = spec_rd ? result : 0;
+  assign spec_rd_addr = insn_rd;
+  assign spec_post_rd = spec_rd_addr ? result : 0;
   assign spec_post_pc = rvfi_pre_pc + 4;
 
   // default assignments

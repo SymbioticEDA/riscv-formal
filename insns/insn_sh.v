@@ -11,7 +11,7 @@ module rvfi_insn_sh (
   output                                spec_valid,
   output [                       4 : 0] spec_rs1_addr,
   output [                       4 : 0] spec_rs2_addr,
-  output [                       4 : 0] spec_rd,
+  output [                       4 : 0] spec_rd_addr,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
   output                                spec_post_trap,
@@ -40,7 +40,7 @@ module rvfi_insn_sh (
   assign spec_post_trap = (addr & (2-1)) != 0;
 
   // default assignments
-  assign spec_rd = 0;
+  assign spec_rd_addr = 0;
   assign spec_post_rd = 0;
   assign spec_mem_rmask = 0;
 endmodule

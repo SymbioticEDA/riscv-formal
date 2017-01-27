@@ -6,7 +6,7 @@ module rvfi_insn_check (
 	input [`RISCV_FORMAL_NRET *                 32   - 1 : 0] rvfi_insn,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,
-	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rd,
+	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rd_addr,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
@@ -29,7 +29,7 @@ module rvfi_insn_check (
 		(* keep *) wire [                      31 : 0] insn      = rvfi_insn     [channel_idx*32 +: 32];
 		(* keep *) wire [                       4 : 0] rs1_addr  = rvfi_rs1_addr [channel_idx*5  +:  5];
 		(* keep *) wire [                       4 : 0] rs2_addr  = rvfi_rs2_addr [channel_idx*5  +:  5];
-		(* keep *) wire [                       4 : 0] rd        = rvfi_rd       [channel_idx*5  +:  5];
+		(* keep *) wire [                       4 : 0] rd        = rvfi_rd_addr       [channel_idx*5  +:  5];
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] pre_pc    = rvfi_pre_pc   [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] rs1_rdata = rvfi_rs1_rdata[channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] rs2_rdata = rvfi_rs2_rdata[channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
@@ -46,7 +46,7 @@ module rvfi_insn_check (
 		(* keep *) wire                                spec_valid;
 		(* keep *) wire [                       4 : 0] spec_rs1_addr;
 		(* keep *) wire [                       4 : 0] spec_rs2_addr;
-		(* keep *) wire [                       4 : 0] spec_rd;
+		(* keep *) wire [                       4 : 0] spec_rd_addr;
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd;
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc;
 		(* keep *) wire                                spec_post_trap;
@@ -66,7 +66,7 @@ module rvfi_insn_check (
 			.spec_valid    (spec_valid    ),
 			.spec_rs1_addr (spec_rs1_addr ),
 			.spec_rs2_addr (spec_rs2_addr ),
-			.spec_rd       (spec_rd       ),
+			.spec_rd_addr       (spec_rd_addr       ),
 			.spec_post_rd  (spec_post_rd  ),
 			.spec_post_pc  (spec_post_pc  ),
 			.spec_post_trap(spec_post_trap),
@@ -87,7 +87,7 @@ module rvfi_insn_check (
 					assert(spec_rs2_addr == rs2_addr);
 
 				if (!spec_post_trap) begin
-					assert(spec_rd == rd);
+					assert(spec_rd_addr == rd);
 					assert(spec_post_rd == post_rd);
 					assert(spec_post_pc == post_pc);
 
