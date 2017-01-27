@@ -86,14 +86,14 @@ Cores that retire all instructions in-order may set `rvfi_order` to constant zer
 
 `rvfi_insn` is the 32-bit or 16-bit instruction word. In case of a 16-bit instruction the upper 16-bits of this output may carry an arbitrary bit pattern. The current RVFI specification does not support instructions wider than 32 bits.
 
-The `rvfi_trap` signal that is high for an instruction that traps and low otherwise. The signals associated with the post-state may have arbitrary values when `rvfi_trap` is asserted. `rvfi_rs1` and `rvfi_rs2` may have arbitrary values when `rvfi_trap` is asserted, but `rvfi_pre_rs1` and `rvfi_pre_rs2` must be consistent with the register file for nonzero `rvfi_rs1` and `rvfi_rs2` (and zero when `x0` is addressed). Which instruction traps depends on the implemented ISA. Make sure to configure riscv-formal to match the ISA implemented by the core under test.
+The `rvfi_trap` signal that is high for an instruction that traps and low otherwise. The signals associated with the post-state may have arbitrary values when `rvfi_trap` is asserted. `rvfi_rs1_addr` and `rvfi_rs2_addr` may have arbitrary values when `rvfi_trap` is asserted, but `rvfi_pre_rs1` and `rvfi_pre_rs2` must be consistent with the register file for nonzero `rvfi_rs1_addr` and `rvfi_rs2_addr` (and zero when `x0` is addressed). Which instruction traps depends on the implemented ISA. Make sure to configure riscv-formal to match the ISA implemented by the core under test.
 
-    output [NRET *    5 - 1 : 0] rvfi_rs1
-    output [NRET *    5 - 1 : 0] rvfi_rs2
+    output [NRET *    5 - 1 : 0] rvfi_rs1_addr
+    output [NRET *    5 - 1 : 0] rvfi_rs2_addr
     output [NRET * XLEN - 1 : 0] rvfi_pre_rs1
     output [NRET * XLEN - 1 : 0] rvfi_pre_rs2
 
-`rvfi_rs1` and `rvfi_rs2` are the decoded `rs1` and `rs1` register addresses for the retired instruction. For an instruction that reads no `rs1`/`rs2` register, this output can have an arbitrary value. However, if this output is nonzero then `rvfi_pre_rs1` must carry the value stored in that register in the pre-state, regardless if the instruction actually reads `rs1`.
+`rvfi_rs1_addr` and `rvfi_rs2_addr` are the decoded `rs1` and `rs1` register addresses for the retired instruction. For an instruction that reads no `rs1`/`rs2` register, this output can have an arbitrary value. However, if this output is nonzero then `rvfi_pre_rs1` must carry the value stored in that register in the pre-state, regardless if the instruction actually reads `rs1`.
 
 `rvfi_pre_rs1`/`rvfi_pre_rs2` is the value of the `x` register addressed by `rs1`/`rs2` before execution of this instruction. This output must be zero when `rs1`/`rs2` is zero.
 
@@ -147,10 +147,10 @@ I think I will rename some of the RVFI ports in an effort to move towards a more
 | `rvfi_valid`     | `rvfi_valid`     |
 | `rvfi_order`     | `rvfi_order`     |
 | `rvfi_insn`      | `rvfi_insn`      |
-| `rvfi_trap` | `rvfi_trap`      |
-| `rvfi_rs1`       | `rvfi_rs1_addr`  |
+| `rvfi_trap`      | `rvfi_trap`      |
+| `rvfi_rs1_addr`  | `rvfi_rs1_addr`  |
 | `rvfi_pre_rs1`   | `rvfi_rs1_rdata` |
-| `rvfi_rs2`       | `rvfi_rs2_addr`  |
+| `rvfi_rs2_addr`  | `rvfi_rs2_addr`  |
 | `rvfi_pre_rs2`   | `rvfi_rs2_rdata` |
 | `rvfi_rd`        | `rvfi_rd_addr`   |
 | `rvfi_post_rd`   | `rvfi_rd_wdata`  |

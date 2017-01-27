@@ -9,8 +9,8 @@ module rvfi_insn_ori (
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 
   output                                spec_valid,
-  output [                       4 : 0] spec_rs1,
-  output [                       4 : 0] spec_rs2,
+  output [                       4 : 0] spec_rs1_addr,
+  output [                       4 : 0] spec_rs2_addr,
   output [                       4 : 0] spec_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
@@ -31,13 +31,13 @@ module rvfi_insn_ori (
   // ORI instruction
   wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_pre_rs1 | insn_imm;
   assign spec_valid = rvfi_valid && insn_funct3 == 3'b 110 && insn_opcode == 7'b 0010011;
-  assign spec_rs1 = insn_rs1;
+  assign spec_rs1_addr = insn_rs1;
   assign spec_rd = insn_rd;
   assign spec_post_rd = spec_rd ? result : 0;
   assign spec_post_pc = rvfi_pre_pc + 4;
 
   // default assignments
-  assign spec_rs2 = 0;
+  assign spec_rs2_addr = 0;
   assign spec_post_trap = 0;
   assign spec_mem_addr = 0;
   assign spec_mem_rmask = 0;

@@ -9,8 +9,8 @@ module rvfi_insn_sll (
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 
   output                                spec_valid,
-  output [                       4 : 0] spec_rs1,
-  output [                       4 : 0] spec_rs2,
+  output [                       4 : 0] spec_rs1_addr,
+  output [                       4 : 0] spec_rs2_addr,
   output [                       4 : 0] spec_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
@@ -32,8 +32,8 @@ module rvfi_insn_sll (
   // SLL instruction
   wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_pre_rs1 << rvfi_pre_rs2[4:0];
   assign spec_valid = rvfi_valid && insn_funct7 == 7'b 0000000 && insn_funct3 == 3'b 001 && insn_opcode == 7'b 0110011;
-  assign spec_rs1 = insn_rs1;
-  assign spec_rs2 = insn_rs2;
+  assign spec_rs1_addr = insn_rs1;
+  assign spec_rs2_addr = insn_rs2;
   assign spec_rd = insn_rd;
   assign spec_post_rd = spec_rd ? result : 0;
   assign spec_post_pc = rvfi_pre_pc + 4;

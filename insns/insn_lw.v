@@ -9,8 +9,8 @@ module rvfi_insn_lw (
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 
   output                                spec_valid,
-  output [                       4 : 0] spec_rs1,
-  output [                       4 : 0] spec_rs2,
+  output [                       4 : 0] spec_rs1_addr,
+  output [                       4 : 0] spec_rs2_addr,
   output [                       4 : 0] spec_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
@@ -32,7 +32,7 @@ module rvfi_insn_lw (
   wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_pre_rs1 + insn_imm;
   wire [31:0] result = rvfi_mem_rdata >> (8*(addr-spec_mem_addr));
   assign spec_valid = rvfi_valid && insn_funct3 == 3'b 010 && insn_opcode == 7'b 0000011;
-  assign spec_rs1 = insn_rs1;
+  assign spec_rs1_addr = insn_rs1;
   assign spec_rd = insn_rd;
   assign spec_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);
   assign spec_mem_rmask = ((1 << 4)-1) << (addr-spec_mem_addr);
@@ -41,7 +41,7 @@ module rvfi_insn_lw (
   assign spec_post_trap = (addr & (4-1)) != 0;
 
   // default assignments
-  assign spec_rs2 = 0;
+  assign spec_rs2_addr = 0;
   assign spec_mem_wmask = 0;
   assign spec_mem_wdata = 0;
 endmodule

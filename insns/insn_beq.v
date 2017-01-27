@@ -9,8 +9,8 @@ module rvfi_insn_beq (
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 
   output                                spec_valid,
-  output [                       4 : 0] spec_rs1,
-  output [                       4 : 0] spec_rs2,
+  output [                       4 : 0] spec_rs1_addr,
+  output [                       4 : 0] spec_rs2_addr,
   output [                       4 : 0] spec_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
@@ -32,8 +32,8 @@ module rvfi_insn_beq (
   wire cond = rvfi_pre_rs1 == rvfi_pre_rs2;
   wire [`RISCV_FORMAL_XLEN-1:0] next_pc = cond ? rvfi_pre_pc + insn_imm : rvfi_pre_pc + 4;
   assign spec_valid = rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 1100011;
-  assign spec_rs1 = insn_rs1;
-  assign spec_rs2 = insn_rs2;
+  assign spec_rs1_addr = insn_rs1;
+  assign spec_rs2_addr = insn_rs2;
   assign spec_post_pc = next_pc;
 `ifdef RISCV_FORMAL_COMPRESSED
   assign spec_post_trap = next_pc[0] != 0;

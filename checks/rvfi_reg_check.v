@@ -6,8 +6,8 @@ module rvfi_reg_check #(
 	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid,
 	input [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order,
 	input [`RISCV_FORMAL_NRET *                 32   - 1 : 0] rvfi_insn,
-	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1,
-	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2,
+	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,
+	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rd,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_pc,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pre_rs1,
@@ -30,9 +30,9 @@ module rvfi_reg_check #(
 		for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin
 			if (resetn && rvfi_valid[channel_idx]) begin
 				if (register_written) begin
-					if (register_index == rvfi_rs1[channel_idx*5 +: 5])
+					if (register_index == rvfi_rs1_addr[channel_idx*5 +: 5])
 						assert(register_shadow == rvfi_pre_rs1[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN]);
-					if (register_index == rvfi_rs2[channel_idx*5 +: 5])
+					if (register_index == rvfi_rs2_addr[channel_idx*5 +: 5])
 						assert(register_shadow == rvfi_pre_rs2[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN]);
 				end
 				if (register_index == rvfi_rd[channel_idx*5 +: 5]) begin

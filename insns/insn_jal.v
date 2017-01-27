@@ -9,8 +9,8 @@ module rvfi_insn_jal (
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 
   output                                spec_valid,
-  output [                       4 : 0] spec_rs1,
-  output [                       4 : 0] spec_rs2,
+  output [                       4 : 0] spec_rs1_addr,
+  output [                       4 : 0] spec_rs2_addr,
   output [                       4 : 0] spec_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
@@ -39,8 +39,8 @@ module rvfi_insn_jal (
 `endif
 
   // default assignments
-  assign spec_rs1 = 0;
-  assign spec_rs2 = 0;
+  assign spec_rs1_addr = 0;
+  assign spec_rs2_addr = 0;
   assign spec_mem_addr = 0;
   assign spec_mem_rmask = 0;
   assign spec_mem_wmask = 0;
