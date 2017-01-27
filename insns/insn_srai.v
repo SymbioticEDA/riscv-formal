@@ -13,7 +13,7 @@ module rvfi_insn_srai (
   output [                       4 : 0] spec_rs2_addr,
   output [                       4 : 0] spec_rd_addr,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_rd_wdata,
-  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
+  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_pc_wdata,
   output                                spec_post_trap,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_mem_addr,
   output [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_rmask,
@@ -35,7 +35,7 @@ module rvfi_insn_srai (
   assign spec_rs1_addr = insn_rs1;
   assign spec_rd_addr = insn_rd;
   assign spec_rd_wdata = spec_rd_addr ? result : 0;
-  assign spec_post_pc = rvfi_pc_rdata + 4;
+  assign spec_pc_wdata = rvfi_pc_rdata + 4;
 
   // default assignments
   assign spec_rs2_addr = 0;

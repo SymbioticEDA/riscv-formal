@@ -10,7 +10,7 @@ module rvfi_insn_check (
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_post_pc,
+	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_wdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rd_wdata,
 	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_addr,
@@ -33,7 +33,7 @@ module rvfi_insn_check (
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] pc_rdata    = rvfi_pc_rdata   [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] rs1_rdata = rvfi_rs1_rdata[channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] rs2_rdata = rvfi_rs2_rdata[channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
-		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] post_pc   = rvfi_post_pc  [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] pc_wdata   = rvfi_pc_wdata  [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] rd_wdata   = rvfi_rd_wdata  [channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];
 		(* keep *) wire                                post_trap = rvfi_trap[channel_idx];
 
@@ -48,7 +48,7 @@ module rvfi_insn_check (
 		(* keep *) wire [                       4 : 0] spec_rs2_addr;
 		(* keep *) wire [                       4 : 0] spec_rd_addr;
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_rd_wdata;
-		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc;
+		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_pc_wdata;
 		(* keep *) wire                                spec_post_trap;
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_mem_addr;
 		(* keep *) wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_rmask;
@@ -68,7 +68,7 @@ module rvfi_insn_check (
 			.spec_rs2_addr (spec_rs2_addr ),
 			.spec_rd_addr       (spec_rd_addr       ),
 			.spec_rd_wdata  (spec_rd_wdata  ),
-			.spec_post_pc  (spec_post_pc  ),
+			.spec_pc_wdata  (spec_pc_wdata  ),
 			.spec_post_trap(spec_post_trap),
 			.spec_mem_addr (spec_mem_addr ),
 			.spec_mem_rmask(spec_mem_rmask),
@@ -89,7 +89,7 @@ module rvfi_insn_check (
 				if (!spec_post_trap) begin
 					assert(spec_rd_addr == rd);
 					assert(spec_rd_wdata == rd_wdata);
-					assert(spec_post_pc == post_pc);
+					assert(spec_pc_wdata == pc_wdata);
 
 					if (spec_mem_wmask || spec_mem_rmask) begin
 						assert(spec_mem_addr == mem_addr);

@@ -105,9 +105,9 @@ The `rvfi_trap` signal that is high for an instruction that traps and low otherw
 `rvfi_rd_wdata` is the value of the `x` register addressed by `rd` after execution of this instruction. This output must be zero when `rd` is zero.
 
     output [NRET * XLEN - 1 : 0] rvfi_pc_rdata
-    output [NRET * XLEN - 1 : 0] rvfi_post_pc
+    output [NRET * XLEN - 1 : 0] rvfi_pc_wdata
 
-This is the program counter (`pc`) before (`rvfi_pc_rdata`) and after (`rvfi_post_pc`) execution of this instruction. I.e. this is the address of the retired instruction and the address of the next instruction.
+This is the program counter (`pc`) before (`rvfi_pc_rdata`) and after (`rvfi_pc_wdata`) execution of this instruction. I.e. this is the address of the retired instruction and the address of the next instruction.
 
     output [NRET * XLEN   - 1 : 0] rvfi_mem_addr
     output [NRET * XLEN/8 - 1 : 0] rvfi_mem_rmask
@@ -155,7 +155,7 @@ I think I will rename some of the RVFI ports in an effort to move towards a more
 | `rvfi_rd_addr`   | `rvfi_rd_addr`   |
 | `rvfi_rd_wdata`  | `rvfi_rd_wdata`  |
 | `rvfi_pc_rdata`    | `rvfi_pc_rdata`  |
-| `rvfi_post_pc`   | `rvfi_pc_wdata`  |
+| `rvfi_pc_wdata`   | `rvfi_pc_wdata`  |
 | `rvfi_mem_addr`  | `rvfi_mem_addr`  |
 | `rvfi_mem_rmask` | `rvfi_mem_rmask` |
 | `rvfi_mem_wmask` | `rvfi_mem_wmask` |

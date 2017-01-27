@@ -13,7 +13,7 @@ module rvfi_insn_lw (
   output [                       4 : 0] spec_rs2_addr,
   output [                       4 : 0] spec_rd_addr,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_rd_wdata,
-  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
+  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_pc_wdata,
   output                                spec_post_trap,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_mem_addr,
   output [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_rmask,
@@ -37,7 +37,7 @@ module rvfi_insn_lw (
   assign spec_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);
   assign spec_mem_rmask = ((1 << 4)-1) << (addr-spec_mem_addr);
   assign spec_rd_wdata = spec_rd_addr ? $signed(result) : 0;
-  assign spec_post_pc = rvfi_pc_rdata + 4;
+  assign spec_pc_wdata = rvfi_pc_rdata + 4;
   assign spec_post_trap = (addr & (4-1)) != 0;
 
   // default assignments
