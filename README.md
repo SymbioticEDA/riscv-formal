@@ -31,7 +31,7 @@ Other RISC-V formal verification projects and related materials:
 - [Kami: A Framework for (RISC-V) HW Verification](https://riscv.org/wp-content/uploads/2016/07/Wed1130_Kami_Framework_Murali_Vijayaraghavan.pdf)
 - [Verifying a RISC-V Processor, Nirav Dave, Prashanth Mundkur, SRI International](https://riscv.org/wp-content/uploads/2015/06/riscv-verification-workshop-june2015.pdf)
 
-Please [open an issue](https://github.com/cliffordwolf/riscv-formal/issues/new) if you kown of other RISC-V formal verification projects I should link to in this section.
+Please [open an issue](https://github.com/cliffordwolf/riscv-formal/issues/new) if you known of other RISC-V formal verification projects I should link to in this section.
 
 Verification Procedure
 ----------------------
@@ -75,73 +75,57 @@ In the following specification the term `XLEN` refers to the width of an `x` reg
 
 The Interface consists only of output signals. Each signal is a concatenation of `NRET` values of constant width, effectively creating `NRET` channels. For simplicity, the following descriptions refer to one such channel. For example, we refer to `rvfi_valid` as a 1-bit signal, not a `NRET`-bits signal.
 
-#### `output [NRET        - 1 : 0] rvfi_valid`
+    output [NRET        - 1 : 0] rvfi_valid
+    output [NRET *    8 - 1 : 0] rvfi_order
+    output [NRET *   32 - 1 : 0] rvfi_insn
+    output [NRET        - 1 : 0] rvfi_post_trap
 
 When the core retires an instruction, it asserts the `rvfi_valid` signal and uses the signals described below to output the details of the retired instruction. The signals below are only valid during such a cycle and can be driven to arbitrary values in a cycle in which `rvfi_valid` is not asserted.
 
-#### `output [NRET *    8 - 1 : 0] rvfi_order`
+Cores that retire all instructions in-order may set `rvfi_order` to constant zero. Cores that retire instructions out-of-order must set this field to the instruction index so that they can be sorted within `riscv-formal` test-benches when needed. Right now no such sorter is implemented and cores that retire instructions out-of-order are not supported.
 
-Cores that retire all instructions in-order may set this field to constant zero. Cores that retire instructions out-of-order must set this field to the instruction index so that they can be sorted within `riscv-formal` test-benches when needed. Right now no such sorter is implemented and cores that retire instructions out-of-order are not supported.
-
-#### `output [NRET *   32 - 1 : 0] rvfi_insn`
-
-This is the 32-bit or 16-bit instruction word. In case of a 16-bit instruction the upper 16-bits of this output may carry an arbitrary bit pattern. The current RVFI specification does not support instructions wider than 32 bits.
-
-#### `output [NRET *    5 - 1 : 0] rvfi_rs1`
-
-This is the decoded `rs1` register for the retired instruction. For an instruction that reads no `rs1` register, this output can have an arbitrary value. However, if this output is nonzero then `rvfi_pre_rs1` must carry the value stored in that register in the pre-state, regardless if the instruction actually reads `rs1`.
-
-#### `output [NRET *    5 - 1 : 0] rvfi_rs2`
-
-This is the decoded `rs2` register for the retired instruction. For an instruction that reads no `rs2` register, this output can have an arbitrary value. However, if this output is nonzero then `rvfi_pre_rs2` must carry the value stored in that register in the pre-state, regardless if the instruction actually reads `rs2`.
-
-#### `output [NRET *    5 - 1 : 0] rvfi_rd`
-
-This is the decoded `rd` register for the retired instruction. For an instruction that writes no `rd` register, this output must always be zero.
-
-#### `output [NRET * XLEN - 1 : 0] rvfi_pre_pc`
-
-This is the program counter (`pc`) before execution of this instruction. I.e. this is the address of the retired instruction.
-
-#### `output [NRET * XLEN - 1 : 0] rvfi_pre_rs1`
-
-This is the value of the `x` register addressed by `rs1` before execution of this instruction. This output must be zero when `rs1` is zero.
-
-#### `output [NRET * XLEN - 1 : 0] rvfi_pre_rs2`
-
-This is the value of the `x` register addressed by `rs2` before execution of this instruction. This output must be zero when `rs2` is zero.
-
-#### `output [NRET * XLEN - 1 : 0] rvfi_post_pc`
-
-This is the value of the program counter after execution of this instruction. For a non-branching 32-bit instruction this is `rvfi_pre_pc + 4`.
-
-#### `output [NRET * XLEN - 1 : 0] rvfi_post_rd`
-
-This is the value of the `x` register addressed by `rd` after execution of this instruction. This output must be zero when `rd` is zero.
-
-#### `output [NRET        - 1 : 0] rvfi_post_trap`
+`rvfi_insn` is the 32-bit or 16-bit instruction word. In case of a 16-bit instruction the upper 16-bits of this output may carry an arbitrary bit pattern. The current RVFI specification does not support instructions wider than 32 bits.
 
 The `rvfi_post_trap` signal that is high for an instruction that traps and low otherwise. The other `rvfi_post_*` signals may have arbitrary values when `rvfi_post_trap` is asserted. `rvfi_rs1` and `rvfi_rs2` may have arbitrary values when `rvfi_post_trap` is asserted, but `rvfi_pre_rs1` and `rvfi_pre_rs2` must be consistent with the register file for nonzero `rvfi_rs1` and `rvfi_rs2` (and zero when `x0` is addressed). Which instruction traps depends on the implemented ISA. Make sure to configure riscv-formal to match the ISA implemented by the core under test.
 
-#### `output [NRET * XLEN - 1 : 0] rvfi_mem_addr`
+    output [NRET *    5 - 1 : 0] rvfi_rs1
+    output [NRET *    5 - 1 : 0] rvfi_rs2
+    output [NRET * XLEN - 1 : 0] rvfi_pre_rs1
+    output [NRET * XLEN - 1 : 0] rvfi_pre_rs2
 
-For memory operations (`rvfi_mem_rmask` and/or `rvfi_mem_wmask` are non-zero) this fields holds the accessed memory location. The address must have a 4-byte alignment for `XLEN=32` and an 8-byte alignment for `XLEN=64`.
+`rvfi_rs1` and `rvfi_rs2` are the decoded `rs1` and `rs1` register addresses for the retired instruction. For an instruction that reads no `rs1`/`rs2` register, this output can have an arbitrary value. However, if this output is nonzero then `rvfi_pre_rs1` must carry the value stored in that register in the pre-state, regardless if the instruction actually reads `rs1`.
 
-#### `output [NRET * XLEN/8 - 1 : 0] rvfi_mem_rmask`
+`rvfi_pre_rs1`/`rvfi_pre_rs2` is the value of the `x` register addressed by `rs1`/`rs2` before execution of this instruction. This output must be zero when `rs1`/`rs2` is zero.
 
-A bitmask that specifies which bytes in `rvfi_mem_rdata` contain valid read data from `rvfi_mem_addr`.
+    output [NRET *    5 - 1 : 0] rvfi_rd
+    output [NRET * XLEN - 1 : 0] rvfi_post_rd
 
-#### `output [NRET * XLEN/8 - 1 : 0] rvfi_mem_wmask`
+`rvfi_rd` is the decoded `rd` register address for the retired instruction. For an instruction that writes no `rd` register, this output must always be zero.
 
-A bitmask that specifies which bytes in `rvfi_mem_wdata` contain valid data that is written to `rvfi_mem_addr`.
+`rvfi_post_rd` is the value of the `x` register addressed by `rd` after execution of this instruction. This output must be zero when `rd` is zero.
 
-#### `output [NRET * XLEN - 1 : 0] rvfi_mem_rdata`
+    output [NRET * XLEN - 1 : 0] rvfi_pre_pc
+    output [NRET * XLEN - 1 : 0] rvfi_post_pc
 
-The pre-state data read from `rvfi_mem_addr`. `rvfi_mem_rmask` specifies which bytes are valid.
+This is the program counter (`pc`) before (`rvfi_pre_pc`) and after (`rvfi_post_pc`) execution of this instruction. I.e. this is the address of the retired instruction and the address of the next instruction.
 
-#### `output [NRET * XLEN - 1 : 0] rvfi_mem_wdata`
+    output [NRET * XLEN   - 1 : 0] rvfi_mem_addr
+    output [NRET * XLEN/8 - 1 : 0] rvfi_mem_rmask
+    output [NRET * XLEN/8 - 1 : 0] rvfi_mem_wmask
+    output [NRET * XLEN   - 1 : 0] rvfi_mem_rdata
+    output [NRET * XLEN   - 1 : 0] rvfi_mem_wdata
 
-The post-state data written to `rvfi_mem_addr`. `rvfi_mem_wmask` specifies which bytes are valid.
+For memory operations (`rvfi_mem_rmask` and/or `rvfi_mem_wmask` are non-zero), `rvfi_mem_addr` holds the accessed memory location. The address must have a 4-byte alignment for `XLEN=32` and an 8-byte alignment for `XLEN=64`.
+
+`rvfi_mem_rmask` is a bitmask that specifies which bytes in `rvfi_mem_rdata` contain valid read data from `rvfi_mem_addr`.
+
+`rvfi_mem_wmask` is a bitmask that specifies which bytes in `rvfi_mem_wdata` contain valid data that is written to `rvfi_mem_addr`.
+
+`rvfi_mem_rdata` is the pre-state data read from `rvfi_mem_addr`. `rvfi_mem_rmask` specifies which bytes are valid.
+
+`rvfi_mem_wdata` is the post-state data written to `rvfi_mem_addr`. `rvfi_mem_wmask` specifies which bytes are valid.
+
+The current `riscv-formal` implementation assumes that unaligned memory access causes a trap. This is actually not what the ISA spec says. The spec says that unaligned memory access can be slow, hinting at that it can be implemented in a trap handler for cores that do not support that in hardware. A configuration switch must be added to `riscv-formal` for configuring if the core supports unaligned memory access in hardware.
 
 RVFI TODOs and Requests for Comments
 ------------------------------------
@@ -152,7 +136,7 @@ Models for RV64I-only instructions are still missing. They will be added as soon
 
 ### Support for Compressed ISAs
 
-There are no models for the compressed instructions yet. The proposal is to verify them as if they where seperate instructions, i.e. not merge them with the models for uncompressed instructions.
+There are no models for the compressed instructions yet. The proposal is to verify them as if they where separate instructions, i.e. not merge them with the models for uncompressed instructions.
 
 ### Proposed renaming of RVFI ports
 
@@ -207,7 +191,7 @@ For instructions that do not use the floating point rounding mode the signal `rv
 
 The signal `rvfi_post_sfflags` has the bits set that this instruction sets in the `fflags` CSR. A bit in `fflags` that was already set in the pre-state, and is not set again by this instruction, must not be set in `rvfi_post_sfflags`.
 
-The FPU model in `riscv-formal` will be swapable (using a Verilog define) with with a pseudo-model that is using cheaper operations instead of proper floating point math. This enables efficient verification of cores that can be configured to support a similar FPU model. (A similar functionality will be provided for M-extension instructions.)
+The FPU model in `riscv-formal` will be swappable (using a Verilog define) with with a pseudo-model that is using cheaper operations instead of proper floating point math. This enables efficient verification of cores that can be configured to support a similar FPU model. (A similar functionality will be provided for M-extension instructions.)
 
 ### RVFI Peep Interface
 
@@ -233,7 +217,7 @@ output [NRET * FLEN - 1 : 0] rvfi_peep_rf_wdata,
 
 AMO instructions (`AMOSWAP.W`, etc.) can be modelled using the existing `rvfi_mem_*` interface by asserting bits in both `rvfi_mem_rmask` and `rvfi_mem_wmask`.
 
-The is also no extension to the RVFI port neccessary to accommodate the `LR`, `SC`, `FENCE` and `FENCE.I` instructions.
+The is also no extension to the RVFI port necessary to accommodate the `LR`, `SC`, `FENCE` and `FENCE.I` instructions.
 
 Verification of this instructions for a single-core systems can be done using the RVFI port only. A strategy must be defined to verify their correct behavior in multicore systems. This is TBD.
 
