@@ -12,7 +12,7 @@ module rvfi_insn_bge (
   output [                       4 : 0] spec_rs1_addr,
   output [                       4 : 0] spec_rs2_addr,
   output [                       4 : 0] spec_rd_addr,
-  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_rd,
+  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_rd_wdata,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_post_pc,
   output                                spec_post_trap,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_mem_addr,
@@ -43,7 +43,7 @@ module rvfi_insn_bge (
 
   // default assignments
   assign spec_rd_addr = 0;
-  assign spec_post_rd = 0;
+  assign spec_rd_wdata = 0;
   assign spec_mem_addr = 0;
   assign spec_mem_rmask = 0;
   assign spec_mem_wmask = 0;
