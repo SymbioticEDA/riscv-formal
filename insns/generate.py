@@ -19,12 +19,12 @@ def header(f, insn):
 
     print("", file=f)
     print("  output                                spec_valid,", file=f)
+    print("  output                                spec_trap,", file=f)
     print("  output [                       4 : 0] spec_rs1_addr,", file=f)
     print("  output [                       4 : 0] spec_rs2_addr,", file=f)
     print("  output [                       4 : 0] spec_rd_addr,", file=f)
     print("  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_rd_wdata,", file=f)
     print("  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_pc_wdata,", file=f)
-    print("  output                                spec_post_trap,", file=f)
     print("  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_mem_addr,", file=f)
     print("  output [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_rmask,", file=f)
     print("  output [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_wmask,", file=f)
@@ -38,7 +38,7 @@ def header(f, insn):
     defaults_cache["spec_rd_addr"] = "0"
     defaults_cache["spec_rd_wdata"] = "0"
     defaults_cache["spec_pc_wdata"] = "0"
-    defaults_cache["spec_post_trap"] = "0"
+    defaults_cache["spec_trap"] = "0"
     defaults_cache["spec_mem_addr"] = "0"
     defaults_cache["spec_mem_rmask"] = "0"
     defaults_cache["spec_mem_wmask"] = "0"
@@ -65,7 +65,7 @@ def footer(f):
         default_assign("spec_rd_addr")
         default_assign("spec_rd_wdata")
         default_assign("spec_pc_wdata")
-        default_assign("spec_post_trap")
+        default_assign("spec_trap")
         default_assign("spec_mem_addr")
         default_assign("spec_mem_rmask")
         default_assign("spec_mem_wmask")
@@ -175,9 +175,9 @@ def insn_jal(insn = "jal"):
         assign(f, "spec_rd_wdata", "spec_rd_addr ? rvfi_pc_rdata + 4 : 0")
         assign(f, "spec_pc_wdata", "next_pc")
         print("`ifdef RISCV_FORMAL_COMPRESSED", file=f)
-        assign(f, "spec_post_trap", "next_pc[0] != 0")
+        assign(f, "spec_trap", "next_pc[0] != 0")
         print("`else", file=f)
-        assign(f, "spec_post_trap", "next_pc[1:0] != 0")
+        assign(f, "spec_trap", "next_pc[1:0] != 0")
         print("`endif", file=f)
 
         footer(f)
@@ -196,9 +196,9 @@ def insn_jalr(insn = "jalr"):
         assign(f, "spec_rd_wdata", "spec_rd_addr ? rvfi_pc_rdata + 4 : 0")
         assign(f, "spec_pc_wdata", "next_pc")
         print("`ifdef RISCV_FORMAL_COMPRESSED", file=f)
-        assign(f, "spec_post_trap", "next_pc[0] != 0")
+        assign(f, "spec_trap", "next_pc[0] != 0")
         print("`else", file=f)
-        assign(f, "spec_post_trap", "next_pc[1:0] != 0")
+        assign(f, "spec_trap", "next_pc[1:0] != 0")
         print("`endif", file=f)
 
         footer(f)
@@ -217,9 +217,9 @@ def insn_b(insn, funct3, expr):
         assign(f, "spec_rs2_addr", "insn_rs2")
         assign(f, "spec_pc_wdata", "next_pc")
         print("`ifdef RISCV_FORMAL_COMPRESSED", file=f)
-        assign(f, "spec_post_trap", "next_pc[0] != 0")
+        assign(f, "spec_trap", "next_pc[0] != 0")
         print("`else", file=f)
-        assign(f, "spec_post_trap", "next_pc[1:0] != 0")
+        assign(f, "spec_trap", "next_pc[1:0] != 0")
         print("`endif", file=f)
 
         footer(f)
@@ -243,7 +243,7 @@ def insn_l(insn, funct3, numbytes, signext):
         else:
             assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 4")
-        assign(f, "spec_post_trap", "(addr & (%d-1)) != 0" % numbytes)
+        assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
 
         footer(f)
 
@@ -262,7 +262,7 @@ def insn_s(insn, funct3, numbytes):
         assign(f, "spec_mem_wmask", "((1 << %d)-1) << (addr-spec_mem_addr)" % numbytes)
         assign(f, "spec_mem_wdata", "rvfi_rs2_rdata << (8*(addr-spec_mem_addr))")
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 4")
-        assign(f, "spec_post_trap", "(addr & (%d-1)) != 0" % numbytes)
+        assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
 
         footer(f)
 

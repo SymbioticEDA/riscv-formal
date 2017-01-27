@@ -9,12 +9,12 @@ module rvfi_insn_bltu (
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 
   output                                spec_valid,
+  output                                spec_trap,
   output [                       4 : 0] spec_rs1_addr,
   output [                       4 : 0] spec_rs2_addr,
   output [                       4 : 0] spec_rd_addr,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_rd_wdata,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_pc_wdata,
-  output                                spec_post_trap,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_mem_addr,
   output [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_rmask,
   output [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_wmask,
@@ -36,9 +36,9 @@ module rvfi_insn_bltu (
   assign spec_rs2_addr = insn_rs2;
   assign spec_pc_wdata = next_pc;
 `ifdef RISCV_FORMAL_COMPRESSED
-  assign spec_post_trap = next_pc[0] != 0;
+  assign spec_trap = next_pc[0] != 0;
 `else
-  assign spec_post_trap = next_pc[1:0] != 0;
+  assign spec_trap = next_pc[1:0] != 0;
 `endif
 
   // default assignments

@@ -97,7 +97,7 @@ The `rvfi_trap` signal that is high for an instruction that traps and low otherw
 
 `rvfi_rs1_rdata`/`rvfi_rs2_rdata` is the value of the `x` register addressed by `rs1`/`rs2` before execution of this instruction. This output must be zero when `rs1`/`rs2` is zero.
 
-    output [NRET *    5 - 1 : 0] rvfi_rd
+    output [NRET *    5 - 1 : 0] rvfi_rd_addr
     output [NRET * XLEN - 1 : 0] rvfi_rd_wdata
 
 `rvfi_rd_addr` is the decoded `rd` register address for the retired instruction. For an instruction that writes no `rd` register, this output must always be zero.
@@ -137,32 +137,6 @@ Models for RV64I-only instructions are still missing. They will be added as soon
 ### Support for Compressed ISAs
 
 There are no models for the compressed instructions yet. The proposal is to verify them as if they where separate instructions, i.e. not merge them with the models for uncompressed instructions.
-
-### Proposed renaming of RVFI ports
-
-I think I will rename some of the RVFI ports in an effort to move towards a more systematic naming scheme.
-
-| Old Port Name    | New Port Name    |
-| ---------------- | ---------------- |
-| `rvfi_valid`     | `rvfi_valid`     |
-| `rvfi_order`     | `rvfi_order`     |
-| `rvfi_insn`      | `rvfi_insn`      |
-| `rvfi_trap`      | `rvfi_trap`      |
-| `rvfi_rs1_addr`  | `rvfi_rs1_addr`  |
-| `rvfi_rs1_rdata` | `rvfi_rs1_rdata` |
-| `rvfi_rs2_addr`  | `rvfi_rs2_addr`  |
-| `rvfi_rs2_rdata` | `rvfi_rs2_rdata` |
-| `rvfi_rd_addr`   | `rvfi_rd_addr`   |
-| `rvfi_rd_wdata`  | `rvfi_rd_wdata`  |
-| `rvfi_pc_rdata`    | `rvfi_pc_rdata`  |
-| `rvfi_pc_wdata`   | `rvfi_pc_wdata`  |
-| `rvfi_mem_addr`  | `rvfi_mem_addr`  |
-| `rvfi_mem_rmask` | `rvfi_mem_rmask` |
-| `rvfi_mem_wmask` | `rvfi_mem_wmask` |
-| `rvfi_mem_rdata` | `rvfi_mem_rdata` |
-| `rvfi_mem_wdata` | `rvfi_mem_wdata` |
-
-This is a request for comments. Please [open an issue](https://github.com/cliffordwolf/riscv-formal/issues/new) if you have an opinion that you would like to share.
 
 ### Modelling of Floating-Point State
 

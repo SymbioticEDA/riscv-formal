@@ -9,12 +9,12 @@ module rvfi_insn_auipc (
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 
   output                                spec_valid,
+  output                                spec_trap,
   output [                       4 : 0] spec_rs1_addr,
   output [                       4 : 0] spec_rs2_addr,
   output [                       4 : 0] spec_rd_addr,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_rd_wdata,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_pc_wdata,
-  output                                spec_post_trap,
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_mem_addr,
   output [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_rmask,
   output [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_wmask,
@@ -35,7 +35,7 @@ module rvfi_insn_auipc (
   // default assignments
   assign spec_rs1_addr = 0;
   assign spec_rs2_addr = 0;
-  assign spec_post_trap = 0;
+  assign spec_trap = 0;
   assign spec_mem_addr = 0;
   assign spec_mem_rmask = 0;
   assign spec_mem_wmask = 0;
