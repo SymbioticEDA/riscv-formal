@@ -6,10 +6,15 @@ depth 100
 smtbmc -s boolector
 
 [script]
+verilog_defines -D RISCV_FORMAL
+verilog_defines -D RISCV_FORMAL_NRET=1
+verilog_defines -D RISCV_FORMAL_XLEN=32
+read_verilog rvfi_macros.vh
 read_verilog picorv32.v
 read_verilog -formal cover.v
 prep -nordff -top testbench
 
 [files]
+../../checks/rvfi_macros.vh
 ../../../picorv32/picorv32.v
 cover.v

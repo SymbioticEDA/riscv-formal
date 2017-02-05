@@ -16,6 +16,8 @@ module testbench (
 	always @(posedge clk)
 		resetn <= 1;
 
+	`RFVI_WIRES
+
 	picorv32 #(
 		.REGS_INIT_ZERO(1),
 		.COMPRESSED_ISA(1),
@@ -32,6 +34,8 @@ module testbench (
 		.mem_wdata      (mem_wdata     ),
 		.mem_wstrb      (mem_wstrb     ),
 		.mem_rdata      (mem_rdata     ),
+
+		`RFVI_CONN
 	);
 
 	integer count_dmemrd = 0;
@@ -40,14 +44,14 @@ module testbench (
 	integer count_comprinsn = 0;
 
 	always @(posedge clk) begin
-		if (resetn && mem_valid && mem_ready) begin
-			if (!mem_instr && !mem_wstrb)
+		if (resetn && rvfi_valid) begin
+			if (rvfi_mem_rmask)
 				count_dmemrd <= count_dmemrd + 1;
-			if (!mem_instr && mem_wstrb)
+			if (rvfi_mem_wmask)
 				count_dmemwr <= count_dmemwr + 1;
-			if (mem_instr && mem_rdata[1:0] == 3)
+			if (rvfi_insn[1:0] == 3)
 				count_longinsn <= count_longinsn + 1;
-			if (mem_instr && mem_rdata[1:0] != 3)
+			if (rvfi_insn[1:0] != 3)
 				count_comprinsn <= count_comprinsn + 1;
 		end
 	end
