@@ -1,0 +1,15 @@
+[options]
+mode cover
+depth 100
+
+[engines]
+smtbmc -s boolector
+
+[script]
+read_verilog picorv32.v
+read_verilog -formal cover.v
+prep -nordff -top testbench
+
+[files]
+../../../picorv32/picorv32.v
+cover.v
