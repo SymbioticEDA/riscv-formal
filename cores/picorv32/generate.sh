@@ -22,7 +22,7 @@ for check in reg pc imem dmem; do
 		depth $((check_bmc_depth))
 
 		[engines]
-		abc_bmc3
+		abc bmc3
 
 		[script]
 		verilog_defines -D RISCV_FORMAL
@@ -54,7 +54,7 @@ for insn in $basedir/insns/insn_*.v; do
 		depth $((insn_bmc_depth + 5))
 
 		[engines]
-		abc_bmc3
+		abc bmc3
 
 		[script]
 		verilog_defines -D RISCV_FORMAL
@@ -81,6 +81,6 @@ for insn in $basedir/insns/insn_*.v; do
 	} >> makefile
 done
 
-make -j$(nproc)
-echo "ALL TESTS PASSED"
+set +x
+echo "ALL TESTS GENERATED. Run \"cd work; make -j$(nproc)\" next."
 
