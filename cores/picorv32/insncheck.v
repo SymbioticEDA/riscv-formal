@@ -25,7 +25,7 @@ module testbench (
 		enable <= cycle == `RISCV_FORMAL_BMC_DEPTH;
 	end
 
-	rvfi_insn_check checker (
+	rvfi_insn_check checker_inst (
 		.clk    (clk   ),
 		.enable (enable),
 		`RFVI_CONN

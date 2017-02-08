@@ -7,8 +7,7 @@ module testbench (
 	output [31:0] mem_addr,
 	output [31:0] mem_wdata,
 	output [3:0]  mem_wstrb,
-	input  [31:0] mem_rdata,
-
+	input  [31:0] mem_rdata
 );
 	reg resetn = 0;
 	wire trap;
@@ -20,7 +19,7 @@ module testbench (
 
 	rvfi_reg_check #(
 		.ZERO_INIT(1)
-	) checker (
+	) checker_inst (
 		.clk    (clk   ),
 		.resetn (resetn),
 		`RFVI_CONN

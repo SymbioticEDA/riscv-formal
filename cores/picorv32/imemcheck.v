@@ -7,8 +7,7 @@ module testbench (
 	output [31:0] mem_addr,
 	output [31:0] mem_wdata,
 	output [3:0]  mem_wstrb,
-	input  [31:0] mem_rdata,
-
+	input  [31:0] mem_rdata
 );
 	reg resetn = 0;
 	wire trap;
@@ -21,7 +20,7 @@ module testbench (
 	wire [31:0] imem_addr;
 	wire [15:0] imem_data;
 
-	rvfi_imem_check checker (
+	rvfi_imem_check checker_inst (
 		.clk       (clk      ),
 		.resetn    (resetn   ),
 		.imem_addr (imem_addr),
