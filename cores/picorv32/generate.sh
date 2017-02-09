@@ -40,8 +40,8 @@ for check in reg pc imem dmem; do
 				\`define RISCV_FORMAL_XLEN 32
 				\`include "rvfi_macros.vh"
 				\`include "picorv32.v"
-				\`include "${check}check.v"
-				\`include "rvfi_${check}_check.v"
+				\`include "${check}check.sv"
+				\`include "rvfi_${check}_check.sv"
 			EOT
 		else
 			cat <<- EOT
@@ -52,8 +52,8 @@ for check in reg pc imem dmem; do
 				read_verilog rvfi_macros.vh
 
 				read_verilog $read_verilog_picorv32_opts picorv32.v
-				read_verilog -formal ${check}check.v
-				read_verilog -formal rvfi_${check}_check.v
+				read_verilog -sv -formal ${check}check.sv
+				read_verilog -sv -formal rvfi_${check}_check.sv
 				prep -nordff -top testbench
 			EOT
 		fi
@@ -63,8 +63,8 @@ for check in reg pc imem dmem; do
 			[files]
 			$picorv32v
 			$basedir/checks/rvfi_macros.vh
-			$basedir/checks/rvfi_${check}_check.v
-			$basedir/cores/picorv32/${check}check.v
+			$basedir/checks/rvfi_${check}_check.sv
+			$basedir/cores/picorv32/${check}check.sv
 		EOT
 	} > check_${check}.sby
 
@@ -99,16 +99,16 @@ for insn in $basedir/insns/insn_*.v; do
 
 		read_verilog picorv32.v
 		read_verilog insn_${insn}.v
-		read_verilog -formal insncheck.v
-		read_verilog -formal rvfi_insn_check.v
+		read_verilog -sv -formal insncheck.sv
+		read_verilog -sv -formal rvfi_insn_check.sv
 		prep -nordff -top testbench
 
 		[files]
 		$picorv32v
 		$basedir/checks/rvfi_macros.vh
-		$basedir/checks/rvfi_insn_check.v
+		$basedir/checks/rvfi_insn_check.sv
+		$basedir/cores/picorv32/insncheck.sv
 		$basedir/insns/insn_${insn}.v
-		$basedir/cores/picorv32/insncheck.v
 	EOT
 
 	{

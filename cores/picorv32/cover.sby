@@ -11,10 +11,10 @@ verilog_defines -D RISCV_FORMAL_NRET=1
 verilog_defines -D RISCV_FORMAL_XLEN=32
 read_verilog rvfi_macros.vh
 read_verilog picorv32.v
-read_verilog -formal cover.v
+read_verilog -sv -formal cover.sv
 prep -nordff -top testbench
 
 [files]
 ../../checks/rvfi_macros.vh
 ../../../picorv32/picorv32.v
-cover.v
+cover.sv
