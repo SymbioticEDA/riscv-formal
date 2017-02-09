@@ -20,9 +20,11 @@ module rvfi_dmem_check (
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata
 );
-	rand const [`RISCV_FORMAL_XLEN-1:0] dmem_addr_randval;
+	checker assign_free_variables;
+		rand const bit [`RISCV_FORMAL_XLEN-1:0] dmem_addr_randval;
+		assign dmem_addr = dmem_addr_randval;
+	endchecker
 
-	assign dmem_addr = dmem_addr_randval;
 	reg [`RISCV_FORMAL_XLEN-1:0] dmem_shadow;
 	reg [`RISCV_FORMAL_XLEN/8-1:0] dmem_written = 0;
 

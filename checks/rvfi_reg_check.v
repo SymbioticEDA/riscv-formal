@@ -21,9 +21,14 @@ module rvfi_reg_check #(
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata
 );
-	rand const [4:0] register_index;
+	wire [4:0] register_index;
 	reg [`RISCV_FORMAL_XLEN-1:0] register_shadow = 0;
 	reg register_written = ZERO_INIT;
+
+	checker assign_free_variables;
+		rand const bit [4:0] register_index_randval;
+		assign register_index = register_index_randval;
+	endchecker
 
 	integer channel_idx;
 	always @(posedge clk) begin

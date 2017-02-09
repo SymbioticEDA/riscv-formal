@@ -21,11 +21,13 @@ module rvfi_imem_check (
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata
 );
-	rand const [`RISCV_FORMAL_XLEN-1:0] imem_addr_randval;
-	rand const [15:0] imem_data_randval;
+	checker assign_free_variables;
+		rand const bit [`RISCV_FORMAL_XLEN-1:0] imem_addr_randval;
+		rand const bit [15:0] imem_data_randval;
+		assign imem_addr = imem_addr_randval;
+		assign imem_data = imem_data_randval;
+	endchecker
 
-	assign imem_addr = imem_addr_randval;
-	assign imem_data = imem_data_randval;
 	reg [`RISCV_FORMAL_XLEN-1:0] pc;
 	reg [31:0] insn;
 
