@@ -55,7 +55,7 @@ module rvfi_insn_check (
 		(* keep *) wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_mem_wmask;
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_mem_wdata;
 
-		rvfi_insn_`RISCV_FORMAL_INSN insn_spec (
+		`RISCV_FORMAL_INSN_MODEL insn_spec (
 			.rvfi_valid    (valid    ),
 			.rvfi_insn     (insn     ),
 			.rvfi_pc_rdata (pc_rdata ),

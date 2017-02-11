@@ -4,13 +4,11 @@ set -ex
 
 basedir=$PWD/../..
 picorv32v=$basedir/../picorv32/picorv32.v
+sbycmd="sby"
 
 use_verific=false
 check_bmc_depth=20
 insn_bmc_depth=30
-
-read_verilog_picorv32_opts=""
-# read_verilog_picorv32_opts="-formal -norestrict -assume-asserts"
 
 rm -rf work
 mkdir -p work
@@ -33,33 +31,28 @@ for check in reg pc imem dmem; do
 				[script]
 				verific -sv top.sv
 				verific -import testbench
+				prep -nordff -top testbench
 
-				[file top.sv]
-				\`define RISCV_FORMAL
-				\`define RISCV_FORMAL_NRET 1
-				\`define RISCV_FORMAL_XLEN 32
-				\`include "rvfi_macros.vh"
-				\`include "picorv32.v"
-				\`include "${check}check.sv"
-				\`include "rvfi_${check}_check.sv"
 			EOT
 		else
 			cat <<- EOT
 				[script]
-				verilog_defines -D RISCV_FORMAL
-				verilog_defines -D RISCV_FORMAL_NRET=1
-				verilog_defines -D RISCV_FORMAL_XLEN=32
-				read_verilog rvfi_macros.vh
-
-				read_verilog $read_verilog_picorv32_opts picorv32.v
-				read_verilog -sv -formal ${check}check.sv
-				read_verilog -sv -formal rvfi_${check}_check.sv
+				read_verilog -sv top.sv
 				prep -nordff -top testbench
 			EOT
 		fi
 
 		echo
 		cat <<- EOT
+			[file top.sv]
+			\`define RISCV_FORMAL
+			\`define RISCV_FORMAL_NRET 1
+			\`define RISCV_FORMAL_XLEN 32
+			\`include "rvfi_macros.vh"
+			\`include "picorv32.v"
+			\`include "${check}check.sv"
+			\`include "rvfi_${check}_check.sv"
+
 			[files]
 			$picorv32v
 			$basedir/checks/rvfi_macros.vh
@@ -71,7 +64,7 @@ for check in reg pc imem dmem; do
 	{
 		echo "all:: check_${check}/PASS"
 		echo "check_${check}/PASS:"
-		echo "	sby check_${check}.sby"
+		echo "	${sbycmd} check_${check}.sby"
 		echo "clean::"
 		echo "	rm -rf check_${check}"
 	} >> makefile
@@ -80,41 +73,60 @@ done
 for insn in $basedir/insns/insn_*.v; do
 	insn=${insn##*/insn_}
 	insn=${insn%.v}
-	cat > insn_${insn}.sby <<- EOT
-		[options]
-		mode bmc
-		depth $((insn_bmc_depth + 5))
+	{
+		cat <<- EOT
+			[options]
+			mode bmc
+			depth $((insn_bmc_depth + 5))
 
-		[engines]
-		abc bmc3
+			[engines]
+			abc bmc3
+		EOT
 
-		[script]
-		verilog_defines -D RISCV_FORMAL
-		verilog_defines -D RISCV_FORMAL_NRET=1
-		verilog_defines -D RISCV_FORMAL_XLEN=32
-		verilog_defines -D RISCV_FORMAL_BMC_DEPTH=${insn_bmc_depth}
-		verilog_defines -D RISCV_FORMAL_INSN=${insn}
-		verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=0
-		read_verilog rvfi_macros.vh
+		echo
+		if $use_verific; then
+			cat <<- EOT
+				[script]
+				verific -sv top.sv
+				verific -import testbench
+				prep -nordff -top testbench
+			EOT
+		else
+			cat <<- EOT
+				[script]
+				read_verilog -sv top.sv
+				prep -nordff -top testbench
+			EOT
+		fi
 
-		read_verilog picorv32.v
-		read_verilog insn_${insn}.v
-		read_verilog -sv -formal insncheck.sv
-		read_verilog -sv -formal rvfi_insn_check.sv
-		prep -nordff -top testbench
+		echo
+		cat <<- EOT
+			[file top.sv]
+			\`define RISCV_FORMAL
+			\`define RISCV_FORMAL_NRET 1
+			\`define RISCV_FORMAL_XLEN 32
+			\`define RISCV_FORMAL_BMC_DEPTH ${insn_bmc_depth}
+			\`define RISCV_FORMAL_INSN_MODEL rvfi_insn_${insn}
+			\`define RISCV_FORMAL_CHANNEL_IDX 0
+			\`include "rvfi_macros.vh"
+			\`include "picorv32.v"
+			\`include "insncheck.sv"
+			\`include "rvfi_insn_check.sv"
+			\`include "insn_${insn}.v"
 
-		[files]
-		$picorv32v
-		$basedir/checks/rvfi_macros.vh
-		$basedir/checks/rvfi_insn_check.sv
-		$basedir/cores/picorv32/insncheck.sv
-		$basedir/insns/insn_${insn}.v
-	EOT
+			[files]
+			$picorv32v
+			$basedir/checks/rvfi_macros.vh
+			$basedir/checks/rvfi_insn_check.sv
+			$basedir/cores/picorv32/insncheck.sv
+			$basedir/insns/insn_${insn}.v
+		EOT
+	} > insn_${insn}.sby
 
 	{
 		echo "all:: insn_${insn}/PASS"
 		echo "insn_${insn}/PASS:"
-		echo "	sby insn_${insn}.sby"
+		echo "	${sbycmd} insn_${insn}.sby"
 		echo "clean::"
 		echo "	rm -rf insn_${insn}"
 	} >> makefile
