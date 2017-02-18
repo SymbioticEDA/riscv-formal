@@ -67,7 +67,7 @@ for check in reg pc imem dmem; do
 		echo "	${sbycmd} check_${check}.sby"
 		echo "clean::"
 		echo "	rm -rf check_${check}"
-	} >> makefile
+	} > check_${check}.mk
 done
 
 for insn in $basedir/insns/insn_*.v; do
@@ -129,8 +129,36 @@ for insn in $basedir/insns/insn_*.v; do
 		echo "	${sbycmd} insn_${insn}.sby"
 		echo "clean::"
 		echo "	rm -rf insn_${insn}"
-	} >> makefile
+	} > insn_${insn}.mk
 done
+
+# launch longest running jobs first. obtain cached list of longest running jobs using this command:
+# grep 'summary: Elapsed process time' work/*/logfile.txt | sed -r 's,^(.*/)?([^/]*)/.*\((.*)\),\3 \2,;' | sort -rn
+while read _ job; do
+	cat $job.mk >> makefile
+	rm -f $job.mk
+done <<- EOT
+	1351 check_reg
+	1286 insn_bgeu
+	1170 insn_bge
+	1034 insn_blt
+	1033 insn_beq
+	937 insn_bne
+	751 insn_lhu
+	733 insn_lw
+	711 insn_bltu
+	702 insn_lbu
+	611 insn_lh
+	594 insn_sh
+	568 insn_lb
+	489 insn_sb
+	263 insn_sw
+	242 insn_auipc
+	202 insn_jal
+EOT
+
+cat *.mk >> makefile
+rm -f *.mk
 
 set +x
 echo "ALL TESTS GENERATED. Run \"cd work; make -j$(nproc)\" next."
