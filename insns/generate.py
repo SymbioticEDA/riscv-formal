@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 
+current_isa = []
+isa_database = dict()
 defaults_cache = None
 
 def header(f, insn):
+    global isa_database
+    for isa in current_isa:
+        if isa not in isa_database:
+            isa_database[isa] = set()
+        isa_database[isa].add(insn)
+
     global defaults_cache
     defaults_cache = dict()
 
@@ -133,6 +141,14 @@ def format_uj(f):
     print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = $signed({rvfi_insn[31], rvfi_insn[19:12], rvfi_insn[20], rvfi_insn[30:21], 1'b0});", file=f)
     print("  wire [4:0] insn_rd     = rvfi_insn[11:7];", file=f)
     print("  wire [6:0] insn_opcode = rvfi_insn[6:0];", file=f)
+
+def format_cj(f):
+    print("", file=f)
+    print("  // CJ-type instruction format", file=f)
+    print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = $signed({rvfi_insn[12], rvfi_insn[8], rvfi_insn[10], rvfi_insn[9],", file=f)
+    print("      rvfi_insn[6], rvfi_insn[7], rvfi_insn[2], rvfi_insn[11], rvfi_insn[5], rvfi_insn[4], rvfi_insn[3], 1'b0});", file=f)
+    print("  wire [4:0] insn_funct3 = rvfi_insn[15:13];", file=f)
+    print("  wire [6:0] insn_opcode = rvfi_insn[1:0];", file=f)
 
 def insn_lui(insn = "lui"):
     with open("insn_%s.v" % insn, "w") as f:
@@ -315,6 +331,26 @@ def insn_alu(insn, funct7, funct3, expr):
 
         footer(f)
 
+def insn_c_jal(insn, funct3, link):
+    with open("insn_%s.v" % insn, "w") as f:
+        header(f, insn)
+        format_cj(f)
+
+        print("", file=f)
+        print("  // %s instruction" % insn.upper(), file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_pc_rdata + insn_imm;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 01" % (funct3))
+        if link:
+            assign(f, "spec_rd_addr", "5'd 1")
+            assign(f, "spec_rd_wdata", "rvfi_pc_rdata + 2")
+        assign(f, "spec_pc_wdata", "next_pc")
+
+        footer(f)
+
+## Base Integer ISA (I)
+
+current_isa = ["rv32i"]
+
 insn_lui()
 insn_auipc()
 insn_jal()
@@ -358,4 +394,18 @@ insn_alu("srl",  "0000000", "101", "rvfi_rs1_rdata >> rvfi_rs2_rdata[4:0]")
 insn_alu("sra",  "0100000", "101", "$signed(rvfi_rs1_rdata) >>> rvfi_rs2_rdata[4:0]")
 insn_alu("or",   "0000000", "110", "rvfi_rs1_rdata | rvfi_rs2_rdata")
 insn_alu("and",  "0000000", "111", "rvfi_rs1_rdata & rvfi_rs2_rdata")
+
+## Compressed ISA
+
+current_isa = ["rv32c"]
+
+insn_c_jal("c_jal", "001", True)
+insn_c_jal("c_j",   "101", False)
+
+## ISA Listings
+
+for isa, insns in isa_database.items():
+    with open("isa_%s.txt" % isa, "w") as f:
+        for insn in sorted(insns):
+            print(insn, file=f)
 

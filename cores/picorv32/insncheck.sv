@@ -32,7 +32,7 @@ module testbench (
 	);
 
 	picorv32 #(
-		.COMPRESSED_ISA(0),
+		.COMPRESSED_ISA(1),
 		.BARREL_SHIFTER(1)
 	) uut (
 		.clk       (clk      ),
