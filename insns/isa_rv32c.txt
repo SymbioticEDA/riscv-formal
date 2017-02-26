@@ -1,2 +1,4 @@
+c_addi
 c_j
 c_jal
+c_nop

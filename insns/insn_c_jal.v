@@ -24,8 +24,8 @@ module rvfi_insn_c_jal (
   // CJ-type instruction format
   wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = $signed({rvfi_insn[12], rvfi_insn[8], rvfi_insn[10], rvfi_insn[9],
       rvfi_insn[6], rvfi_insn[7], rvfi_insn[2], rvfi_insn[11], rvfi_insn[5], rvfi_insn[4], rvfi_insn[3], 1'b0});
-  wire [4:0] insn_funct3 = rvfi_insn[15:13];
-  wire [6:0] insn_opcode = rvfi_insn[1:0];
+  wire [2:0] insn_funct3 = rvfi_insn[15:13];
+  wire [1:0] insn_opcode = rvfi_insn[1:0];
 
   // C_JAL instruction
   wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_pc_rdata + insn_imm;

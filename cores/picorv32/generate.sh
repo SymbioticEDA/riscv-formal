@@ -9,6 +9,7 @@ sbycmd="sby"
 use_verific=false
 check_bmc_depth=20
 insn_bmc_depth=30
+aigsmt=z3
 
 rm -rf work
 mkdir -p work
@@ -19,6 +20,7 @@ for check in reg pc imem dmem; do
 		cat <<- EOT
 			[options]
 			mode bmc
+			aigsmt $aigsmt
 			depth $((check_bmc_depth))
 
 			[engines]
@@ -45,6 +47,7 @@ for check in reg pc imem dmem; do
 		echo
 		cat <<- EOT
 			[file top.sv]
+			\`define DEBUGNETS
 			\`define RISCV_FORMAL
 			\`define RISCV_FORMAL_NRET 1
 			\`define RISCV_FORMAL_XLEN 32
@@ -77,6 +80,7 @@ for insn in $basedir/insns/insn_*.v; do
 		cat <<- EOT
 			[options]
 			mode bmc
+			aigsmt $aigsmt
 			depth $((insn_bmc_depth + 5))
 
 			[engines]
@@ -102,6 +106,7 @@ for insn in $basedir/insns/insn_*.v; do
 		echo
 		cat <<- EOT
 			[file top.sv]
+			\`define DEBUGNETS
 			\`define RISCV_FORMAL
 			\`define RISCV_FORMAL_NRET 1
 			\`define RISCV_FORMAL_XLEN 32
