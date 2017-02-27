@@ -1,4 +1,7 @@
 c_addi
+c_addi4spn
 c_j
 c_jal
+c_lw
 c_nop
+c_sw
