@@ -3,6 +3,7 @@
 import os
 
 depth = 15
+warmup = True
 
 insn_list = list()
 
@@ -83,6 +84,8 @@ for mode in ["single_%s" % insn for insn in insn_list] + ["serial", "parallel"]:
             if step != depth-1:
                 for insn in insn_list:
                     print("(assert (not (|testbench_n enable_%s| s%d)))" % (insn, step), file=f)
+                if warmup:
+                    print("(check-sat)", file=f)
 
             else:
                 if mode == "parallel":
