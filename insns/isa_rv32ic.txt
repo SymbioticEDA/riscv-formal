@@ -12,6 +12,7 @@ bne
 c_addi
 c_addi16sp
 c_addi4spn
+c_and
 c_andi
 c_j
 c_jal
@@ -19,9 +20,12 @@ c_li
 c_lui
 c_lw
 c_nop
+c_or
 c_srai
 c_srli
+c_sub
 c_sw
+c_xor
 jal
 jalr
 lb

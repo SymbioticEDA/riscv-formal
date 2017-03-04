@@ -208,6 +208,16 @@ def format_cs(f, numbytes):
     print("  wire [4:0] insn_rs2 = {1'b1, rvfi_insn[4:2]};", file=f)
     print("  wire [1:0] insn_opcode = rvfi_insn[1:0];", file=f)
 
+def format_cs_alu(f):
+    print("", file=f)
+    print("  // CS-type instruction format (ALU version)", file=f)
+    print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[5], rvfi_insn[12:10], rvfi_insn[6], 2'b00};", file=f)
+    print("  wire [5:0] insn_funct6 = rvfi_insn[15:10];", file=f)
+    print("  wire [1:0] insn_funct2 = rvfi_insn[6:5];", file=f)
+    print("  wire [4:0] insn_rs1_rd = {1'b1, rvfi_insn[9:7]};", file=f)
+    print("  wire [4:0] insn_rs2 = {1'b1, rvfi_insn[4:2]};", file=f)
+    print("  wire [1:0] insn_opcode = rvfi_insn[1:0];", file=f)
+
 def format_ciw(f):
     print("", file=f)
     print("  // CIW-type instruction format", file=f)
@@ -585,6 +595,23 @@ def insn_c_andi(insn="c_andi"):
 
         footer(f)
 
+def insn_c_alu(insn, funct6, funct2, expr):
+    with open("insn_%s.v" % insn, "w") as f:
+        header(f, insn)
+        format_cs_alu(f)
+
+        print("", file=f)
+        print("  // %s instruction" % insn.upper(), file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct6 == 6'b %s && insn_funct2 == 2'b %s && insn_opcode == 2'b 01" % (funct6, funct2))
+        assign(f, "spec_rs1_addr", "insn_rs1_rd")
+        assign(f, "spec_rs2_addr", "insn_rs2")
+        assign(f, "spec_rd_addr", "insn_rs1_rd")
+        assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
+
+        footer(f)
+
 ## Base Integer ISA (I)
 
 current_isa = ["rv32i"]
@@ -649,6 +676,10 @@ insn_c_lui()
 insn_c_sri("c_srli", "00", "rvfi_rs1_rdata >> insn_shamt")
 insn_c_sri("c_srai", "01", "$signed(rvfi_rs1_rdata) >>> insn_shamt")
 insn_c_andi()
+insn_c_alu("c_sub", "100011", "00", "rvfi_rs1_rdata - rvfi_rs2_rdata")
+insn_c_alu("c_xor", "100011", "01", "rvfi_rs1_rdata ^ rvfi_rs2_rdata")
+insn_c_alu("c_or",  "100011", "10", "rvfi_rs1_rdata | rvfi_rs2_rdata")
+insn_c_alu("c_and", "100011", "11", "rvfi_rs1_rdata & rvfi_rs2_rdata")
 insn_c_jal("c_j", "101", False)
 
 ## ISA Propagate
