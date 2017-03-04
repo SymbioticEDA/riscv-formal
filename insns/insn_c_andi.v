@@ -1,6 +1,6 @@
 // DO NOT EDIT -- auto-generated from generate.py
 
-module rvfi_insn_c_srai (
+module rvfi_insn_c_andi (
   input                                rvfi_valid,
   input [                32   - 1 : 0] rvfi_insn,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
@@ -21,16 +21,16 @@ module rvfi_insn_c_srai (
   output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_mem_wdata
 );
 
-  // CI-type instruction format (SRI variation)
-  wire [5:0] insn_shamt = {rvfi_insn[12], rvfi_insn[6:2]};
+  // CI-type instruction format (ANDI variation)
+  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = $signed({rvfi_insn[12], rvfi_insn[6:2]});
   wire [2:0] insn_funct3 = rvfi_insn[15:13];
   wire [1:0] insn_funct2 = rvfi_insn[11:10];
   wire [4:0] insn_rs1_rd = {1'b1, rvfi_insn[9:7]};
   wire [1:0] insn_opcode = rvfi_insn[1:0];
 
-  // C_SRAI instruction
-  wire [`RISCV_FORMAL_XLEN-1:0] result = $signed(rvfi_rs1_rdata) >>> insn_shamt;
-  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 100 && insn_funct2 == 2'b 01 && insn_opcode == 2'b 01 && insn_shamt && (!insn_shamt[5] || `RISCV_FORMAL_XLEN == 64);
+  // C_ANDI instruction
+  wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata & insn_imm;
+  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 100 && insn_funct2 == 2'b 10 && insn_opcode == 2'b 01 && insn_imm;
   assign spec_rs1_addr = insn_rs1_rd;
   assign spec_rd_addr = insn_rs1_rd;
   assign spec_rd_wdata = spec_rd_addr ? result : 0;
