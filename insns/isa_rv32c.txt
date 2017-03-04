@@ -1,7 +1,10 @@
 c_addi
+c_addi16sp
 c_addi4spn
 c_j
 c_jal
+c_li
+c_lui
 c_lw
 c_nop
 c_sw
