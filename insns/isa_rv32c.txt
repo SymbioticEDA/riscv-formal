@@ -7,4 +7,6 @@ c_li
 c_lui
 c_lw
 c_nop
+c_srai
+c_srli
 c_sw
