@@ -226,6 +226,14 @@ def format_ciw(f):
     print("  wire [4:0] insn_rd = {1'b1, rvfi_insn[4:2]};", file=f)
     print("  wire [1:0] insn_opcode = rvfi_insn[1:0];", file=f)
 
+def format_cb(f):
+    print("", file=f)
+    print("  // CB-type instruction format", file=f)
+    print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = $signed({rvfi_insn[12], rvfi_insn[6:5], rvfi_insn[2], rvfi_insn[11:10], rvfi_insn[4:3], 1'b0});", file=f)
+    print("  wire [2:0] insn_funct3 = rvfi_insn[15:13];", file=f)
+    print("  wire [4:0] insn_rs1 = {1'b1, rvfi_insn[9:7]};", file=f)
+    print("  wire [1:0] insn_opcode = rvfi_insn[1:0];", file=f)
+
 def format_cj(f):
     print("", file=f)
     print("  // CJ-type instruction format", file=f)
@@ -612,6 +620,22 @@ def insn_c_alu(insn, funct6, funct2, expr):
 
         footer(f)
 
+def insn_c_b(insn, funct3, expr):
+    with open("insn_%s.v" % insn, "w") as f:
+        header(f, insn)
+        format_cb(f)
+
+        print("", file=f)
+        print("  // %s instruction" % insn.upper(), file=f)
+        print("  wire cond = %s;" % expr, file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = cond ? rvfi_pc_rdata + insn_imm : rvfi_pc_rdata + 2;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 01" % funct3)
+        assign(f, "spec_rs1_addr", "insn_rs1")
+        assign(f, "spec_pc_wdata", "next_pc")
+        assign(f, "spec_trap", "next_pc[0] != 0")
+
+        footer(f)
+
 ## Base Integer ISA (I)
 
 current_isa = ["rv32i"]
@@ -660,7 +684,7 @@ insn_alu("sra",  "0100000", "101", "$signed(rvfi_rs1_rdata) >>> rvfi_rs2_rdata[4
 insn_alu("or",   "0000000", "110", "rvfi_rs1_rdata | rvfi_rs2_rdata")
 insn_alu("and",  "0000000", "111", "rvfi_rs1_rdata & rvfi_rs2_rdata")
 
-## Compressed ISA
+## Compressed Integer ISA (IC)
 
 current_isa = ["rv32ic"]
 
@@ -681,6 +705,8 @@ insn_c_alu("c_xor", "100011", "01", "rvfi_rs1_rdata ^ rvfi_rs2_rdata")
 insn_c_alu("c_or",  "100011", "10", "rvfi_rs1_rdata | rvfi_rs2_rdata")
 insn_c_alu("c_and", "100011", "11", "rvfi_rs1_rdata & rvfi_rs2_rdata")
 insn_c_jal("c_j", "101", False)
+insn_c_b("c_beqz", "110", "rvfi_rs1_rdata == 0")
+insn_c_b("c_bnez", "111", "rvfi_rs1_rdata != 0")
 
 ## ISA Propagate
 

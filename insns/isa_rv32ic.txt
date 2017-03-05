@@ -14,6 +14,8 @@ c_addi16sp
 c_addi4spn
 c_and
 c_andi
+c_beqz
+c_bnez
 c_j
 c_jal
 c_li
