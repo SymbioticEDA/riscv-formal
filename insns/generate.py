@@ -175,6 +175,14 @@ def format_ci_sri(f):
     print("  wire [4:0] insn_rs1_rd = {1'b1, rvfi_insn[9:7]};", file=f)
     print("  wire [1:0] insn_opcode = rvfi_insn[1:0];", file=f)
 
+def format_ci_sli(f):
+    print("", file=f)
+    print("  // CI-type instruction format (SLI variation)", file=f)
+    print("  wire [5:0] insn_shamt = {rvfi_insn[12], rvfi_insn[6:2]};", file=f)
+    print("  wire [2:0] insn_funct3 = rvfi_insn[15:13];", file=f)
+    print("  wire [4:0] insn_rs1_rd = rvfi_insn[11:7];", file=f)
+    print("  wire [1:0] insn_opcode = rvfi_insn[1:0];", file=f)
+
 def format_ci_andi(f):
     print("", file=f)
     print("  // CI-type instruction format (ANDI variation)", file=f)
@@ -636,6 +644,22 @@ def insn_c_b(insn, funct3, expr):
 
         footer(f)
 
+def insn_c_sli(insn, expr):
+    with open("insn_%s.v" % insn, "w") as f:
+        header(f, insn)
+        format_ci_sli(f)
+
+        print("", file=f)
+        print("  // %s instruction" % insn.upper(), file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 2'b 10 && insn_shamt && (!insn_shamt[5] || `RISCV_FORMAL_XLEN == 64)")
+        assign(f, "spec_rs1_addr", "insn_rs1_rd")
+        assign(f, "spec_rd_addr", "insn_rs1_rd")
+        assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
+
+        footer(f)
+
 ## Base Integer ISA (I)
 
 current_isa = ["rv32i"]
@@ -707,6 +731,9 @@ insn_c_alu("c_and", "100011", "11", "rvfi_rs1_rdata & rvfi_rs2_rdata")
 insn_c_jal("c_j", "101", False)
 insn_c_b("c_beqz", "110", "rvfi_rs1_rdata == 0")
 insn_c_b("c_bnez", "111", "rvfi_rs1_rdata != 0")
+insn_c_sli("c_slli", "rvfi_rs1_rdata << insn_shamt")
+
+# TODO: c_lwsp c_jr c_mv c_add c_swsp
 
 ## ISA Propagate
 

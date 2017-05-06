@@ -23,6 +23,7 @@ c_lui
 c_lw
 c_nop
 c_or
+c_slli
 c_srai
 c_srli
 c_sub
