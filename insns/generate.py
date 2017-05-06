@@ -142,6 +142,14 @@ def format_uj(f):
     print("  wire [4:0] insn_rd     = rvfi_insn[11:7];", file=f)
     print("  wire [6:0] insn_opcode = rvfi_insn[6:0];", file=f)
 
+def format_cr(f):
+    print("", file=f)
+    print("  // CI-type instruction format", file=f)
+    print("  wire [3:0] insn_funct4 = rvfi_insn[15:12];", file=f)
+    print("  wire [4:0] insn_rs1_rd = rvfi_insn[11:7];", file=f)
+    print("  wire [4:0] insn_rs2 = rvfi_insn[6:2];", file=f)
+    print("  wire [1:0] insn_opcode = rvfi_insn[1:0];", file=f)
+
 def format_ci(f):
     print("", file=f)
     print("  // CI-type instruction format", file=f)
@@ -724,6 +732,45 @@ def insn_c_ssp(insn, funct3, numbytes):
 
         footer(f)
 
+def insn_c_jalr(insn, funct4, link):
+    with open("insn_%s.v" % insn, "w") as f:
+        header(f, insn)
+        format_cr(f)
+
+        print("", file=f)
+        print("  // %s instruction" % insn.upper(), file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_rs1_rdata;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct4 == 4'b %s && insn_rs1_rd && !insn_rs2 && insn_opcode == 2'b 10" % funct4)
+        assign(f, "spec_rs1_addr", "insn_rs1_rd")
+        if link:
+            assign(f, "spec_rd_addr", "5'd 1")
+            assign(f, "spec_rd_wdata", "rvfi_pc_rdata + 2")
+        assign(f, "spec_pc_wdata", "next_pc")
+        assign(f, "spec_trap", "next_pc[0] != 0")
+
+        footer(f)
+
+def insn_c_mvadd(insn, funct4, add):
+    with open("insn_%s.v" % insn, "w") as f:
+        header(f, insn)
+        format_cr(f)
+
+        print("", file=f)
+        print("  // %s instruction" % insn.upper(), file=f)
+        if add:
+            print("  wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata + rvfi_rs2_rdata;", file=f)
+        else:
+            print("  wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs2_rdata;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct4 == 4'b %s && insn_rs1_rd && insn_rs2 && insn_opcode == 2'b 10" % funct4)
+        if add:
+            assign(f, "spec_rs1_addr", "insn_rs1_rd")
+        assign(f, "spec_rs2_addr", "insn_rs2")
+        assign(f, "spec_rd_addr", "insn_rs1_rd")
+        assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
+
+        footer(f)
+
 ## Base Integer ISA (I)
 
 current_isa = ["rv32i"]
@@ -797,7 +844,10 @@ insn_c_b("c_beqz", "110", "rvfi_rs1_rdata == 0")
 insn_c_b("c_bnez", "111", "rvfi_rs1_rdata != 0")
 insn_c_sli("c_slli", "rvfi_rs1_rdata << insn_shamt")
 insn_c_lsp("c_lwsp", "010", 4, True)
-# TODO: c_jr c_mv c_add
+insn_c_jalr("c_jr", "1000", False)
+insn_c_mvadd("c_mv", "1000", False)
+insn_c_jalr("c_jalr", "1001", True)
+insn_c_mvadd("c_add", "1001", True)
 insn_c_ssp("c_swsp", "110", 4)
 
 ## ISA Propagate
