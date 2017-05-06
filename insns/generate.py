@@ -192,6 +192,17 @@ def format_ci_andi(f):
     print("  wire [4:0] insn_rs1_rd = {1'b1, rvfi_insn[9:7]};", file=f)
     print("  wire [1:0] insn_opcode = rvfi_insn[1:0];", file=f)
 
+def format_ci_lsp(f, numbytes):
+    print("", file=f)
+    if numbytes == 4:
+        print("  // CI-type instruction format (LSP variation, 32 bit version)", file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[3:2], rvfi_insn[12], rvfi_insn[6:4], 2'b00};", file=f)
+    else:
+        assert False
+    print("  wire [2:0] insn_funct3 = rvfi_insn[15:13];", file=f)
+    print("  wire [4:0] insn_rd = rvfi_insn[11:7];", file=f)
+    print("  wire [1:0] insn_opcode = rvfi_insn[1:0];", file=f)
+
 def format_cl(f, numbytes):
     print("", file=f)
     if numbytes == 4:
@@ -202,6 +213,17 @@ def format_cl(f, numbytes):
     print("  wire [2:0] insn_funct3 = rvfi_insn[15:13];", file=f)
     print("  wire [4:0] insn_rs1 = {1'b1, rvfi_insn[9:7]};", file=f)
     print("  wire [4:0] insn_rd = {1'b1, rvfi_insn[4:2]};", file=f)
+    print("  wire [1:0] insn_opcode = rvfi_insn[1:0];", file=f)
+
+def format_css(f, numbytes):
+    print("", file=f)
+    if numbytes == 4:
+        print("  // CSS-type instruction format (32 bit version)", file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[8:7], rvfi_insn[12:9], 2'b00};", file=f)
+    else:
+        assert False
+    print("  wire [2:0] insn_funct3 = rvfi_insn[15:13];", file=f)
+    print("  wire [4:0] insn_rs2 = rvfi_insn[6:2];", file=f)
     print("  wire [1:0] insn_opcode = rvfi_insn[1:0];", file=f)
 
 def format_cs(f, numbytes):
@@ -660,6 +682,48 @@ def insn_c_sli(insn, expr):
 
         footer(f)
 
+def insn_c_lsp(insn, funct3, numbytes, signext):
+    with open("insn_%s.v" % insn, "w") as f:
+        header(f, insn)
+        format_ci_lsp(f, numbytes)
+
+        print("", file=f)
+        print("  // %s instruction" % insn.upper(), file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
+        print("  wire [%d:0] result = rvfi_mem_rdata >> (8*(addr-spec_mem_addr));" % (8*numbytes-1), file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 10" % funct3)
+        assign(f, "spec_rs1_addr", "2")
+        assign(f, "spec_rd_addr", "insn_rd")
+        assign(f, "spec_mem_addr", "addr & ~(`RISCV_FORMAL_XLEN/8-1)")
+        assign(f, "spec_mem_rmask", "((1 << %d)-1) << (addr-spec_mem_addr)" % numbytes)
+        if signext:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(result) : 0")
+        else:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
+        assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
+
+        footer(f)
+
+def insn_c_ssp(insn, funct3, numbytes):
+    with open("insn_%s.v" % insn, "w") as f:
+        header(f, insn)
+        format_css(f, numbytes)
+
+        print("", file=f)
+        print("  // %s instruction" % insn.upper(), file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 10" % funct3)
+        assign(f, "spec_rs1_addr", "2")
+        assign(f, "spec_rs2_addr", "insn_rs2")
+        assign(f, "spec_mem_addr", "addr & ~(`RISCV_FORMAL_XLEN/8-1)")
+        assign(f, "spec_mem_wmask", "((1 << %d)-1) << (addr-spec_mem_addr)" % numbytes)
+        assign(f, "spec_mem_wdata", "rvfi_rs2_rdata << (8*(addr-spec_mem_addr))")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
+        assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
+
+        footer(f)
+
 ## Base Integer ISA (I)
 
 current_isa = ["rv32i"]
@@ -732,8 +796,9 @@ insn_c_jal("c_j", "101", False)
 insn_c_b("c_beqz", "110", "rvfi_rs1_rdata == 0")
 insn_c_b("c_bnez", "111", "rvfi_rs1_rdata != 0")
 insn_c_sli("c_slli", "rvfi_rs1_rdata << insn_shamt")
-
-# TODO: c_lwsp c_jr c_mv c_add c_swsp
+insn_c_lsp("c_lwsp", "010", 4, True)
+# TODO: c_jr c_mv c_add
+insn_c_ssp("c_swsp", "110", 4)
 
 ## ISA Propagate
 

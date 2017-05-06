@@ -21,6 +21,7 @@ c_jal
 c_li
 c_lui
 c_lw
+c_lwsp
 c_nop
 c_or
 c_slli
@@ -28,6 +29,7 @@ c_srai
 c_srli
 c_sub
 c_sw
+c_swsp
 c_xor
 jal
 jalr
