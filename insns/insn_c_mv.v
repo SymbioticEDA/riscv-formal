@@ -29,7 +29,7 @@ module rvfi_insn_c_mv (
 
   // C_MV instruction
   wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs2_rdata;
-  assign spec_valid = rvfi_valid && insn_funct4 == 4'b 1000 && insn_rs1_rd && insn_rs2 && insn_opcode == 2'b 10;
+  assign spec_valid = rvfi_valid && insn_funct4 == 4'b 1000 && insn_rs2 && insn_opcode == 2'b 10;
   assign spec_rs2_addr = insn_rs2;
   assign spec_rd_addr = insn_rs1_rd;
   assign spec_rd_wdata = spec_rd_addr ? result : 0;

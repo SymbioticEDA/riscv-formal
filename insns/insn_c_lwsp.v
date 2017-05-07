@@ -30,7 +30,7 @@ module rvfi_insn_c_lwsp (
   // C_LWSP instruction
   wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;
   wire [31:0] result = rvfi_mem_rdata >> (8*(addr-spec_mem_addr));
-  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 010 && insn_opcode == 2'b 10;
+  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 010 && insn_opcode == 2'b 10 && insn_rd;
   assign spec_rs1_addr = 2;
   assign spec_rd_addr = insn_rd;
   assign spec_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);

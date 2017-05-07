@@ -30,7 +30,7 @@ module rvfi_insn_c_andi (
 
   // C_ANDI instruction
   wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata & insn_imm;
-  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 100 && insn_funct2 == 2'b 10 && insn_opcode == 2'b 01 && insn_imm;
+  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 100 && insn_funct2 == 2'b 10 && insn_opcode == 2'b 01;
   assign spec_rs1_addr = insn_rs1_rd;
   assign spec_rd_addr = insn_rs1_rd;
   assign spec_rd_wdata = spec_rd_addr ? result : 0;
