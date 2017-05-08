@@ -15,70 +15,11 @@ verilog_defines -D RISCV_FORMAL_COMPRESSED
 read_verilog -sv rvfi_macros.vh
 read_verilog -sv picorv32.v
 
-# sed 's,.*,read_verilog -sv insn_&.v,' < ../../insns/isa_rv32ic.txt
-read_verilog -sv insn_add.v
-read_verilog -sv insn_addi.v
-read_verilog -sv insn_and.v
-read_verilog -sv insn_andi.v
-read_verilog -sv insn_auipc.v
-read_verilog -sv insn_beq.v
-read_verilog -sv insn_bge.v
-read_verilog -sv insn_bgeu.v
-read_verilog -sv insn_blt.v
-read_verilog -sv insn_bltu.v
-read_verilog -sv insn_bne.v
-read_verilog -sv insn_c_add.v
-read_verilog -sv insn_c_addi.v
-read_verilog -sv insn_c_addi16sp.v
-read_verilog -sv insn_c_addi4spn.v
-read_verilog -sv insn_c_and.v
-read_verilog -sv insn_c_andi.v
-read_verilog -sv insn_c_beqz.v
-read_verilog -sv insn_c_bnez.v
-read_verilog -sv insn_c_j.v
-read_verilog -sv insn_c_jal.v
-read_verilog -sv insn_c_jalr.v
-read_verilog -sv insn_c_jr.v
-read_verilog -sv insn_c_li.v
-read_verilog -sv insn_c_lui.v
-read_verilog -sv insn_c_lw.v
-read_verilog -sv insn_c_lwsp.v
-read_verilog -sv insn_c_mv.v
-read_verilog -sv insn_c_nop.v
-read_verilog -sv insn_c_or.v
-read_verilog -sv insn_c_slli.v
-read_verilog -sv insn_c_srai.v
-read_verilog -sv insn_c_srli.v
-read_verilog -sv insn_c_sub.v
-read_verilog -sv insn_c_sw.v
-read_verilog -sv insn_c_swsp.v
-read_verilog -sv insn_c_xor.v
-read_verilog -sv insn_jal.v
-read_verilog -sv insn_jalr.v
-read_verilog -sv insn_lb.v
-read_verilog -sv insn_lbu.v
-read_verilog -sv insn_lh.v
-read_verilog -sv insn_lhu.v
-read_verilog -sv insn_lui.v
-read_verilog -sv insn_lw.v
-read_verilog -sv insn_or.v
-read_verilog -sv insn_ori.v
-read_verilog -sv insn_sb.v
-read_verilog -sv insn_sh.v
-read_verilog -sv insn_sll.v
-read_verilog -sv insn_slli.v
-read_verilog -sv insn_slt.v
-read_verilog -sv insn_slti.v
-read_verilog -sv insn_sltiu.v
-read_verilog -sv insn_sltu.v
-read_verilog -sv insn_sra.v
-read_verilog -sv insn_srai.v
-read_verilog -sv insn_srl.v
-read_verilog -sv insn_srli.v
-read_verilog -sv insn_sub.v
-read_verilog -sv insn_sw.v
-read_verilog -sv insn_xor.v
-read_verilog -sv insn_xori.v
+--pycode-begin--
+with open("../../insns/isa_rv32ic.txt") as f:
+  for line in f:
+    output("read_verilog -sv insn_%s.v" % line.strip())
+--pycode-end--
 
 read_verilog -sv isa_rv32ic.v
 read_verilog -sv complete.sv
@@ -90,68 +31,9 @@ complete.sv
 ../../checks/rvfi_macros.vh
 ../../insns/isa_rv32ic.v
 
-# sed 's,.*,../../insns/insn_&.v,' < ../../insns/isa_rv32ic.txt
-../../insns/insn_add.v
-../../insns/insn_addi.v
-../../insns/insn_and.v
-../../insns/insn_andi.v
-../../insns/insn_auipc.v
-../../insns/insn_beq.v
-../../insns/insn_bge.v
-../../insns/insn_bgeu.v
-../../insns/insn_blt.v
-../../insns/insn_bltu.v
-../../insns/insn_bne.v
-../../insns/insn_c_add.v
-../../insns/insn_c_addi.v
-../../insns/insn_c_addi16sp.v
-../../insns/insn_c_addi4spn.v
-../../insns/insn_c_and.v
-../../insns/insn_c_andi.v
-../../insns/insn_c_beqz.v
-../../insns/insn_c_bnez.v
-../../insns/insn_c_j.v
-../../insns/insn_c_jal.v
-../../insns/insn_c_jalr.v
-../../insns/insn_c_jr.v
-../../insns/insn_c_li.v
-../../insns/insn_c_lui.v
-../../insns/insn_c_lw.v
-../../insns/insn_c_lwsp.v
-../../insns/insn_c_mv.v
-../../insns/insn_c_nop.v
-../../insns/insn_c_or.v
-../../insns/insn_c_slli.v
-../../insns/insn_c_srai.v
-../../insns/insn_c_srli.v
-../../insns/insn_c_sub.v
-../../insns/insn_c_sw.v
-../../insns/insn_c_swsp.v
-../../insns/insn_c_xor.v
-../../insns/insn_jal.v
-../../insns/insn_jalr.v
-../../insns/insn_lb.v
-../../insns/insn_lbu.v
-../../insns/insn_lh.v
-../../insns/insn_lhu.v
-../../insns/insn_lui.v
-../../insns/insn_lw.v
-../../insns/insn_or.v
-../../insns/insn_ori.v
-../../insns/insn_sb.v
-../../insns/insn_sh.v
-../../insns/insn_sll.v
-../../insns/insn_slli.v
-../../insns/insn_slt.v
-../../insns/insn_slti.v
-../../insns/insn_sltiu.v
-../../insns/insn_sltu.v
-../../insns/insn_sra.v
-../../insns/insn_srai.v
-../../insns/insn_srl.v
-../../insns/insn_srli.v
-../../insns/insn_sub.v
-../../insns/insn_sw.v
-../../insns/insn_xor.v
-../../insns/insn_xori.v
+--pycode-begin--
+with open("../../insns/isa_rv32ic.txt") as f:
+  for line in f:
+    output("../../insns/insn_%s.v" % line.strip())
+--pycode-end--
 
