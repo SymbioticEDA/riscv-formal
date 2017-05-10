@@ -52,6 +52,8 @@ for check in reg pc imem dmem; do
 			\`define RISCV_FORMAL_NRET 1
 			\`define RISCV_FORMAL_XLEN 32
 			\`define RISCV_FORMAL_COMPRESSED
+			\`define RISCV_FORMAL_BLACKBOX_ALU
+			\`define RISCV_FORMAL_BLACKBOX_REGS
 			\`include "rvfi_macros.vh"
 			\`include "picorv32.v"
 			\`include "${check}check.sv"
@@ -64,6 +66,13 @@ for check in reg pc imem dmem; do
 			$basedir/cores/picorv32/${check}check.sv
 		EOT
 	} > check_${check}.sby
+
+	case "$check" in
+		reg)
+			sed -i '/RISCV_FORMAL_BLACKBOX_REGS/ d;' check_${check}.sby;;
+		imem)
+			sed -i '/RISCV_FORMAL_BLACKBOX_ALU/ d;' check_${check}.sby;;
+	esac
 
 	{
 		echo "all:: check_${check}/PASS"
@@ -112,6 +121,7 @@ for insn in $basedir/insns/insn_*.v; do
 			\`define RISCV_FORMAL_NRET 1
 			\`define RISCV_FORMAL_XLEN 32
 			\`define RISCV_FORMAL_COMPRESSED
+			\`define RISCV_FORMAL_BLACKBOX_REGS
 			\`define RISCV_FORMAL_BMC_DEPTH ${insn_bmc_depth}
 			\`define RISCV_FORMAL_INSN_MODEL rvfi_insn_${insn}
 			\`define RISCV_FORMAL_CHANNEL_IDX 0
