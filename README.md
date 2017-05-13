@@ -1,6 +1,8 @@
 RISC-V Formal Verification Framework
 ====================================
 
+**This repository is up to 6 months behind the non-public development repository. Be patient. I'll continue pushing updates from the development repository in November 2017.** 
+
 **This is work in progress. The interfaces described below are likely to change and the current implementation of everything mentioned below is incomplete.**
 
 About
