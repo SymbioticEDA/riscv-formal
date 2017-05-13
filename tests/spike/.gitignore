@@ -1,0 +1,8 @@
+test_*.cc
+test_*.h
+test_*.ok
+test_*.v
+test_*.yslog
+test_*.cbmc_out
+riscv-isa-sim
+makefile
