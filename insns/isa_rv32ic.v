@@ -916,38 +916,6 @@ module rvfi_isa_rv32ic (
     .spec_mem_wdata(spec_insn_c_mv_mem_wdata)
   );
 
-  wire                                spec_insn_c_nop_valid;
-  wire                                spec_insn_c_nop_trap;
-  wire [                       4 : 0] spec_insn_c_nop_rs1_addr;
-  wire [                       4 : 0] spec_insn_c_nop_rs2_addr;
-  wire [                       4 : 0] spec_insn_c_nop_rd_addr;
-  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_c_nop_rd_wdata;
-  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_c_nop_pc_wdata;
-  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_c_nop_mem_addr;
-  wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_insn_c_nop_mem_rmask;
-  wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_insn_c_nop_mem_wmask;
-  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_c_nop_mem_wdata;
-
-  rvfi_insn_c_nop insn_c_nop (
-    .rvfi_valid(rvfi_valid),
-    .rvfi_insn(rvfi_insn),
-    .rvfi_pc_rdata(rvfi_pc_rdata),
-    .rvfi_rs1_rdata(rvfi_rs1_rdata),
-    .rvfi_rs2_rdata(rvfi_rs2_rdata),
-    .rvfi_mem_rdata(rvfi_mem_rdata),
-    .spec_valid(spec_insn_c_nop_valid),
-    .spec_trap(spec_insn_c_nop_trap),
-    .spec_rs1_addr(spec_insn_c_nop_rs1_addr),
-    .spec_rs2_addr(spec_insn_c_nop_rs2_addr),
-    .spec_rd_addr(spec_insn_c_nop_rd_addr),
-    .spec_rd_wdata(spec_insn_c_nop_rd_wdata),
-    .spec_pc_wdata(spec_insn_c_nop_pc_wdata),
-    .spec_mem_addr(spec_insn_c_nop_mem_addr),
-    .spec_mem_rmask(spec_insn_c_nop_mem_rmask),
-    .spec_mem_wmask(spec_insn_c_nop_mem_wmask),
-    .spec_mem_wdata(spec_insn_c_nop_mem_wdata)
-  );
-
   wire                                spec_insn_c_or_valid;
   wire                                spec_insn_c_or_trap;
   wire [                       4 : 0] spec_insn_c_or_rs1_addr;
@@ -2065,7 +2033,6 @@ module rvfi_isa_rv32ic (
 		spec_insn_c_lw_valid ? spec_insn_c_lw_valid :
 		spec_insn_c_lwsp_valid ? spec_insn_c_lwsp_valid :
 		spec_insn_c_mv_valid ? spec_insn_c_mv_valid :
-		spec_insn_c_nop_valid ? spec_insn_c_nop_valid :
 		spec_insn_c_or_valid ? spec_insn_c_or_valid :
 		spec_insn_c_slli_valid ? spec_insn_c_slli_valid :
 		spec_insn_c_srai_valid ? spec_insn_c_srai_valid :
@@ -2129,7 +2096,6 @@ module rvfi_isa_rv32ic (
 		spec_insn_c_lw_valid ? spec_insn_c_lw_trap :
 		spec_insn_c_lwsp_valid ? spec_insn_c_lwsp_trap :
 		spec_insn_c_mv_valid ? spec_insn_c_mv_trap :
-		spec_insn_c_nop_valid ? spec_insn_c_nop_trap :
 		spec_insn_c_or_valid ? spec_insn_c_or_trap :
 		spec_insn_c_slli_valid ? spec_insn_c_slli_trap :
 		spec_insn_c_srai_valid ? spec_insn_c_srai_trap :
@@ -2193,7 +2159,6 @@ module rvfi_isa_rv32ic (
 		spec_insn_c_lw_valid ? spec_insn_c_lw_rs1_addr :
 		spec_insn_c_lwsp_valid ? spec_insn_c_lwsp_rs1_addr :
 		spec_insn_c_mv_valid ? spec_insn_c_mv_rs1_addr :
-		spec_insn_c_nop_valid ? spec_insn_c_nop_rs1_addr :
 		spec_insn_c_or_valid ? spec_insn_c_or_rs1_addr :
 		spec_insn_c_slli_valid ? spec_insn_c_slli_rs1_addr :
 		spec_insn_c_srai_valid ? spec_insn_c_srai_rs1_addr :
@@ -2257,7 +2222,6 @@ module rvfi_isa_rv32ic (
 		spec_insn_c_lw_valid ? spec_insn_c_lw_rs2_addr :
 		spec_insn_c_lwsp_valid ? spec_insn_c_lwsp_rs2_addr :
 		spec_insn_c_mv_valid ? spec_insn_c_mv_rs2_addr :
-		spec_insn_c_nop_valid ? spec_insn_c_nop_rs2_addr :
 		spec_insn_c_or_valid ? spec_insn_c_or_rs2_addr :
 		spec_insn_c_slli_valid ? spec_insn_c_slli_rs2_addr :
 		spec_insn_c_srai_valid ? spec_insn_c_srai_rs2_addr :
@@ -2321,7 +2285,6 @@ module rvfi_isa_rv32ic (
 		spec_insn_c_lw_valid ? spec_insn_c_lw_rd_addr :
 		spec_insn_c_lwsp_valid ? spec_insn_c_lwsp_rd_addr :
 		spec_insn_c_mv_valid ? spec_insn_c_mv_rd_addr :
-		spec_insn_c_nop_valid ? spec_insn_c_nop_rd_addr :
 		spec_insn_c_or_valid ? spec_insn_c_or_rd_addr :
 		spec_insn_c_slli_valid ? spec_insn_c_slli_rd_addr :
 		spec_insn_c_srai_valid ? spec_insn_c_srai_rd_addr :
@@ -2385,7 +2348,6 @@ module rvfi_isa_rv32ic (
 		spec_insn_c_lw_valid ? spec_insn_c_lw_rd_wdata :
 		spec_insn_c_lwsp_valid ? spec_insn_c_lwsp_rd_wdata :
 		spec_insn_c_mv_valid ? spec_insn_c_mv_rd_wdata :
-		spec_insn_c_nop_valid ? spec_insn_c_nop_rd_wdata :
 		spec_insn_c_or_valid ? spec_insn_c_or_rd_wdata :
 		spec_insn_c_slli_valid ? spec_insn_c_slli_rd_wdata :
 		spec_insn_c_srai_valid ? spec_insn_c_srai_rd_wdata :
@@ -2449,7 +2411,6 @@ module rvfi_isa_rv32ic (
 		spec_insn_c_lw_valid ? spec_insn_c_lw_pc_wdata :
 		spec_insn_c_lwsp_valid ? spec_insn_c_lwsp_pc_wdata :
 		spec_insn_c_mv_valid ? spec_insn_c_mv_pc_wdata :
-		spec_insn_c_nop_valid ? spec_insn_c_nop_pc_wdata :
 		spec_insn_c_or_valid ? spec_insn_c_or_pc_wdata :
 		spec_insn_c_slli_valid ? spec_insn_c_slli_pc_wdata :
 		spec_insn_c_srai_valid ? spec_insn_c_srai_pc_wdata :
@@ -2513,7 +2474,6 @@ module rvfi_isa_rv32ic (
 		spec_insn_c_lw_valid ? spec_insn_c_lw_mem_addr :
 		spec_insn_c_lwsp_valid ? spec_insn_c_lwsp_mem_addr :
 		spec_insn_c_mv_valid ? spec_insn_c_mv_mem_addr :
-		spec_insn_c_nop_valid ? spec_insn_c_nop_mem_addr :
 		spec_insn_c_or_valid ? spec_insn_c_or_mem_addr :
 		spec_insn_c_slli_valid ? spec_insn_c_slli_mem_addr :
 		spec_insn_c_srai_valid ? spec_insn_c_srai_mem_addr :
@@ -2577,7 +2537,6 @@ module rvfi_isa_rv32ic (
 		spec_insn_c_lw_valid ? spec_insn_c_lw_mem_rmask :
 		spec_insn_c_lwsp_valid ? spec_insn_c_lwsp_mem_rmask :
 		spec_insn_c_mv_valid ? spec_insn_c_mv_mem_rmask :
-		spec_insn_c_nop_valid ? spec_insn_c_nop_mem_rmask :
 		spec_insn_c_or_valid ? spec_insn_c_or_mem_rmask :
 		spec_insn_c_slli_valid ? spec_insn_c_slli_mem_rmask :
 		spec_insn_c_srai_valid ? spec_insn_c_srai_mem_rmask :
@@ -2641,7 +2600,6 @@ module rvfi_isa_rv32ic (
 		spec_insn_c_lw_valid ? spec_insn_c_lw_mem_wmask :
 		spec_insn_c_lwsp_valid ? spec_insn_c_lwsp_mem_wmask :
 		spec_insn_c_mv_valid ? spec_insn_c_mv_mem_wmask :
-		spec_insn_c_nop_valid ? spec_insn_c_nop_mem_wmask :
 		spec_insn_c_or_valid ? spec_insn_c_or_mem_wmask :
 		spec_insn_c_slli_valid ? spec_insn_c_slli_mem_wmask :
 		spec_insn_c_srai_valid ? spec_insn_c_srai_mem_wmask :
@@ -2705,7 +2663,6 @@ module rvfi_isa_rv32ic (
 		spec_insn_c_lw_valid ? spec_insn_c_lw_mem_wdata :
 		spec_insn_c_lwsp_valid ? spec_insn_c_lwsp_mem_wdata :
 		spec_insn_c_mv_valid ? spec_insn_c_mv_mem_wdata :
-		spec_insn_c_nop_valid ? spec_insn_c_nop_mem_wdata :
 		spec_insn_c_or_valid ? spec_insn_c_or_mem_wdata :
 		spec_insn_c_slli_valid ? spec_insn_c_slli_mem_wdata :
 		spec_insn_c_srai_valid ? spec_insn_c_srai_mem_wdata :

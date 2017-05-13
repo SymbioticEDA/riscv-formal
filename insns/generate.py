@@ -523,18 +523,6 @@ def insn_c_s(insn, funct3, numbytes):
 
         footer(f)
 
-def insn_c_nop(insn="c_nop"):
-    with open("insn_%s.v" % insn, "w") as f:
-        header(f, insn)
-        format_ci(f)
-
-        print("", file=f)
-        print("  // %s instruction" % insn.upper(), file=f)
-        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 2'b 01 && !insn_rs1_rd && !insn_imm")
-        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
-
-        footer(f)
-
 def insn_c_addi(insn="c_addi"):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
@@ -543,7 +531,7 @@ def insn_c_addi(insn="c_addi"):
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         print("  wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata + insn_imm;", file=f)
-        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 2'b 01 && insn_rs1_rd")
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 2'b 01")
         assign(f, "spec_rs1_addr", "insn_rs1_rd")
         assign(f, "spec_rd_addr", "insn_rs1_rd")
         assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
@@ -830,7 +818,6 @@ current_isa = ["rv32ic"]
 insn_c_addi4spn()
 insn_c_l("c_lw", "010", 4, True)
 insn_c_s("c_sw", "110", 4)
-insn_c_nop()
 insn_c_addi()
 insn_c_jal("c_jal", "001", True)
 insn_c_li()

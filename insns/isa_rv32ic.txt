@@ -26,7 +26,6 @@ c_lui
 c_lw
 c_lwsp
 c_mv
-c_nop
 c_or
 c_slli
 c_srai
