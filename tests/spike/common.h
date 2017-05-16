@@ -84,7 +84,7 @@ public:
   uint64_t rvc_rs2() { return x(2, 5); }
   uint64_t rvc_rs1s() { return 8 + x(7, 3); }
   uint64_t rvc_rs2s() { return 8 + x(2, 3); }
-private:
+//private:
   insn_bits_t b;
   uint64_t x(int lo, int len) { return (b >> lo) & ((insn_bits_t(1) << len)-1); }
   uint64_t xs(int lo, int len) { return int64_t(b) << (64-lo-len) >> (64-len); }
