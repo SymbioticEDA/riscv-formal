@@ -29,7 +29,7 @@ module rvfi_insn_jalr (
   wire [6:0] insn_opcode = rvfi_insn[ 6: 0];
 
   // JALR instruction
-  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_rs1_rdata + insn_imm;
+  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = (rvfi_rs1_rdata + insn_imm) & ~1;
   assign spec_valid = rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 1100111;
   assign spec_rs1_addr = insn_rs1;
   assign spec_rd_addr = insn_rd;

@@ -28,7 +28,7 @@ module rvfi_insn_c_jalr (
   wire [1:0] insn_opcode = rvfi_insn[1:0];
 
   // C_JALR instruction
-  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_rs1_rdata;
+  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_rs1_rdata & ~1;
   assign spec_valid = rvfi_valid && insn_funct4 == 4'b 1001 && insn_rs1_rd && !insn_rs2 && insn_opcode == 2'b 10;
   assign spec_rs1_addr = insn_rs1_rd;
   assign spec_rd_addr = 5'd 1;

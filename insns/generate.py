@@ -339,7 +339,7 @@ def insn_jalr(insn = "jalr"):
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
-        print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_rs1_rdata + insn_imm;", file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = (rvfi_rs1_rdata + insn_imm) & ~1;", file=f)
         assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 1100111")
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rd_addr", "insn_rd")
@@ -731,7 +731,7 @@ def insn_c_jalr(insn, funct4, link):
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
-        print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_rs1_rdata;", file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_rs1_rdata & ~1;", file=f)
         assign(f, "spec_valid", "rvfi_valid && insn_funct4 == 4'b %s && insn_rs1_rd && !insn_rs2 && insn_opcode == 2'b 10" % funct4)
         assign(f, "spec_rs1_addr", "insn_rs1_rd")
         if link:
