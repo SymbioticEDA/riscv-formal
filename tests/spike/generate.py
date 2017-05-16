@@ -77,7 +77,7 @@ with open("makefile", "w") as makefile:
             print("  model.rvfi_valid.value_0_0 = 1;", file=f)
             print("  model.rvfi_insn.value_31_0 = insn.bits();", file=f)
             print("  model.rvfi_pc_rdata.value_31_0 = pre_state.pc;", file=f)
-            print("  rvfi_insn_%s_eval(&model);" % insn, file=f)
+            print("  rvfi_insn_%s_init(&model);" % insn, file=f)
             print("  model.rvfi_rs1_rdata.value_31_0 = pre_state.XPR[model.spec_rs1_addr.value_4_0];", file=f)
             print("  model.rvfi_rs2_rdata.value_31_0 = pre_state.XPR[model.spec_rs2_addr.value_4_0];", file=f)
             # FIXME: Model memory read
@@ -117,7 +117,7 @@ with open("makefile", "w") as makefile:
         print("all:: test_%s.ok" % insn, file=makefile)
 
         print("test_%s.ok: test_%s.h common.h riscv-isa-sim" % (insn, insn), file=makefile)
-        print("\ttime cbmc --trace --stop-on-fail --no-built-in-assertions --function test_%s test_%s.cc | ts -s | tee test_%s.cbmc_out" % (insn, insn, insn), file=makefile)
+        print("\ttime cbmc --trace --stop-on-fail --no-built-in-assertions --function test_%s test_%s.cc | ts -s '%%H:%%M:%%S [%s]' | tee test_%s.cbmc_out" % (insn, insn, insn, insn), file=makefile)
         print("\tgrep 'VERIFICATION SUCCESSFUL' test_%s.cbmc_out" % insn, file=makefile)
         print("\tmv test_%s.cbmc_out test_%s.ok" % (insn, insn), file=makefile)
 
