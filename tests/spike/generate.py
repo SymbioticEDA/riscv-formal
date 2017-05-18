@@ -16,27 +16,6 @@ xlen = 32 if "32" in isa else 64
 with open("../../insns/isa_%s.txt" % isa, "r") as f:
     insns = f.read().split()
 
-if False:
-    # for testing purposes we use this insns only
-    insns = ["add", "addi", "c_add", "c_addi"]
-
-# there are open questions regarding c_li, c_lui, and c_addi16sp
-# details: https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/mr3H6S6IIts
-
-if "c_li" in insns: insns.remove("c_li")
-if "c_lui" in insns: insns.remove("c_lui")
-if "c_addi16sp" in insns: insns.remove("c_addi16sp")
-
-# the spike models for the following instructions utilize spike
-# macros that have not been modelled in this environment yet:
-#
-# c_jal c_jalr
-# c_lw c_lwsp
-# c_sw c_swsp
-# jal jalr
-# lb lbu lh lhu lw
-# sb sh sw
-
 with open("makefile", "w") as makefile:
     print("all::", file=makefile)
 
@@ -46,6 +25,7 @@ with open("makefile", "w") as makefile:
     print("riscv-isa-sim:", file=makefile)
     print("\trm -rf riscv-isa-sim.part", file=makefile)
     print("\tgit clone https://github.com/riscv/riscv-isa-sim.git riscv-isa-sim.part", file=makefile)
+    print("\tcd riscv-isa-sim.part && patch -p1 < ../spike-hotfixes.patch", file=makefile)
     print("\tmv riscv-isa-sim.part riscv-isa-sim", file=makefile)
 
     for insn in insns:
@@ -86,7 +66,14 @@ with open("makefile", "w") as makefile:
             print("  model.rvfi_rs2_rdata.value_xlen = pre_state.XPR[model.spec_rs2_addr.value_4_0];", file=f)
             print("  model.rvfi_mem_rdata.value_xlen = mmu.rdata;", file=f)
             print("  rvfi_insn_%s_eval(&model);" % insn, file=f)
-            print("#include \"riscv-isa-sim/riscv/insns/%s.h\"" % insn, file=f)
+            if insn == "c_lui":
+                print("if (insn.rvc_rd() == 2) valid = false;", file=f)
+                print("#include \"riscv-isa-sim/riscv/insns/c_lui.h\"", file=f)
+            elif insn == "c_addi16sp":
+                print("if (insn.rvc_rd() != 2) valid = false;", file=f)
+                print("#include \"riscv-isa-sim/riscv/insns/c_lui.h\"", file=f)
+            else:
+                print("#include \"riscv-isa-sim/riscv/insns/%s.h\"" % insn, file=f)
             print("  if ((post_state.pc & %d) != 0) valid = false;" % (1 if compressed else 3), file=f)
             print("  printf(\"int main() {\\n\"", file=f)
             print("         \"  insn_t insn(%u);\\n\"", file=f)
