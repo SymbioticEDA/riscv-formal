@@ -29,6 +29,7 @@ module rvfi_insn_lbu (
   wire [6:0] insn_opcode = rvfi_insn[ 6: 0];
 
   // LBU instruction
+`ifdef RISCV_FORMAL_ALIGNED_MEM
   wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;
   wire [7:0] result = rvfi_mem_rdata >> (8*(addr-spec_mem_addr));
   assign spec_valid = rvfi_valid && insn_funct3 == 3'b 100 && insn_opcode == 7'b 0000011;
@@ -39,6 +40,18 @@ module rvfi_insn_lbu (
   assign spec_rd_wdata = spec_rd_addr ? result : 0;
   assign spec_pc_wdata = rvfi_pc_rdata + 4;
   assign spec_trap = (addr & (1-1)) != 0;
+`else
+  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;
+  wire [7:0] result = rvfi_mem_rdata;
+  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 100 && insn_opcode == 7'b 0000011;
+  assign spec_rs1_addr = insn_rs1;
+  assign spec_rd_addr = insn_rd;
+  assign spec_mem_addr = addr;
+  assign spec_mem_rmask = ((1 << 1)-1);
+  assign spec_rd_wdata = spec_rd_addr ? result : 0;
+  assign spec_pc_wdata = rvfi_pc_rdata + 4;
+  assign spec_trap = 0;
+`endif
 
   // default assignments
   assign spec_rs2_addr = 0;

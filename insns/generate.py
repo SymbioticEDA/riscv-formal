@@ -381,6 +381,8 @@ def insn_l(insn, funct3, numbytes, signext):
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
+        print("`ifdef RISCV_FORMAL_ALIGNED_MEM", file=f)
+
         print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
         print("  wire [%d:0] result = rvfi_mem_rdata >> (8*(addr-spec_mem_addr));" % (8*numbytes-1), file=f)
         assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0000011" % funct3)
@@ -395,6 +397,24 @@ def insn_l(insn, funct3, numbytes, signext):
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 4")
         assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
 
+        print("`else", file=f)
+
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
+        print("  wire [%d:0] result = rvfi_mem_rdata;" % (8*numbytes-1), file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0000011" % funct3)
+        assign(f, "spec_rs1_addr", "insn_rs1")
+        assign(f, "spec_rd_addr", "insn_rd")
+        assign(f, "spec_mem_addr", "addr")
+        assign(f, "spec_mem_rmask", "((1 << %d)-1)" % numbytes)
+        if signext:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(result) : 0")
+        else:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 4")
+        assign(f, "spec_trap", "0")
+
+        print("`endif", file=f)
+
         footer(f)
 
 def insn_s(insn, funct3, numbytes):
@@ -404,6 +424,8 @@ def insn_s(insn, funct3, numbytes):
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
+        print("`ifdef RISCV_FORMAL_ALIGNED_MEM", file=f)
+
         print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
         assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0100011" % funct3)
         assign(f, "spec_rs1_addr", "insn_rs1")
@@ -413,6 +435,20 @@ def insn_s(insn, funct3, numbytes):
         assign(f, "spec_mem_wdata", "rvfi_rs2_rdata << (8*(addr-spec_mem_addr))")
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 4")
         assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
+
+        print("`else", file=f)
+
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 7'b 0100011" % funct3)
+        assign(f, "spec_rs1_addr", "insn_rs1")
+        assign(f, "spec_rs2_addr", "insn_rs2")
+        assign(f, "spec_mem_addr", "addr")
+        assign(f, "spec_mem_wmask", "((1 << %d)-1)" % numbytes)
+        assign(f, "spec_mem_wdata", "rvfi_rs2_rdata")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 4")
+        assign(f, "spec_trap", "0")
+
+        print("`endif", file=f)
 
         footer(f)
 
@@ -488,6 +524,8 @@ def insn_c_l(insn, funct3, numbytes, signext):
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
+        print("`ifdef RISCV_FORMAL_ALIGNED_MEM", file=f)
+
         print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
         print("  wire [%d:0] result = rvfi_mem_rdata >> (8*(addr-spec_mem_addr));" % (8*numbytes-1), file=f)
         assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 00" % funct3)
@@ -502,6 +540,24 @@ def insn_c_l(insn, funct3, numbytes, signext):
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
         assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
 
+        print("`else", file=f)
+
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
+        print("  wire [%d:0] result = rvfi_mem_rdata;" % (8*numbytes-1), file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 00" % funct3)
+        assign(f, "spec_rs1_addr", "insn_rs1")
+        assign(f, "spec_rd_addr", "insn_rd")
+        assign(f, "spec_mem_addr", "addr")
+        assign(f, "spec_mem_rmask", "((1 << %d)-1)" % numbytes)
+        if signext:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(result) : 0")
+        else:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
+        assign(f, "spec_trap", "0")
+
+        print("`endif", file=f)
+
         footer(f)
 
 def insn_c_s(insn, funct3, numbytes):
@@ -512,6 +568,8 @@ def insn_c_s(insn, funct3, numbytes):
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
+        print("`ifdef RISCV_FORMAL_ALIGNED_MEM", file=f)
+
         assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 00" % funct3)
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rs2_addr", "insn_rs2")
@@ -520,6 +578,19 @@ def insn_c_s(insn, funct3, numbytes):
         assign(f, "spec_mem_wdata", "rvfi_rs2_rdata << (8*(addr-spec_mem_addr))")
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
         assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
+
+        print("`else", file=f)
+
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 00" % funct3)
+        assign(f, "spec_rs1_addr", "insn_rs1")
+        assign(f, "spec_rs2_addr", "insn_rs2")
+        assign(f, "spec_mem_addr", "addr")
+        assign(f, "spec_mem_wmask", "((1 << %d)-1)" % numbytes)
+        assign(f, "spec_mem_wdata", "rvfi_rs2_rdata")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
+        assign(f, "spec_trap", "0")
+
+        print("`endif", file=f)
 
         footer(f)
 
@@ -689,6 +760,8 @@ def insn_c_lsp(insn, funct3, numbytes, signext):
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
+        print("`ifdef RISCV_FORMAL_ALIGNED_MEM", file=f)
+
         print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
         print("  wire [%d:0] result = rvfi_mem_rdata >> (8*(addr-spec_mem_addr));" % (8*numbytes-1), file=f)
         assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 10 && insn_rd" % funct3)
@@ -703,6 +776,24 @@ def insn_c_lsp(insn, funct3, numbytes, signext):
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
         assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
 
+        print("`else", file=f)
+
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
+        print("  wire [%d:0] result = rvfi_mem_rdata;" % (8*numbytes-1), file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 10 && insn_rd" % funct3)
+        assign(f, "spec_rs1_addr", "2")
+        assign(f, "spec_rd_addr", "insn_rd")
+        assign(f, "spec_mem_addr", "addr")
+        assign(f, "spec_mem_rmask", "((1 << %d)-1)" % numbytes)
+        if signext:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(result) : 0")
+        else:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
+        assign(f, "spec_trap", "0")
+
+        print("`endif", file=f)
+
         footer(f)
 
 def insn_c_ssp(insn, funct3, numbytes):
@@ -712,6 +803,8 @@ def insn_c_ssp(insn, funct3, numbytes):
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
+        print("`ifdef RISCV_FORMAL_ALIGNED_MEM", file=f)
+
         print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
         assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 10" % funct3)
         assign(f, "spec_rs1_addr", "2")
@@ -721,6 +814,20 @@ def insn_c_ssp(insn, funct3, numbytes):
         assign(f, "spec_mem_wdata", "rvfi_rs2_rdata << (8*(addr-spec_mem_addr))")
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
         assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
+
+        print("`else", file=f)
+
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;", file=f)
+        assign(f, "spec_valid", "rvfi_valid && insn_funct3 == 3'b %s && insn_opcode == 2'b 10" % funct3)
+        assign(f, "spec_rs1_addr", "2")
+        assign(f, "spec_rs2_addr", "insn_rs2")
+        assign(f, "spec_mem_addr", "addr")
+        assign(f, "spec_mem_wmask", "((1 << %d)-1)" % numbytes)
+        assign(f, "spec_mem_wdata", "rvfi_rs2_rdata")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
+        assign(f, "spec_trap", "0")
+
+        print("`endif", file=f)
 
         footer(f)
 

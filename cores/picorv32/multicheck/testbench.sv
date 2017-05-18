@@ -1,6 +1,7 @@
 `define RISCV_FORMAL
 `define RISCV_FORMAL_NRET 1
 `define RISCV_FORMAL_XLEN 32
+`define RISCV_FORMAL_ALIGNED_MEM
 `include "../../../../picorv32/picorv32.v"
 `include "../../../checks/rvfi_macros.vh"
 `include "insns.vh"

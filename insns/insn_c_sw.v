@@ -30,6 +30,7 @@ module rvfi_insn_c_sw (
 
   // C_SW instruction
   wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;
+`ifdef RISCV_FORMAL_ALIGNED_MEM
   assign spec_valid = rvfi_valid && insn_funct3 == 3'b 110 && insn_opcode == 2'b 00;
   assign spec_rs1_addr = insn_rs1;
   assign spec_rs2_addr = insn_rs2;
@@ -38,6 +39,16 @@ module rvfi_insn_c_sw (
   assign spec_mem_wdata = rvfi_rs2_rdata << (8*(addr-spec_mem_addr));
   assign spec_pc_wdata = rvfi_pc_rdata + 2;
   assign spec_trap = (addr & (4-1)) != 0;
+`else
+  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 110 && insn_opcode == 2'b 00;
+  assign spec_rs1_addr = insn_rs1;
+  assign spec_rs2_addr = insn_rs2;
+  assign spec_mem_addr = addr;
+  assign spec_mem_wmask = ((1 << 4)-1);
+  assign spec_mem_wdata = rvfi_rs2_rdata;
+  assign spec_pc_wdata = rvfi_pc_rdata + 2;
+  assign spec_trap = 0;
+`endif
 
   // default assignments
   assign spec_rd_addr = 0;
