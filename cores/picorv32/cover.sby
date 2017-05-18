@@ -3,7 +3,7 @@ mode cover
 depth 100
 
 [engines]
-smtbmc -s boolector
+smtbmc boolector
 
 [script]
 verilog_defines -D RISCV_FORMAL
