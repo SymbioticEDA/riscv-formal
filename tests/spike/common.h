@@ -2,6 +2,72 @@
 #define require_extension(_ext) do { } while (0)
 #define require(_expression) do { if (!(_expression)) valid = false; } while (0)
 
+struct mmu_t
+{
+	uint64_t rdata, wdata, addr;
+	int8_t optype; // width in bytes, negative for write
+
+	uint8_t load_uint8(uint64_t a) {
+		assert(optype == 0);
+		addr = a, optype = 1;
+		return rdata;
+	}
+
+	uint16_t load_uint16(uint64_t a) {
+		assert(optype == 0);
+		addr = a, optype = 2;
+		return rdata;
+	}
+
+	uint32_t load_uint32(uint64_t a) {
+		assert(optype == 0);
+		addr = a, optype = 4;
+		return rdata;
+	}
+
+	uint64_t load_uint64(uint64_t a) {
+		assert(optype == 0);
+		addr = a, optype = 8;
+		return rdata;
+	}
+
+	void store_uint8(uint64_t a, uint8_t d) {
+		assert(optype == 0);
+		addr = a, wdata = d, optype = -1;
+	}
+
+	void store_uint16(uint64_t a, uint16_t d) {
+		assert(optype == 0);
+		addr = a, wdata = d, optype = -2;
+	}
+
+	void store_uint32(uint64_t a, uint32_t d) {
+		assert(optype == 0);
+		addr = a, wdata = d, optype = -4;
+	}
+
+	void store_uint64(uint64_t a, uint64_t d) {
+		assert(optype == 0);
+		addr = a, wdata = d, optype = -8;
+	}
+
+	int8_t load_int8(uint64_t a) {
+		return load_uint8(a);
+	}
+
+	int16_t load_int16(uint64_t a) {
+		return load_uint16(a);
+	}
+
+	int32_t load_int32(uint64_t a) {
+		return load_uint32(a);
+	}
+
+	int64_t load_int64(uint64_t a) {
+		return load_uint64(a);
+	}
+};
+
 // ----- from riscv-isa-sim/riscv/decode.h with minor edits -----
 
 typedef int64_t sreg_t;
@@ -92,7 +158,7 @@ public:
 };
 
 // helpful macros, etc
-#define MMU (*p->get_mmu())
+#define MMU (mmu)
 #define STATE (post_state)
 #define READ_REG(reg) STATE.XPR[reg]
 #define READ_FREG(reg) STATE.FPR[reg]
@@ -100,7 +166,7 @@ public:
 #define RS2 READ_REG(insn.rs2())
 #define WRITE_RD(value) WRITE_REG(insn.rd(), value)
 
-#define WRITE_REG(reg, value) do { STATE.XPR[reg] = reg ? value : 0; } while (0)
+#define WRITE_REG(reg, value) do { reg_t v = value; STATE.XPR[reg] = reg ? v : 0; } while (0)
 #define WRITE_FREG(reg, value) DO_WRITE_FREG(reg, value)
 
 // RVC macros
