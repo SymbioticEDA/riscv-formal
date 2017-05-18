@@ -11,7 +11,7 @@ About
 It consists of the following components:
 - A processor-independent formal description of the RISC-V ISA
 - A set of formal testbenches for each processor supported by the framework
-- The specification for the [docs/rfvi.md](RISC-V Formal Interface (RVFI)) that must be implemented by a processor core to interface with `riscv-formal`.
+- The specification for the [RISC-V Formal Interface (RVFI)](docs/rfvi.md) that must be implemented by a processor core to interface with `riscv-formal`.
 
 See [cores/picorv32/](cores/picorv32/) for example bindings for the PicoRV32 processor core.
 
