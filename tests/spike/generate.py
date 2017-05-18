@@ -25,7 +25,6 @@ with open("makefile", "w") as makefile:
     print("riscv-isa-sim:", file=makefile)
     print("\trm -rf riscv-isa-sim.part", file=makefile)
     print("\tgit clone https://github.com/riscv/riscv-isa-sim.git riscv-isa-sim.part", file=makefile)
-    print("\tcd riscv-isa-sim.part && patch -p1 < ../spike-hotfixes.patch", file=makefile)
     print("\tmv riscv-isa-sim.part riscv-isa-sim", file=makefile)
 
     for insn in insns:
