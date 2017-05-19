@@ -1,0 +1,15 @@
+[options]
+mode cover
+depth 100
+
+[engines]
+smtbmc boolector
+
+[script]
+read_ilang rocket-chip.il
+read_verilog -sv -formal cover.sv
+prep -nordff -top testbench
+
+[files]
+rocket-chip.il
+cover.sv
