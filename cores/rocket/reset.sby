@@ -1,9 +1,9 @@
 [options]
-mode cover
+mode bmc
 depth 100
 
 [engines]
-smtbmc yices
+smtbmc boolector
 
 [script]
 read_ilang rocket-chip.il

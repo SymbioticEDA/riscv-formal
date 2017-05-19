@@ -42,5 +42,19 @@ rename rvfi_mon_rvfi_valid     rvfi_valid
 delete rvfi_mon
 cd ..
 
-prep -flatten -top RocketWithRVFI
+prep -top RocketWithRVFI
 write_ilang rocket-chip.il
+
+flatten
+write_ilang rocket-chip-flat.il
+
+opt -full
+memory_map
+opt -fast
+techmap
+opt -fast
+abc -fast
+opt_clean
+stat
+
+write_ilang rocket-chip-gates.il

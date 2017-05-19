@@ -192,10 +192,7 @@ module testbench (
 
 	always @* begin
 		assume(reset == (cycle_count <= reset_depth));
-		cover(insn_count == 1);
-		cover(insn_count == 2);
-		cover(insn_count == 3);
-		cover(insn_count == 4);
+		assert((cycle_count != reset_depth) || !rvfi_valid);
 	end
 
 	RocketWithRVFI uut (
