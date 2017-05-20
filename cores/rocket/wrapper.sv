@@ -1,202 +1,228 @@
-module testbench (
+module rocket_wrapper (
 	input         clock,
 	input         reset,
 
-	output       io_dmem_invalidate_lr,
-	input        io_dmem_ordered,
-	input        io_dmem_replay_next,
-	output[31:0] io_dmem_req_bits_addr,
-	output[4:0]  io_dmem_req_bits_cmd,
-	output       io_dmem_req_bits_phys,
-	output[6:0]  io_dmem_req_bits_tag,
-	output[2:0]  io_dmem_req_bits_typ,
-	input        io_dmem_req_ready,
-	output       io_dmem_req_valid,
-	input [31:0] io_dmem_resp_bits_data,
-	input [31:0] io_dmem_resp_bits_data_word_bypass,
-	input        io_dmem_resp_bits_has_data,
-	input        io_dmem_resp_bits_replay,
-	input [6:0]  io_dmem_resp_bits_tag,
-	input        io_dmem_resp_valid,
-	output[31:0] io_dmem_s1_data_data,
-	output[3:0]  io_dmem_s1_data_mask,
-	output       io_dmem_s1_kill,
-	input        io_dmem_s2_nack,
-	input        io_dmem_s2_xcpt_ae_ld,
-	input        io_dmem_s2_xcpt_ae_st,
-	input        io_dmem_s2_xcpt_ma_ld,
-	input        io_dmem_s2_xcpt_ma_st,
-	input        io_dmem_s2_xcpt_pf_ld,
-	input        io_dmem_s2_xcpt_pf_st,
-	input        io_fpu_dec_ren1,
-	input        io_fpu_dec_ren2,
-	input        io_fpu_dec_ren3,
-	input        io_fpu_dec_wen,
-	output[31:0] io_fpu_dmem_resp_data,
-	output[4:0]  io_fpu_dmem_resp_tag,
-	output       io_fpu_dmem_resp_val,
-	input [4:0]  io_fpu_fcsr_flags_bits,
-	input        io_fpu_fcsr_flags_valid,
-	input        io_fpu_fcsr_rdy,
-	output[2:0]  io_fpu_fcsr_rm,
-	output[31:0] io_fpu_fromint_data,
-	input        io_fpu_illegal_rm,
-	output[31:0] io_fpu_inst,
-	output       io_fpu_killm,
-	output       io_fpu_killx,
-	input        io_fpu_nack_mem,
-	input        io_fpu_sboard_clr,
-	input [4:0]  io_fpu_sboard_clra,
-	input        io_fpu_sboard_set,
-	input [31:0] io_fpu_store_data,
-	input [31:0] io_fpu_toint_data,
-	output       io_fpu_valid,
-	input        io_hartid,
-	output       io_imem_bht_update_bits_mispredict,
-	output[31:0] io_imem_bht_update_bits_pc,
-	output[6:0]  io_imem_bht_update_bits_prediction_bits_bht_history,
-	output[1:0]  io_imem_bht_update_bits_prediction_bits_bht_value,
-	output       io_imem_bht_update_bits_prediction_valid,
-	output       io_imem_bht_update_bits_taken,
-	output       io_imem_bht_update_valid,
-	output[31:0] io_imem_btb_update_bits_br_pc,
-	output[1:0]  io_imem_btb_update_bits_cfiType,
-	output       io_imem_btb_update_bits_isValid,
-	output[31:0] io_imem_btb_update_bits_pc,
-	output[6:0]  io_imem_btb_update_bits_prediction_bits_bht_history,
-	output[1:0]  io_imem_btb_update_bits_prediction_bits_bht_value,
-	output[5:0]  io_imem_btb_update_bits_prediction_bits_entry,
-	output       io_imem_btb_update_bits_prediction_valid,
-	output       io_imem_btb_update_valid,
-	output       io_imem_flush_icache,
-	output[31:0] io_imem_req_bits_pc,
-	output       io_imem_req_bits_speculative,
-	output       io_imem_req_valid,
-	input        io_imem_resp_bits_ae,
-	input [6:0]  io_imem_resp_bits_btb_bits_bht_history,
-	input [1:0]  io_imem_resp_bits_btb_bits_bht_value,
-	input        io_imem_resp_bits_btb_bits_bridx,
-	input [5:0]  io_imem_resp_bits_btb_bits_entry,
-	input        io_imem_resp_bits_btb_bits_taken,
-	input        io_imem_resp_bits_btb_valid,
-	input [31:0] io_imem_resp_bits_data,
-	input [31:0] io_imem_resp_bits_pc,
-	input        io_imem_resp_bits_pf,
-	input        io_imem_resp_bits_replay,
-	output       io_imem_resp_ready,
-	input        io_imem_resp_valid,
-	output       io_imem_sfence_bits_rs1,
-	output       io_imem_sfence_bits_rs2,
-	output       io_imem_sfence_valid,
-	input        io_interrupts_debug,
-	input        io_interrupts_meip,
-	input        io_interrupts_msip,
-	input        io_interrupts_mtip,
-	input        io_interrupts_seip,
-	output       io_ptw_invalidate,
-	output[29:0] io_ptw_pmp_0_addr,
-	output[1:0]  io_ptw_pmp_0_cfg_a,
-	output       io_ptw_pmp_0_cfg_l,
-	output       io_ptw_pmp_0_cfg_r,
-	output       io_ptw_pmp_0_cfg_w,
-	output       io_ptw_pmp_0_cfg_x,
-	output[31:0] io_ptw_pmp_0_mask,
-	output[29:0] io_ptw_pmp_1_addr,
-	output[1:0]  io_ptw_pmp_1_cfg_a,
-	output       io_ptw_pmp_1_cfg_l,
-	output       io_ptw_pmp_1_cfg_r,
-	output       io_ptw_pmp_1_cfg_w,
-	output       io_ptw_pmp_1_cfg_x,
-	output[31:0] io_ptw_pmp_1_mask,
-	output[29:0] io_ptw_pmp_2_addr,
-	output[1:0]  io_ptw_pmp_2_cfg_a,
-	output       io_ptw_pmp_2_cfg_l,
-	output       io_ptw_pmp_2_cfg_r,
-	output       io_ptw_pmp_2_cfg_w,
-	output       io_ptw_pmp_2_cfg_x,
-	output[31:0] io_ptw_pmp_2_mask,
-	output[29:0] io_ptw_pmp_3_addr,
-	output[1:0]  io_ptw_pmp_3_cfg_a,
-	output       io_ptw_pmp_3_cfg_l,
-	output       io_ptw_pmp_3_cfg_r,
-	output       io_ptw_pmp_3_cfg_w,
-	output       io_ptw_pmp_3_cfg_x,
-	output[31:0] io_ptw_pmp_3_mask,
-	output[29:0] io_ptw_pmp_4_addr,
-	output[1:0]  io_ptw_pmp_4_cfg_a,
-	output       io_ptw_pmp_4_cfg_l,
-	output       io_ptw_pmp_4_cfg_r,
-	output       io_ptw_pmp_4_cfg_w,
-	output       io_ptw_pmp_4_cfg_x,
-	output[31:0] io_ptw_pmp_4_mask,
-	output[29:0] io_ptw_pmp_5_addr,
-	output[1:0]  io_ptw_pmp_5_cfg_a,
-	output       io_ptw_pmp_5_cfg_l,
-	output       io_ptw_pmp_5_cfg_r,
-	output       io_ptw_pmp_5_cfg_w,
-	output       io_ptw_pmp_5_cfg_x,
-	output[31:0] io_ptw_pmp_5_mask,
-	output[29:0] io_ptw_pmp_6_addr,
-	output[1:0]  io_ptw_pmp_6_cfg_a,
-	output       io_ptw_pmp_6_cfg_l,
-	output       io_ptw_pmp_6_cfg_r,
-	output       io_ptw_pmp_6_cfg_w,
-	output       io_ptw_pmp_6_cfg_x,
-	output[31:0] io_ptw_pmp_6_mask,
-	output[29:0] io_ptw_pmp_7_addr,
-	output[1:0]  io_ptw_pmp_7_cfg_a,
-	output       io_ptw_pmp_7_cfg_l,
-	output       io_ptw_pmp_7_cfg_r,
-	output       io_ptw_pmp_7_cfg_w,
-	output       io_ptw_pmp_7_cfg_x,
-	output[31:0] io_ptw_pmp_7_mask,
-	output[8:0]  io_ptw_ptbr_asid,
-	output       io_ptw_ptbr_mode,
-	output[21:0] io_ptw_ptbr_ppn,
-	output[1:0]  io_ptw_status_dprv,
-	output       io_ptw_status_mxr,
-	output[1:0]  io_ptw_status_prv,
-	output       io_ptw_status_sum,
-	input        io_rocc_cmd_ready,
-	output       io_rocc_cmd_valid,
-	input        io_rocc_interrupt,
+	output [31:0] rvfi_insn,
+	output [31:0] rvfi_mem_addr,
+	output [31:0] rvfi_mem_rdata,
+	output [3:0]  rvfi_mem_rmask,
+	output [31:0] rvfi_mem_wdata,
+	output [3:0]  rvfi_mem_wmask,
+	output [7:0]  rvfi_order,
+	output [31:0] rvfi_pc_rdata,
+	output [31:0] rvfi_pc_wdata,
+	output [4:0]  rvfi_rd_addr,
+	output [31:0] rvfi_rd_wdata,
+	output [4:0]  rvfi_rs1_addr,
+	output [31:0] rvfi_rs1_rdata,
+	output [4:0]  rvfi_rs2_addr,
+	output [31:0] rvfi_rs2_rdata,
+	output        rvfi_trap,
+	output        rvfi_valid
 );
-	wire [31:0] rvfi_insn;
-	wire [31:0] rvfi_mem_addr;
-	wire [31:0] rvfi_mem_rdata;
-	wire [3:0]  rvfi_mem_rmask;
-	wire [31:0] rvfi_mem_wdata;
-	wire [3:0]  rvfi_mem_wmask;
-	wire [7:0]  rvfi_order;
-	wire [31:0] rvfi_pc_rdata;
-	wire [31:0] rvfi_pc_wdata;
-	wire [4:0]  rvfi_rd_addr;
-	wire [31:0] rvfi_rd_wdata;
-	wire [4:0]  rvfi_rs1_addr;
-	wire [31:0] rvfi_rs1_rdata;
-	wire [4:0]  rvfi_rs2_addr;
-	wire [31:0] rvfi_rs2_rdata;
-	wire        rvfi_trap;
-	wire        rvfi_valid;
+	(* keep *) wire        io_dmem_ordered = $anyseq;
+	(* keep *) wire        io_dmem_replay_next = $anyseq;
+	(* keep *) wire        io_dmem_req_ready = $anyseq;
+	(* keep *) wire [31:0] io_dmem_resp_bits_data = $anyseq;
+	(* keep *) wire [31:0] io_dmem_resp_bits_data_word_bypass = $anyseq;
+	(* keep *) wire        io_dmem_resp_bits_has_data = $anyseq;
+	(* keep *) wire        io_dmem_resp_bits_replay = $anyseq;
+	(* keep *) wire [6:0]  io_dmem_resp_bits_tag = $anyseq;
+	(* keep *) wire        io_dmem_resp_valid = $anyseq;
+	(* keep *) wire        io_dmem_s2_nack = $anyseq;
+	(* keep *) wire        io_dmem_s2_xcpt_ae_ld = $anyseq;
+	(* keep *) wire        io_dmem_s2_xcpt_ae_st = $anyseq;
+	(* keep *) wire        io_dmem_s2_xcpt_ma_ld = $anyseq;
+	(* keep *) wire        io_dmem_s2_xcpt_ma_st = $anyseq;
+	(* keep *) wire        io_dmem_s2_xcpt_pf_ld = $anyseq;
+	(* keep *) wire        io_dmem_s2_xcpt_pf_st = $anyseq;
+	(* keep *) wire        io_fpu_dec_ren1 = $anyseq;
+	(* keep *) wire        io_fpu_dec_ren2 = $anyseq;
+	(* keep *) wire        io_fpu_dec_ren3 = $anyseq;
+	(* keep *) wire        io_fpu_dec_wen = $anyseq;
+	(* keep *) wire [4:0]  io_fpu_fcsr_flags_bits = $anyseq;
+	(* keep *) wire        io_fpu_fcsr_flags_valid = $anyseq;
+	(* keep *) wire        io_fpu_fcsr_rdy = $anyseq;
+	(* keep *) wire        io_fpu_illegal_rm = $anyseq;
+	(* keep *) wire        io_fpu_nack_mem = $anyseq;
+	(* keep *) wire        io_fpu_sboard_clr = $anyseq;
+	(* keep *) wire [4:0]  io_fpu_sboard_clra = $anyseq;
+	(* keep *) wire        io_fpu_sboard_set = $anyseq;
+	(* keep *) wire [31:0] io_fpu_store_data = $anyseq;
+	(* keep *) wire [31:0] io_fpu_toint_data = $anyseq;
+	(* keep *) wire        io_hartid = $anyseq;
+	(* keep *) wire        io_imem_resp_bits_ae = $anyseq;
+	(* keep *) wire [6:0]  io_imem_resp_bits_btb_bits_bht_history = $anyseq;
+	(* keep *) wire [1:0]  io_imem_resp_bits_btb_bits_bht_value = $anyseq;
+	(* keep *) wire        io_imem_resp_bits_btb_bits_bridx = $anyseq;
+	(* keep *) wire [5:0]  io_imem_resp_bits_btb_bits_entry = $anyseq;
+	(* keep *) wire        io_imem_resp_bits_btb_bits_taken = $anyseq;
+	(* keep *) wire        io_imem_resp_bits_btb_valid = $anyseq;
+	(* keep *) wire [31:0] io_imem_resp_bits_data = $anyseq;
+	(* keep *) wire [31:0] io_imem_resp_bits_pc = $anyseq;
+	(* keep *) wire        io_imem_resp_bits_pf = $anyseq;
+	(* keep *) wire        io_imem_resp_bits_replay = $anyseq;
+	(* keep *) wire        io_imem_resp_valid = $anyseq;
+	(* keep *) wire        io_interrupts_debug = $anyseq;
+	(* keep *) wire        io_interrupts_meip = $anyseq;
+	(* keep *) wire        io_interrupts_msip = $anyseq;
+	(* keep *) wire        io_interrupts_mtip = $anyseq;
+	(* keep *) wire        io_interrupts_seip = $anyseq;
+	(* keep *) wire        io_rocc_cmd_ready = $anyseq;
+	(* keep *) wire        io_rocc_interrupt = $anyseq;
 
-	reg [7:0] insn_count = 0;
-	reg [7:0] cycle_count = 0;
+	(* keep *) wire        io_dmem_invalidate_lr;
+	(* keep *) wire [31:0] io_dmem_req_bits_addr;
+	(* keep *) wire [4:0]  io_dmem_req_bits_cmd;
+	(* keep *) wire        io_dmem_req_bits_phys;
+	(* keep *) wire [6:0]  io_dmem_req_bits_tag;
+	(* keep *) wire [2:0]  io_dmem_req_bits_typ;
+	(* keep *) wire        io_dmem_req_valid;
+	(* keep *) wire [31:0] io_dmem_s1_data_data;
+	(* keep *) wire [3:0]  io_dmem_s1_data_mask;
+	(* keep *) wire        io_dmem_s1_kill;
+	(* keep *) wire [31:0] io_fpu_dmem_resp_data;
+	(* keep *) wire [4:0]  io_fpu_dmem_resp_tag;
+	(* keep *) wire        io_fpu_dmem_resp_val;
+	(* keep *) wire [2:0]  io_fpu_fcsr_rm;
+	(* keep *) wire [31:0] io_fpu_fromint_data;
+	(* keep *) wire [31:0] io_fpu_inst;
+	(* keep *) wire        io_fpu_killm;
+	(* keep *) wire        io_fpu_killx;
+	(* keep *) wire        io_fpu_valid;
+	(* keep *) wire        io_imem_bht_update_bits_mispredict;
+	(* keep *) wire [31:0] io_imem_bht_update_bits_pc;
+	(* keep *) wire [6:0]  io_imem_bht_update_bits_prediction_bits_bht_history;
+	(* keep *) wire [1:0]  io_imem_bht_update_bits_prediction_bits_bht_value;
+	(* keep *) wire        io_imem_bht_update_bits_prediction_valid;
+	(* keep *) wire        io_imem_bht_update_bits_taken;
+	(* keep *) wire        io_imem_bht_update_valid;
+	(* keep *) wire [31:0] io_imem_btb_update_bits_br_pc;
+	(* keep *) wire [1:0]  io_imem_btb_update_bits_cfiType;
+	(* keep *) wire        io_imem_btb_update_bits_isValid;
+	(* keep *) wire [31:0] io_imem_btb_update_bits_pc;
+	(* keep *) wire [6:0]  io_imem_btb_update_bits_prediction_bits_bht_history;
+	(* keep *) wire [1:0]  io_imem_btb_update_bits_prediction_bits_bht_value;
+	(* keep *) wire [5:0]  io_imem_btb_update_bits_prediction_bits_entry;
+	(* keep *) wire        io_imem_btb_update_bits_prediction_valid;
+	(* keep *) wire        io_imem_btb_update_valid;
+	(* keep *) wire        io_imem_flush_icache;
+	(* keep *) wire [31:0] io_imem_req_bits_pc;
+	(* keep *) wire        io_imem_req_bits_speculative;
+	(* keep *) wire        io_imem_req_valid;
+	(* keep *) wire        io_imem_resp_ready;
+	(* keep *) wire        io_imem_sfence_bits_rs1;
+	(* keep *) wire        io_imem_sfence_bits_rs2;
+	(* keep *) wire        io_imem_sfence_valid;
+	(* keep *) wire        io_ptw_invalidate;
+	(* keep *) wire [29:0] io_ptw_pmp_0_addr;
+	(* keep *) wire [1:0]  io_ptw_pmp_0_cfg_a;
+	(* keep *) wire        io_ptw_pmp_0_cfg_l;
+	(* keep *) wire        io_ptw_pmp_0_cfg_r;
+	(* keep *) wire        io_ptw_pmp_0_cfg_w;
+	(* keep *) wire        io_ptw_pmp_0_cfg_x;
+	(* keep *) wire [31:0] io_ptw_pmp_0_mask;
+	(* keep *) wire [29:0] io_ptw_pmp_1_addr;
+	(* keep *) wire [1:0]  io_ptw_pmp_1_cfg_a;
+	(* keep *) wire        io_ptw_pmp_1_cfg_l;
+	(* keep *) wire        io_ptw_pmp_1_cfg_r;
+	(* keep *) wire        io_ptw_pmp_1_cfg_w;
+	(* keep *) wire        io_ptw_pmp_1_cfg_x;
+	(* keep *) wire [31:0] io_ptw_pmp_1_mask;
+	(* keep *) wire [29:0] io_ptw_pmp_2_addr;
+	(* keep *) wire [1:0]  io_ptw_pmp_2_cfg_a;
+	(* keep *) wire        io_ptw_pmp_2_cfg_l;
+	(* keep *) wire        io_ptw_pmp_2_cfg_r;
+	(* keep *) wire        io_ptw_pmp_2_cfg_w;
+	(* keep *) wire        io_ptw_pmp_2_cfg_x;
+	(* keep *) wire [31:0] io_ptw_pmp_2_mask;
+	(* keep *) wire [29:0] io_ptw_pmp_3_addr;
+	(* keep *) wire [1:0]  io_ptw_pmp_3_cfg_a;
+	(* keep *) wire        io_ptw_pmp_3_cfg_l;
+	(* keep *) wire        io_ptw_pmp_3_cfg_r;
+	(* keep *) wire        io_ptw_pmp_3_cfg_w;
+	(* keep *) wire        io_ptw_pmp_3_cfg_x;
+	(* keep *) wire [31:0] io_ptw_pmp_3_mask;
+	(* keep *) wire [29:0] io_ptw_pmp_4_addr;
+	(* keep *) wire [1:0]  io_ptw_pmp_4_cfg_a;
+	(* keep *) wire        io_ptw_pmp_4_cfg_l;
+	(* keep *) wire        io_ptw_pmp_4_cfg_r;
+	(* keep *) wire        io_ptw_pmp_4_cfg_w;
+	(* keep *) wire        io_ptw_pmp_4_cfg_x;
+	(* keep *) wire [31:0] io_ptw_pmp_4_mask;
+	(* keep *) wire [29:0] io_ptw_pmp_5_addr;
+	(* keep *) wire [1:0]  io_ptw_pmp_5_cfg_a;
+	(* keep *) wire        io_ptw_pmp_5_cfg_l;
+	(* keep *) wire        io_ptw_pmp_5_cfg_r;
+	(* keep *) wire        io_ptw_pmp_5_cfg_w;
+	(* keep *) wire        io_ptw_pmp_5_cfg_x;
+	(* keep *) wire [31:0] io_ptw_pmp_5_mask;
+	(* keep *) wire [29:0] io_ptw_pmp_6_addr;
+	(* keep *) wire [1:0]  io_ptw_pmp_6_cfg_a;
+	(* keep *) wire        io_ptw_pmp_6_cfg_l;
+	(* keep *) wire        io_ptw_pmp_6_cfg_r;
+	(* keep *) wire        io_ptw_pmp_6_cfg_w;
+	(* keep *) wire        io_ptw_pmp_6_cfg_x;
+	(* keep *) wire [31:0] io_ptw_pmp_6_mask;
+	(* keep *) wire [29:0] io_ptw_pmp_7_addr;
+	(* keep *) wire [1:0]  io_ptw_pmp_7_cfg_a;
+	(* keep *) wire        io_ptw_pmp_7_cfg_l;
+	(* keep *) wire        io_ptw_pmp_7_cfg_r;
+	(* keep *) wire        io_ptw_pmp_7_cfg_w;
+	(* keep *) wire        io_ptw_pmp_7_cfg_x;
+	(* keep *) wire [31:0] io_ptw_pmp_7_mask;
+	(* keep *) wire [8:0]  io_ptw_ptbr_asid;
+	(* keep *) wire        io_ptw_ptbr_mode;
+	(* keep *) wire [21:0] io_ptw_ptbr_ppn;
+	(* keep *) wire [1:0]  io_ptw_status_dprv;
+	(* keep *) wire        io_ptw_status_mxr;
+	(* keep *) wire [1:0]  io_ptw_status_prv;
+	(* keep *) wire        io_ptw_status_sum;
+	(* keep *) wire        io_rocc_cmd_valid;
 
-	localparam integer reset_depth = 10;
+	// ---- IMEM Constraints ----
+
+	reg [31:0] imem_pc_fifo [0:63];
+	reg [5:0] imem_pc_fifo_wptr = 0;
+	reg [5:0] imem_pc_fifo_rptr = 0;
 
 	always @(posedge clock) begin
-		if (!reset && rvfi_valid)
-			insn_count <= insn_count + |(insn_count + 1);
-		cycle_count <= cycle_count + |(cycle_count + 1);
+		if (reset) begin
+			imem_pc_fifo_wptr <= 0;
+			imem_pc_fifo_rptr <= 0;
+			assume(!io_imem_resp_valid);
+		end else begin
+			if (imem_pc_fifo_wptr == imem_pc_fifo_rptr) begin
+				assume(!io_imem_resp_valid);
+			end
+
+			if (io_imem_resp_valid) begin
+				assume(io_imem_resp_bits_pc == imem_pc_fifo[imem_pc_fifo_rptr]);
+			end
+
+			if (io_imem_resp_valid && io_imem_resp_ready) begin
+				imem_pc_fifo_rptr <= imem_pc_fifo_rptr + 1;
+			end
+
+			if (io_imem_req_valid) begin
+				imem_pc_fifo[imem_pc_fifo_wptr] <= io_imem_req_bits_pc;
+				imem_pc_fifo_wptr <= imem_pc_fifo_wptr + 1;
+			end
+
+			if ($past(io_imem_resp_valid) && !$past(io_imem_resp_ready)) begin
+				assume(io_imem_resp_valid);
+				assume($stable(io_imem_resp_bits_pc));
+				assume($stable(io_imem_resp_bits_data));
+			end
+		end
 	end
 
-	always @* begin
-		assume(reset == (cycle_count <= reset_depth));
-		assert((cycle_count != reset_depth) || !rvfi_valid);
-	end
+	// ---- Rocket Instance ----
 
-	RocketWithRVFI uut (
+	RocketWithRVFI rocket (
 		.clock                                              (clock                                              ),
+		.reset                                              (reset                                              ),
+
 		.io_dmem_invalidate_lr                              (io_dmem_invalidate_lr                              ),
 		.io_dmem_ordered                                    (io_dmem_ordered                                    ),
 		.io_dmem_replay_next                                (io_dmem_replay_next                                ),
@@ -355,7 +381,7 @@ module testbench (
 		.io_rocc_cmd_ready                                  (io_rocc_cmd_ready                                  ),
 		.io_rocc_cmd_valid                                  (io_rocc_cmd_valid                                  ),
 		.io_rocc_interrupt                                  (io_rocc_interrupt                                  ),
-		.reset                                              (reset                                              ),
+
 		.rvfi_insn                                          (rvfi_insn                                          ),
 		.rvfi_mem_addr                                      (rvfi_mem_addr                                      ),
 		.rvfi_mem_rdata                                     (rvfi_mem_rdata                                     ),
@@ -372,6 +398,6 @@ module testbench (
 		.rvfi_rs2_addr                                      (rvfi_rs2_addr                                      ),
 		.rvfi_rs2_rdata                                     (rvfi_rs2_rdata                                     ),
 		.rvfi_trap                                          (rvfi_trap                                          ),
-		.rvfi_valid                                         (rvfi_valid                                         ),
+		.rvfi_valid                                         (rvfi_valid                                         )
 	);
 endmodule

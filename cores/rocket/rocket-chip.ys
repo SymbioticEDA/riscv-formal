@@ -42,6 +42,8 @@ rename rvfi_mon_rvfi_valid     rvfi_valid
 delete rvfi_mon
 cd ..
 
+rename -hide w:_*
+
 prep -top RocketWithRVFI
 write_ilang rocket-chip.il
 
