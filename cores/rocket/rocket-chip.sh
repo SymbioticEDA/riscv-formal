@@ -1,27 +1,30 @@
 #!/bin/sh
 
 set -ex
-export CONFIG=DefaultConfigWithRVFIMonitors
-export MAKEFLAGS="-j$(nproc)"
 
-rm -rf rocket-chip
-git clone https://github.com/freechipsproject/rocket-chip
-cd rocket-chip
+if [ ! -d rocket-chip ]; then
+	export CONFIG=DefaultConfigWithRVFIMonitors
+	export MAKEFLAGS="-j$(nproc)"
 
-git checkout RVFI
-git submodule update --init
+	rm -rf rocket-chip
+	git clone https://github.com/freechipsproject/rocket-chip
+	cd rocket-chip
 
-mkdir toolchain
-export RISCV=$PWD/toolchain
+	git checkout RVFI
+	git submodule update --init
 
-# cd riscv-tools
-# git submodule update --init --recursive
-# MAKEFLAGS="-j$(nproc)" ./build-rv32ima.sh
-# cd ..
+	mkdir toolchain
+	export RISCV=$PWD/toolchain
 
-cd vsim
-make verilog
+	# cd riscv-tools
+	# git submodule update --init --recursive
+	# MAKEFLAGS="-j$(nproc)" ./build-rv32ima.sh
+	# cd ..
 
-cd ../..
-yosys rocket-chip.ys
+	cd vsim
+	make verilog
+	cd ../..
+fi
+
+yosys -v2 -l rocket-chip.yslog rocket-chip.ys
 

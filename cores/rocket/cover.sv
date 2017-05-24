@@ -22,7 +22,7 @@ module testbench (
 	reg [7:0] insn_count = 0;
 	reg [7:0] cycle_count = 0;
 
-	localparam integer reset_depth = 10;
+	localparam integer reset_depth = 5;
 
 	always @(posedge clock) begin
 		if (!reset && rvfi_valid)

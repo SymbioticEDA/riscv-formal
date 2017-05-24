@@ -1,62 +1,146 @@
 [*]
 [*] GTKWave Analyzer v3.3.65 (w)1999-2015 BSI
-[*] Sat May 20 10:42:43 2017
+[*] Wed May 24 00:09:16 2017
 [*]
-[dumpfile] "/home/clifford/Work/riscv-formal/cores/rocket/cover/engine_0/trace3.vcd"
-[dumpfile_mtime] "Sat May 20 10:21:43 2017"
-[dumpfile_size] 632452
+[dumpfile] "/home/clifford/Work/riscv-formal/cores/rocket/cover/engine_0/trace2.vcd"
+[dumpfile_mtime] "Wed May 24 00:02:15 2017"
+[dumpfile_size] 3446356
 [savefile] "/home/clifford/Work/riscv-formal/cores/rocket/cover.gtkw"
-[timestart] 79
-[size] 1340 745
-[pos] 74 8
-*-5.000821 115 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 0
+[size] 1418 896
+[pos] -82 -79
+*-5.930773 136 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] testbench.
-[treeopen] testbench.uut.
-[treeopen] testbench.uut.rocket.
 [sst_width] 225
-[signals_width] 254
+[signals_width] 403
 [sst_expanded] 1
-[sst_vpaned_height] 362
+[sst_vpaned_height] 264
 @24
 smt_step
 @28
-testbench.reset
+testbench.uut.reset
 @200
 -
 @28
-testbench.rvfi_valid
+testbench.uut.rvfi_valid
 @22
-testbench.rvfi_insn[31:0]
+testbench.uut.rvfi_insn[31:0]
 @200
 -
+@28
+testbench.uut.rvfi_trap
 @22
-testbench.rvfi_pc_rdata[31:0]
-testbench.rvfi_pc_wdata[31:0]
+testbench.uut.rvfi_order[7:0]
+@201
+-
+@22
+testbench.uut.rvfi_pc_rdata[31:0]
+testbench.uut.rvfi_pc_wdata[31:0]
 @200
 -
 @24
-testbench.rvfi_rd_addr[4:0]
-testbench.rvfi_rs1_addr[4:0]
-testbench.rvfi_rs2_addr[4:0]
+testbench.uut.rvfi_rd_addr[4:0]
+@22
+testbench.uut.rvfi_rd_wdata[31:0]
+@200
+-
+@24
+testbench.uut.rvfi_rs1_addr[4:0]
+@22
+testbench.uut.rvfi_rs1_rdata[31:0]
+@200
+-
+@24
+testbench.uut.rvfi_rs2_addr[4:0]
+@22
+testbench.uut.rvfi_rs2_rdata[31:0]
 @200
 -
 @22
-testbench.rvfi_rd_wdata[31:0]
-testbench.rvfi_rs1_rdata[31:0]
-testbench.rvfi_rs2_rdata[31:0]
+testbench.uut.rvfi_mem_addr[31:0]
+@28
+testbench.uut.rvfi_mem_rmask[3:0]
+testbench.uut.rvfi_mem_wmask[3:0]
+@22
+testbench.uut.rvfi_mem_rdata[31:0]
+testbench.uut.rvfi_mem_wdata[31:0]
 @200
 -
 @28
-testbench.uut.io_imem_req_valid
-@22
-testbench.uut.io_imem_req_bits_pc[31:0]
+testbench.uut.io_interrupts_0_0
+testbench.uut.io_interrupts_0_1
+testbench.uut.io_interrupts_0_2
+testbench.uut.io_interrupts_0_3
+testbench.uut.io_interrupts_0_4
 @200
 -
 @28
-testbench.uut.io_imem_resp_ready
-testbench.uut.io_imem_resp_valid
+testbench.uut.io_master_0_a_valid
+testbench.uut.io_master_0_a_ready
 @22
-testbench.uut.io_imem_resp_bits_pc[31:0]
-testbench.uut.io_imem_resp_bits_data[31:0]
+testbench.uut.io_master_0_a_bits_address[31:0]
+testbench.uut.io_master_0_a_bits_data[31:0]
+testbench.uut.io_master_0_a_bits_mask[3:0]
+@28
+testbench.uut.io_master_0_a_bits_opcode[2:0]
+testbench.uut.io_master_0_a_bits_param[2:0]
+@22
+testbench.uut.io_master_0_a_bits_size[3:0]
+@28
+testbench.uut.io_master_0_a_bits_source[1:0]
+@200
+-
+@28
+testbench.uut.io_master_0_b_valid
+testbench.uut.io_master_0_b_ready
+@22
+testbench.uut.io_master_0_b_bits_address[31:0]
+testbench.uut.io_master_0_b_bits_mask[3:0]
+@28
+testbench.uut.io_master_0_b_bits_opcode[2:0]
+testbench.uut.io_master_0_b_bits_param[1:0]
+@22
+testbench.uut.io_master_0_b_bits_size[3:0]
+@28
+testbench.uut.io_master_0_b_bits_source[1:0]
+@200
+-
+@28
+testbench.uut.io_master_0_c_valid
+testbench.uut.io_master_0_c_ready
+@22
+testbench.uut.io_master_0_c_bits_address[31:0]
+testbench.uut.io_master_0_c_bits_data[31:0]
+@28
+testbench.uut.io_master_0_c_bits_error
+testbench.uut.io_master_0_c_bits_opcode[2:0]
+testbench.uut.io_master_0_c_bits_param[2:0]
+@22
+testbench.uut.io_master_0_c_bits_size[3:0]
+@28
+testbench.uut.io_master_0_c_bits_source[1:0]
+@200
+-
+@28
+testbench.uut.io_master_0_d_valid
+testbench.uut.io_master_0_d_ready
+testbench.uut.io_master_0_d_bits_addr_lo[1:0]
+@22
+testbench.uut.io_master_0_d_bits_data[31:0]
+@28
+testbench.uut.io_master_0_d_bits_error
+testbench.uut.io_master_0_d_bits_opcode[2:0]
+testbench.uut.io_master_0_d_bits_param[1:0]
+testbench.uut.io_master_0_d_bits_sink[1:0]
+@22
+testbench.uut.io_master_0_d_bits_size[3:0]
+@28
+testbench.uut.io_master_0_d_bits_source[1:0]
+@200
+-
+@28
+testbench.uut.io_master_0_e_valid
+testbench.uut.io_master_0_e_ready
+testbench.uut.io_master_0_e_bits_sink[1:0]
 [pattern_trace] 1
 [pattern_trace] 0

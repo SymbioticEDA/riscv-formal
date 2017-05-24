@@ -1,6 +1,9 @@
 read_verilog rocket-chip/vsim/generated-src/rocketchip.DefaultConfigWithRVFIMonitors.v
+read_verilog rocket-chip/vsim/generated-src/rocketchip.DefaultConfigWithRVFIMonitors.behav_srams.v
+hierarchy -top RocketTile_rocket
 
-hierarchy -top RocketWithRVFI
+# ---- Create RFVI on RocketWithRVFI ----
+
 cd RocketWithRVFI
 
 expose rvfi_mon_rvfi_insn
@@ -42,9 +45,53 @@ rename rvfi_mon_rvfi_valid     rvfi_valid
 delete rvfi_mon
 cd ..
 
+# ---- Create RFVI on RocketTile_rocket ----
+
+cd RocketTile_rocket
+
+add -output rvfi_insn        32
+add -output rvfi_mem_addr    32
+add -output rvfi_mem_rdata   32
+add -output rvfi_mem_rmask    4
+add -output rvfi_mem_wdata   32
+add -output rvfi_mem_wmask    4
+add -output rvfi_order        8
+add -output rvfi_pc_rdata    32
+add -output rvfi_pc_wdata    32
+add -output rvfi_rd_addr      5
+add -output rvfi_rd_wdata    32
+add -output rvfi_rs1_addr     5
+add -output rvfi_rs1_rdata   32
+add -output rvfi_rs2_addr     5
+add -output rvfi_rs2_rdata   32
+add -output rvfi_trap         1
+add -output rvfi_valid        1
+
+connect -port core rvfi_insn      rvfi_insn
+connect -port core rvfi_mem_addr  rvfi_mem_addr
+connect -port core rvfi_mem_rdata rvfi_mem_rdata
+connect -port core rvfi_mem_rmask rvfi_mem_rmask
+connect -port core rvfi_mem_wdata rvfi_mem_wdata
+connect -port core rvfi_mem_wmask rvfi_mem_wmask
+connect -port core rvfi_order     rvfi_order
+connect -port core rvfi_pc_rdata  rvfi_pc_rdata
+connect -port core rvfi_pc_wdata  rvfi_pc_wdata
+connect -port core rvfi_rd_addr   rvfi_rd_addr
+connect -port core rvfi_rd_wdata  rvfi_rd_wdata
+connect -port core rvfi_rs1_addr  rvfi_rs1_addr
+connect -port core rvfi_rs1_rdata rvfi_rs1_rdata
+connect -port core rvfi_rs2_addr  rvfi_rs2_addr
+connect -port core rvfi_rs2_rdata rvfi_rs2_rdata
+connect -port core rvfi_trap      rvfi_trap
+connect -port core rvfi_valid     rvfi_valid
+
+cd ..
+
+# ---- Generate netlists ----
+
 rename -hide w:_*
 
-prep -top RocketWithRVFI
+prep -nordff
 write_ilang rocket-chip.il
 
 flatten
