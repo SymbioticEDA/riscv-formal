@@ -26,8 +26,8 @@ module testbench (
 
 	always @(posedge clock) begin
 		if (!reset && rvfi_valid)
-			insn_count <= insn_count + |(insn_count + 1);
-		cycle_count <= cycle_count + |(cycle_count + 1);
+			insn_count <= insn_count + !(&insn_count);
+		cycle_count <= cycle_count + !(&cycle_count);
 	end
 
 	always @* begin

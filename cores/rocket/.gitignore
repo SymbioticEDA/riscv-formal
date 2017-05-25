@@ -3,4 +3,6 @@ rocket-chip.il
 rocket-chip-flat.il
 rocket-chip-gates.il
 rocket-chip.yslog
+rocketio-cover/
+rocketio-bmc/
 cover/

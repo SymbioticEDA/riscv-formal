@@ -120,6 +120,70 @@ module rocket_wrapper (
 		end
 	end
 
+	// Formal Checker for IO interfaces
+
+`ifdef FORMAL_CHECK_ROCKET_IO
+	localparam integer reset_depth = 30;
+
+	reg [7:0] cycle = 0;
+	always @(posedge clock) cycle <= cycle + !(&cycle);
+
+	always @(posedge clock) begin
+		assume(reset == (cycle <= reset_depth));
+
+		if (cycle == reset_depth) begin
+			assert(!io_master_0_a_valid);
+			assert(!io_master_0_b_ready);
+			assert(!io_master_0_c_valid);
+			assert(!io_master_0_d_ready);
+			assert(!io_master_0_e_valid);
+		end
+
+		if (cycle > reset_depth) begin
+			if ($past(io_master_0_a_valid) && !$past(io_master_0_a_ready)) begin
+				assert(io_master_0_a_valid);
+				assert($stable(io_master_0_a_bits_address));
+				assert($stable(io_master_0_a_bits_data));
+				assert($stable(io_master_0_a_bits_mask));
+				assert($stable(io_master_0_a_bits_opcode));
+				assert($stable(io_master_0_a_bits_param));
+				assert($stable(io_master_0_a_bits_size));
+				assert($stable(io_master_0_a_bits_source));
+			end
+
+			if ($past(io_master_0_b_ready) && !$past(io_master_0_b_valid)) begin
+				assert(io_master_0_b_ready);
+			end
+
+			if ($past(io_master_0_c_valid) && !$past(io_master_0_c_ready)) begin
+				assert(io_master_0_c_valid);
+				assert($stable(io_master_0_c_bits_address));
+				assert($stable(io_master_0_c_bits_data));
+				assert($stable(io_master_0_c_bits_error));
+				assert($stable(io_master_0_c_bits_opcode));
+				assert($stable(io_master_0_c_bits_param));
+				assert($stable(io_master_0_c_bits_size));
+				assert($stable(io_master_0_c_bits_source));
+			end
+
+			if ($past(io_master_0_d_ready) && !$past(io_master_0_d_valid)) begin
+				assert(io_master_0_d_ready);
+			end
+
+			if ($past(io_master_0_e_valid) && !$past(io_master_0_e_ready)) begin
+				assert(io_master_0_e_valid);
+				assert($stable(io_master_0_e_bits_sink));
+			end
+
+			cover(io_master_0_a_valid && io_master_0_a_ready);
+			cover(io_master_0_b_valid && io_master_0_b_ready);
+			cover(io_master_0_c_valid && io_master_0_c_ready);
+			cover(io_master_0_d_valid && io_master_0_d_ready);
+			cover(io_master_0_e_valid && io_master_0_e_ready);
+		end
+	end
+`endif
+
 	// Rocket Tile
 
 	RocketTile_rocket rocket (
