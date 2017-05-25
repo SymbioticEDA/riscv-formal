@@ -118,12 +118,21 @@ module rocket_wrapper (
 				assume(io_master_0_e_ready);
 			end
 		end
+
+		// Deactivate B, C, and E channels
+		assume(io_master_0_b_valid == 0);
+		assume(io_master_0_c_ready == 0);
+		assume(io_master_0_e_ready == 0);
+
+		// Also make sure we don't toggle source on B channel (makes b_ready toggle)
+		if (!io_master_0_b_valid) assume(io_master_0_b_bits_source == 0);
+		if (!io_master_0_d_valid) assume(io_master_0_d_bits_source == 0);
 	end
 
 	// Formal Checker for IO interfaces
 
 `ifdef FORMAL_CHECK_ROCKET_IO
-	localparam integer reset_depth = 30;
+	localparam integer reset_depth = 5;
 
 	reg [7:0] cycle = 0;
 	always @(posedge clock) cycle <= cycle + !(&cycle);
@@ -137,6 +146,7 @@ module rocket_wrapper (
 			assert(!io_master_0_c_valid);
 			assert(!io_master_0_d_ready);
 			assert(!io_master_0_e_valid);
+			assert(!rvfi_valid);
 		end
 
 		if (cycle > reset_depth) begin
@@ -176,10 +186,10 @@ module rocket_wrapper (
 			end
 
 			cover(io_master_0_a_valid && io_master_0_a_ready);
-			cover(io_master_0_b_valid && io_master_0_b_ready);
-			cover(io_master_0_c_valid && io_master_0_c_ready);
+			// cover(io_master_0_b_valid && io_master_0_b_ready);
+			// cover(io_master_0_c_valid && io_master_0_c_ready);
 			cover(io_master_0_d_valid && io_master_0_d_ready);
-			cover(io_master_0_e_valid && io_master_0_e_ready);
+			// cover(io_master_0_e_valid && io_master_0_e_ready);
 		end
 	end
 `endif
