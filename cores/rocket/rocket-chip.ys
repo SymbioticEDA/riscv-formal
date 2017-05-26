@@ -1,5 +1,17 @@
 read_verilog rocket-chip/vsim/generated-src/rocketchip.DefaultConfigWithRVFIMonitors.v
 read_verilog rocket-chip/vsim/generated-src/rocketchip.DefaultConfigWithRVFIMonitors.behav_srams.v
+
+read_verilog <<EOT
+module plusarg_reader #(
+	parameter [1023:0] FORMAT = "borked=%d",
+	parameter integer DEFAULT = 0
+) (
+	output [31:0] out
+);
+	assign out = DEFAULT;
+endmodule
+EOT
+
 hierarchy -top RocketTile_rocket
 
 # ---- Create RFVI on RocketWithRVFI ----
