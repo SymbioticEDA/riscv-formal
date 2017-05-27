@@ -32,10 +32,16 @@ module testbench (
 
 	always @* begin
 		assume(reset == (cycle_count <= reset_depth));
+
 		cover(insn_count == 1);
 		cover(insn_count == 2);
 		cover(insn_count == 3);
 		cover(insn_count == 4);
+
+		// cover(cycle_count == 50 && insn_count == 10);
+		// cover(cycle_count == 50 && insn_count == 11);
+		// cover(cycle_count == 50 && insn_count == 12);
+		// cover(cycle_count == 50 && insn_count == 13);
 	end
 
 	rocket_wrapper uut (
