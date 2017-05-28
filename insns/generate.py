@@ -15,7 +15,7 @@ def header(f, insn, isa_mode=False):
     global defaults_cache
     defaults_cache = dict()
 
-    print("// DO NOT EDIT -- auto-generated from generate.py", file=f)
+    print("// DO NOT EDIT -- auto-generated from riscv-formal/insns/generate.py", file=f)
     print("", file=f)
     if isa_mode:
         print("module rvfi_isa_%s (" % insn, file=f)

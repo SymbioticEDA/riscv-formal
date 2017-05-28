@@ -5,7 +5,7 @@ def handle_isa(isa):
         insns = f.read().split()
 
     with open("isa_coverage_%s.v" % isa, "w") as f:
-        print("// DO NOT EDIT -- auto-generated from generate.py", file=f)
+        print("// DO NOT EDIT -- auto-generated from riscv-formal/tests/coverage/generate.py", file=f)
         print("", file=f)
 
         print("`define ISA_COVERAGE_LEN_%s %d" % (isa.upper(), len(insns)), file=f)

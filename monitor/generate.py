@@ -63,7 +63,7 @@ else:
 if "c" in isa:
     compressed = True
 
-print("// DO NOT EDIT -- auto-generated from generate.py");
+print("// DO NOT EDIT -- auto-generated from riscv-formal/monitor/generate.py");
 print()
 
 print("module %s (" % prefix);

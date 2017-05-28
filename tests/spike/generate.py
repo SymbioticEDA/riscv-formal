@@ -29,13 +29,13 @@ with open("makefile", "w") as makefile:
 
     for insn in insns:
         with open("test_%s.v" % insn, "w") as f:
-            print("// DO NOT EDIT -- auto-generated from generate.py", file=f)
+            print("// DO NOT EDIT -- auto-generated from riscv-formal/tests/spike/generate.py", file=f)
             print("`define RISCV_FORMAL_XLEN %d" % xlen, file=f)
             if compressed: print("`define RISCV_FORMAL_COMPRESSED", file=f)
             print("`include \"../../insns/insn_%s.v\"" % insn, file=f)
 
         with open("test_%s.cc" % insn, "w") as f:
-            print("// DO NOT EDIT -- auto-generated from generate.py", file=f)
+            print("// DO NOT EDIT -- auto-generated from riscv-formal/tests/spike/generate.py", file=f)
             print("#define xlen %d" % xlen, file=f)
             print("#define value_xlen value_%d_0" % (xlen-1), file=f)
             print("#include <stdio.h>", file=f)
