@@ -1,4 +1,4 @@
-// DO NOT EDIT -- auto-generated from generate.py
+// DO NOT EDIT -- auto-generated from riscv-formal/insns/generate.py
 
 module rvfi_insn_c_and (
   input                                rvfi_valid,
