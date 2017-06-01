@@ -69,6 +69,22 @@ RVFI TODOs and Requests for Comments
 
 The following section contains notes on future extensions to RVFI. They will come part of the spec as soon as there is at least one core that implements the feature, and a matching formal check that utilises the feature.
 
+### Changes to `rvfi_trap` specification
+
+The exact meaning of the `rvfi_trap` signal currently is not very well defined. This is a proposal to fix this.
+
+Two additional control signals `rvfi_halt` and `rvfi_intr` should be created in addition to the `rvfi_trap` signal. The signals should have the following meaning:
+
+`rvfi_trap` must be set for an instruction that cannot be decoded as a legal instruction, such as 0x00000000.
+
+In addition, `rvfi_trap` may be set for a misaligned memory read or write. In this case the new configuration switch `RISCV_FORMAL_TRAP_ALIGNED_MEM` must be set to enable the same behavior in the riscv-formal insn models.
+
+Furthermore `rvfi_trap` may be set for a jump instruction that jumps to a misaligned instruction. In this case the new configuration switch `RISCV_FORMAL_TRAP_ALIGNED_INSN` must be set to enable the same behavior in the riscv-formal insn models.
+
+The new signal `rvfi_halt` must be set when the instruction is the last instruction that the core retires before halting execution. It should not be set for an instruction that triggers a trap condition if the CPU reacts to the trap by executing a trap handler. This signal enables verification of liveness properties.
+
+Finally the new signal `rvfi_intr` must be set for the first instruction that is part of a trap handler, i.e. an instruction that has a `rvfi_pc_rdata` that does not match the `rvfi_pc_wdata` of the previous instruction.
+
 ### Support for RV64 ISAs
 
 Models for RV64I-only instructions are still missing. They will be added as soon as a RV64 processor with RVFI support is available.
