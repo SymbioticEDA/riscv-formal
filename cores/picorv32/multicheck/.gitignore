@@ -1,7 +1,0 @@
-test_*.smt2
-testbench.smt2
-testbench.yslog
-runall.sh
-results.txt
-models.vh
-insns.vh
