@@ -2,7 +2,7 @@
 
 module rvfi_insn_xor (
   input                                rvfi_valid,
-  input [                32   - 1 : 0] rvfi_insn,
+  input [`RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
   input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,

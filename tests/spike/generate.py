@@ -31,6 +31,7 @@ with open("makefile", "w") as makefile:
         with open("test_%s.v" % insn, "w") as f:
             print("// DO NOT EDIT -- auto-generated from riscv-formal/tests/spike/generate.py", file=f)
             print("`define RISCV_FORMAL_XLEN %d" % xlen, file=f)
+            print("`define RISCV_FORMAL_ILEN 32", file=f)
             if compressed: print("`define RISCV_FORMAL_COMPRESSED", file=f)
             print("`include \"../../insns/insn_%s.v\"" % insn, file=f)
 

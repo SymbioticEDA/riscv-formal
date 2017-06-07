@@ -3,8 +3,10 @@ module rvfi_insn_check (
 	input enable,
 	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid,
 	input [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order,
-	input [`RISCV_FORMAL_NRET *                 32   - 1 : 0] rvfi_insn,
+	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
 	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap,
+	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt,
+	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_intr,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
@@ -26,8 +28,10 @@ module rvfi_insn_check (
 	generate for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin:channel
 `endif
 		(* keep *) wire valid = enable && rvfi_valid[channel_idx];
-		(* keep *) wire [                      31 : 0] insn      = rvfi_insn     [channel_idx*32 +: 32];
+		(* keep *) wire [`RISCV_FORMAL_ILEN   - 1 : 0] insn      = rvfi_insn     [channel_idx*`RISCV_FORMAL_ILEN   +: `RISCV_FORMAL_ILEN];
 		(* keep *) wire                                trap      = rvfi_trap     [channel_idx];
+		(* keep *) wire                                halt      = rvfi_halt     [channel_idx];
+		(* keep *) wire                                intr      = rvfi_intr     [channel_idx];
 		(* keep *) wire [                       4 : 0] rs1_addr  = rvfi_rs1_addr [channel_idx*5  +:  5];
 		(* keep *) wire [                       4 : 0] rs2_addr  = rvfi_rs2_addr [channel_idx*5  +:  5];
 		(* keep *) wire [`RISCV_FORMAL_XLEN   - 1 : 0] rs1_rdata = rvfi_rs1_rdata[channel_idx*`RISCV_FORMAL_XLEN   +: `RISCV_FORMAL_XLEN];

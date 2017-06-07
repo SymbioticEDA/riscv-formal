@@ -23,7 +23,7 @@ def header(f, insn, isa_mode=False):
         print("module rvfi_insn_%s (" % insn, file=f)
 
     print("  input                                rvfi_valid,", file=f)
-    print("  input [                32   - 1 : 0] rvfi_insn,", file=f)
+    print("  input [`RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,", file=f)
     print("  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,", file=f)
     print("  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,", file=f)
     print("  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,", file=f)

@@ -18,6 +18,8 @@ module rocket_wrapper (
 	output [4:0]  rvfi_rs2_addr,
 	output [31:0] rvfi_rs2_rdata,
 	output        rvfi_trap,
+	output        rvfi_halt,
+	output        rvfi_intr,
 	output        rvfi_valid
 );
 	// Rocket Tile Inputs
@@ -222,6 +224,8 @@ module rocket_wrapper (
 		.rvfi_rs2_addr             (rvfi_rs2_addr             ),
 		.rvfi_rs2_rdata            (rvfi_rs2_rdata            ),
 		.rvfi_trap                 (rvfi_trap                 ),
+		.rvfi_halt                 (rvfi_halt                 ),
+		.rvfi_intr                 (rvfi_intr                 ),
 		.rvfi_valid                (rvfi_valid                )
 	);
 endmodule

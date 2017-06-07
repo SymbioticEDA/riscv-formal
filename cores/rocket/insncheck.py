@@ -43,6 +43,7 @@ with open("../../insns/isa_rv32i.txt") as isa_file:
                     : verilog_defines -D RISCV_FORMAL
                     : verilog_defines -D RISCV_FORMAL_NRET=1
                     : verilog_defines -D RISCV_FORMAL_XLEN=32
+                    : verilog_defines -D RISCV_FORMAL_ILEN=32
                     : verilog_defines -D RISCV_FORMAL_BMC_DEPTH=@depth@
                     : verilog_defines -D RISCV_FORMAL_INSN_MODEL=rvfi_insn_@insn@
                     : verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=0

@@ -2,8 +2,10 @@
 `define RFVI_WIRES                                                                   \
 (* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid;      \
 (* keep *) wire [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order;      \
-(* keep *) wire [`RISCV_FORMAL_NRET *                 32   - 1 : 0] rvfi_insn;       \
+(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn;       \
 (* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap;       \
+(* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt;       \
+(* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_intr;       \
 (* keep *) wire [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr;   \
 (* keep *) wire [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr;   \
 (* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata;  \
@@ -23,6 +25,8 @@
 .rvfi_order     (rvfi_order    ),  \
 .rvfi_insn      (rvfi_insn     ),  \
 .rvfi_trap      (rvfi_trap     ),  \
+.rvfi_halt      (rvfi_halt     ),  \
+.rvfi_intr      (rvfi_intr     ),  \
 .rvfi_rs1_addr  (rvfi_rs1_addr ),  \
 .rvfi_rs2_addr  (rvfi_rs2_addr ),  \
 .rvfi_rs1_rdata (rvfi_rs1_rdata),  \

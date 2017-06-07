@@ -5,8 +5,10 @@ module rvfi_imem_check (
 	output [15:0] imem_data, 
 	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid,
 	input [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order,
-	input [`RISCV_FORMAL_NRET *                 32   - 1 : 0] rvfi_insn,
+	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
 	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap,
+	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt,
+	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_intr,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,
 	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
@@ -29,7 +31,7 @@ module rvfi_imem_check (
 	endchecker
 
 	reg [`RISCV_FORMAL_XLEN-1:0] pc;
-	reg [31:0] insn;
+	reg [`RISCV_FORMAL_ILEN-1:0] insn;
 
 	integer channel_idx;
 	integer i;
@@ -38,7 +40,7 @@ module rvfi_imem_check (
 		for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin
 			if (resetn && rvfi_valid[channel_idx]) begin
 				pc = rvfi_pc_rdata[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
-				insn = rvfi_insn[channel_idx*32 +: 32];
+				insn = rvfi_insn[channel_idx*`RISCV_FORMAL_ILEN +: `RISCV_FORMAL_ILEN];
 
 				if (pc == imem_addr)
 					assert(insn[15:0] == imem_data);

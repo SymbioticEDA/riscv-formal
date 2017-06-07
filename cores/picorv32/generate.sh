@@ -9,7 +9,7 @@ sbycmd="sby"
 use_verific=false
 check_bmc_depth=20
 insn_bmc_depth=30
-aigsmt=z3
+aigsmt=yices
 
 rm -rf work
 mkdir -p work
@@ -51,6 +51,7 @@ for check in reg pc imem dmem; do
 			\`define RISCV_FORMAL
 			\`define RISCV_FORMAL_NRET 1
 			\`define RISCV_FORMAL_XLEN 32
+			\`define RISCV_FORMAL_ILEN 32
 			\`define RISCV_FORMAL_COMPRESSED
 			\`define RISCV_FORMAL_ALIGNED_MEM
 			\`define RISCV_FORMAL_BLACKBOX_ALU
@@ -121,6 +122,7 @@ for insn in $basedir/insns/insn_*.v; do
 			\`define RISCV_FORMAL
 			\`define RISCV_FORMAL_NRET 1
 			\`define RISCV_FORMAL_XLEN 32
+			\`define RISCV_FORMAL_ILEN 32
 			\`define RISCV_FORMAL_COMPRESSED
 			\`define RISCV_FORMAL_ALIGNED_MEM
 			\`define RISCV_FORMAL_BLACKBOX_REGS

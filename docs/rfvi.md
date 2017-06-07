@@ -5,14 +5,16 @@ RISC-V Formal Interface (RVFI)
 RFVI Specification
 ------------------
 
-In the following specification the term `XLEN` refers to the width of an `x` register in bits, as described in the RISC-V ISA specification. The term `NRET` refers to the maximum number of instructions that the core under test can retire in one cycle. If more than one of the retired instruction writes the same register, the channel with the highest index contains the instruction that wins the conflict.
+In the following specification the term `XLEN` refers to the width of an `x` register in bits, as described in the RISC-V ISA specification. The term `NRET` refers to the maximum number of instructions that the core under test can retire in one cycle. If more than one of the retired instruction writes the same register, the channel with the highest index contains the instruction that wins the conflict. The term `ILEN` refers to the maximum instruction width for the processor under test.
 
 The Interface consists only of output signals. Each signal is a concatenation of `NRET` values of constant width, effectively creating `NRET` channels. For simplicity, the following descriptions refer to one such channel. For example, we refer to `rvfi_valid` as a 1-bit signal, not a `NRET`-bits signal.
 
     output [NRET        - 1 : 0] rvfi_valid
     output [NRET *    8 - 1 : 0] rvfi_order
-    output [NRET *   32 - 1 : 0] rvfi_insn
+    output [NRET * ILEN - 1 : 0] rvfi_insn
     output [NRET        - 1 : 0] rvfi_trap
+    output [NRET        - 1 : 0] rvfi_halt
+    output [NRET        - 1 : 0] rvfi_intr
 
 When the core retires an instruction, it asserts the `rvfi_valid` signal and uses the signals described below to output the details of the retired instruction. The signals below are only valid during such a cycle and can be driven to arbitrary values in a cycle in which `rvfi_valid` is not asserted.
 
@@ -20,7 +22,13 @@ Cores that retire all instructions in-order may set `rvfi_order` to constant zer
 
 `rvfi_insn` is the 32-bit or 16-bit instruction word. In case of a 16-bit instruction the upper 16-bits of this output may carry an arbitrary bit pattern. The current RVFI specification does not support instructions wider than 32 bits.
 
-The `rvfi_trap` signal that is high for an instruction that traps and low otherwise. The signals associated with the post-state may have arbitrary values when `rvfi_trap` is asserted. `rvfi_rs1_addr` and `rvfi_rs2_addr` may have arbitrary values when `rvfi_trap` is asserted, but `rvfi_rs1_rdata` and `rvfi_rs2_rdata` must be consistent with the register file for nonzero `rvfi_rs1_addr` and `rvfi_rs2_addr` (and zero when `x0` is addressed). Which instruction traps depends on the implemented ISA. Make sure to configure riscv-formal to match the ISA implemented by the core under test.
+`rvfi_trap` must be set for an instruction that cannot be decoded as a legal instruction, such as 0x00000000.
+
+In addition, `rvfi_trap` may be set for a misaligned memory read or write. In this case the configuration switch `RISCV_FORMAL_TRAP_ALIGNED_MEM` must be set to enable the same behavior in the riscv-formal insn models. `rvfi_trap` may also be set for a jump instruction that jumps to a misaligned instruction. In this case the configuration switch `RISCV_FORMAL_TRAP_ALIGNED_INSN` must be set to enable the same behavior in the riscv-formal insn models.
+
+The signal `rvfi_halt` must be set when the instruction is the last instruction that the core retires before halting execution. It should not be set for an instruction that triggers a trap condition if the CPU reacts to the trap by executing a trap handler. This signal enables verification of liveness properties.
+
+Finally `rvfi_intr` must be set for the first instruction that is part of a trap handler, i.e. an instruction that has a `rvfi_pc_rdata` that does not match the `rvfi_pc_wdata` of the previous instruction.
 
     output [NRET *    5 - 1 : 0] rvfi_rs1_addr
     output [NRET *    5 - 1 : 0] rvfi_rs2_addr
@@ -68,22 +76,6 @@ RVFI TODOs and Requests for Comments
 ------------------------------------
 
 The following section contains notes on future extensions to RVFI. They will come part of the spec as soon as there is at least one core that implements the feature, and a matching formal check that utilises the feature.
-
-### Changes to `rvfi_trap` specification
-
-The exact meaning of the `rvfi_trap` signal currently is not very well defined. This is a proposal to fix this.
-
-Two additional control signals `rvfi_halt` and `rvfi_intr` should be created in addition to the `rvfi_trap` signal. The signals should have the following meaning:
-
-`rvfi_trap` must be set for an instruction that cannot be decoded as a legal instruction, such as 0x00000000.
-
-In addition, `rvfi_trap` may be set for a misaligned memory read or write. In this case the new configuration switch `RISCV_FORMAL_TRAP_ALIGNED_MEM` must be set to enable the same behavior in the riscv-formal insn models.
-
-Furthermore `rvfi_trap` may be set for a jump instruction that jumps to a misaligned instruction. In this case the new configuration switch `RISCV_FORMAL_TRAP_ALIGNED_INSN` must be set to enable the same behavior in the riscv-formal insn models.
-
-The new signal `rvfi_halt` must be set when the instruction is the last instruction that the core retires before halting execution. It should not be set for an instruction that triggers a trap condition if the CPU reacts to the trap by executing a trap handler. This signal enables verification of liveness properties.
-
-Finally the new signal `rvfi_intr` must be set for the first instruction that is part of a trap handler, i.e. an instruction that has a `rvfi_pc_rdata` that does not match the `rvfi_pc_wdata` of the previous instruction.
 
 ### Support for RV64 ISAs
 

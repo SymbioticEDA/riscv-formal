@@ -6,6 +6,7 @@ isa = "rv32i"
 prefix = None
 channels = 1
 xlen = None
+ilen = None
 aligned = False
 compressed = False
 
@@ -60,6 +61,9 @@ elif isa.startswith("rv64"):
 else:
     usage()
 
+if ilen is None:
+    ilen = 32
+
 if "c" in isa:
     compressed = True
 
@@ -73,6 +77,8 @@ print("  input [%d:0] rvfi_valid," % (channels-1))
 print("  input [%d:0] rvfi_order," % (channels*8-1))
 print("  input [%d:0] rvfi_insn," % (channels*32-1))
 print("  input [%d:0] rvfi_trap," % (channels-1))
+print("  input [%d:0] rvfi_halt," % (channels-1))
+print("  input [%d:0] rvfi_intr," % (channels-1))
 print("  input [%d:0] rvfi_rs1_addr," % (channels*5-1))
 print("  input [%d:0] rvfi_rs2_addr," % (channels*5-1))
 print("  input [%d:0] rvfi_rs1_rdata," % (channels*xlen-1))
@@ -191,6 +197,7 @@ print("endmodule")
 replace_db = list()
 replace_db.append((" rvfi_isa_%s " % isa, " %s_isa_spec " % prefix))
 replace_db.append(("`RISCV_FORMAL_XLEN", str(xlen)))
+replace_db.append(("`RISCV_FORMAL_ILEN", str(ilen)))
 
 
 insn_list = list()

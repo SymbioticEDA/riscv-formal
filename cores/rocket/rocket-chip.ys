@@ -34,6 +34,8 @@ expose rvfi_mon_rvfi_rs1_rdata
 expose rvfi_mon_rvfi_rs2_addr
 expose rvfi_mon_rvfi_rs2_rdata
 expose rvfi_mon_rvfi_trap
+expose rvfi_mon_rvfi_halt
+expose rvfi_mon_rvfi_intr
 expose rvfi_mon_rvfi_valid
 
 rename rvfi_mon_rvfi_insn      rvfi_insn
@@ -52,6 +54,8 @@ rename rvfi_mon_rvfi_rs1_rdata rvfi_rs1_rdata
 rename rvfi_mon_rvfi_rs2_addr  rvfi_rs2_addr
 rename rvfi_mon_rvfi_rs2_rdata rvfi_rs2_rdata
 rename rvfi_mon_rvfi_trap      rvfi_trap
+rename rvfi_mon_rvfi_halt      rvfi_halt
+rename rvfi_mon_rvfi_intr      rvfi_intr
 rename rvfi_mon_rvfi_valid     rvfi_valid
 
 delete rvfi_mon
@@ -77,6 +81,8 @@ add -output rvfi_rs1_rdata   32
 add -output rvfi_rs2_addr     5
 add -output rvfi_rs2_rdata   32
 add -output rvfi_trap         1
+add -output rvfi_halt         1
+add -output rvfi_intr         1
 add -output rvfi_valid        1
 
 connect -port core rvfi_insn      rvfi_insn
@@ -95,6 +101,8 @@ connect -port core rvfi_rs1_rdata rvfi_rs1_rdata
 connect -port core rvfi_rs2_addr  rvfi_rs2_addr
 connect -port core rvfi_rs2_rdata rvfi_rs2_rdata
 connect -port core rvfi_trap      rvfi_trap
+connect -port core rvfi_halt      rvfi_halt
+connect -port core rvfi_intr      rvfi_intr
 connect -port core rvfi_valid     rvfi_valid
 
 cd ..
