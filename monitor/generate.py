@@ -172,9 +172,16 @@ for chidx in range(channels):
     print("      if (ch%d_rvfi_rd_addr != ch%d_spec_rd_addr) begin" % (chidx, chidx))
     print("        ch%d_print_error; $display(\"Error details: mismatch in rd_addr.\");" % (chidx))
     print("      end")
-    print("      if (ch%d_rvfi_rd_wdata != ch%d_spec_rd_wdata) begin" % (chidx, chidx))
-    print("        ch%d_print_error; $display(\"Error details: mismatch in rd_wdata.\");" % (chidx))
-    print("      end")
+
+    if ignore_mem:
+        print("      if (ch%d_rvfi_rd_wdata != ch%d_spec_rd_wdata && !ch%d_spec_mem_rmask) begin" % (chidx, chidx, chidx))
+        print("        ch%d_print_error; $display(\"Error details: mismatch in rd_wdata.\");" % (chidx))
+        print("      end")
+    else:
+        print("      if (ch%d_rvfi_rd_wdata != ch%d_spec_rd_wdata) begin" % (chidx, chidx))
+        print("        ch%d_print_error; $display(\"Error details: mismatch in rd_wdata.\");" % (chidx))
+        print("      end")
+
     print("      if (ch%d_rvfi_pc_wdata != ch%d_spec_pc_wdata) begin" % (chidx, chidx))
     print("        ch%d_print_error; $display(\"Error details: mismatch in pc_wdata.\");" % (chidx))
     print("      end")
