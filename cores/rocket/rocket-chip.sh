@@ -29,7 +29,7 @@ if [ ! -d rocket-chip ]; then
 
 	cd ..
 
-	( cd ../../monitor && python3 generate.py -p RVFIMonitor; ) > rocket-chip/vsrc/RVFIMonitor.v
+	( cd ../../monitor && python3 generate.py -p RVFIMonitor -M; ) > rocket-chip/vsrc/RVFIMonitor.v
 	sed -i 's/--top-module/-Wno-fatal &/' rocket-chip/emulator/Makefrag-verilator
 fi
 

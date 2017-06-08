@@ -9,6 +9,7 @@ xlen = None
 ilen = None
 aligned = False
 compressed = False
+ignore_mem = False
 
 def usage():
     print("""
@@ -28,11 +29,14 @@ Usage: %s [options] > outfile.v
   -a
       create monitor for core with aligned memory access
 
+  -M
+      do not check the mem_ RVFI signals in the monitor
+
 """ % sys.argv[0])
     sys.exit(1)
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "i:p:c:a")
+    opts, args = getopt.getopt(sys.argv[1:], "i:p:c:aM")
 except:
     usage()
 
@@ -45,6 +49,8 @@ for o, a in opts:
         channels = int(a)
     elif o == "-a":
         aligned = True
+    elif o == "-M":
+        ignore_mem = True
     else:
         usage()
 
@@ -172,20 +178,22 @@ for chidx in range(channels):
     print("      if (ch%d_rvfi_pc_wdata != ch%d_spec_pc_wdata) begin" % (chidx, chidx))
     print("        ch%d_print_error; $display(\"Error details: mismatch in pc_wdata.\");" % (chidx))
     print("      end")
-    print("      if (ch%d_rvfi_mem_addr != ch%d_spec_mem_addr) begin" % (chidx, chidx))
-    print("        ch%d_print_error; $display(\"Error details: mismatch in mem_addr.\");" % (chidx))
-    print("      end")
-    print("      if (ch%d_rvfi_mem_wmask != ch%d_spec_mem_wmask) begin" % (chidx, chidx))
-    print("        ch%d_print_error; $display(\"Error details: mismatch in mem_wmask.\");" % (chidx))
-    print("      end")
 
-    for i in range(xlen//8):
-        print("      if (!ch%d_rvfi_mem_rmask[%d] && ch%d_spec_mem_rmask[%d]) begin" % (chidx, i, chidx, i))
-        print("        ch%d_print_error; $display(\"Error details: mismatch in mem_rmask[%d].\");" % (chidx, i))
+    if not ignore_mem:
+        print("      if (ch%d_rvfi_mem_addr != ch%d_spec_mem_addr) begin" % (chidx, chidx))
+        print("        ch%d_print_error; $display(\"Error details: mismatch in mem_addr.\");" % (chidx))
         print("      end")
-        print("      if (ch%d_rvfi_mem_wmask[%d] && ch%d_rvfi_mem_wdata[%d:%d] != ch%d_spec_mem_wdata[%d:%d]) begin" % (chidx, i, chidx, 8*i+7, 8*i, chidx, 8*i+7, 8*i))
-        print("        ch%d_print_error; $display(\"Error details: mismatch in mem_wdata[%d:%d].\");" % (chidx, 8*i+7, 8*i))
+        print("      if (ch%d_rvfi_mem_wmask != ch%d_spec_mem_wmask) begin" % (chidx, chidx))
+        print("        ch%d_print_error; $display(\"Error details: mismatch in mem_wmask.\");" % (chidx))
         print("      end")
+
+        for i in range(xlen//8):
+            print("      if (!ch%d_rvfi_mem_rmask[%d] && ch%d_spec_mem_rmask[%d]) begin" % (chidx, i, chidx, i))
+            print("        ch%d_print_error; $display(\"Error details: mismatch in mem_rmask[%d].\");" % (chidx, i))
+            print("      end")
+            print("      if (ch%d_rvfi_mem_wmask[%d] && ch%d_rvfi_mem_wdata[%d:%d] != ch%d_spec_mem_wdata[%d:%d]) begin" % (chidx, i, chidx, 8*i+7, 8*i, chidx, 8*i+7, 8*i))
+            print("        ch%d_print_error; $display(\"Error details: mismatch in mem_wdata[%d:%d].\");" % (chidx, 8*i+7, 8*i))
+            print("      end")
 
     print("    end")
     print("  end")
@@ -264,8 +272,10 @@ def print_rewrite_file(filename):
 
             print(line, end="")
 
+print()
 print_rewrite_file("../insns/isa_%s.v" % isa)
 
 for insn in insn_list:
+    print()
     print_rewrite_file("../insns/insn_%s.v" % insn)
 
