@@ -14,7 +14,7 @@ if [ ! -d rocket-chip ]; then
 	git checkout RVFI
 	git submodule update --init
 
-	( cd ../../../monitor && python3 generate.py -p RVFIMonitor -M; ) > vsrc/RVFIMonitor.v
+	( cd ../../../monitor && python3 generate.py -p RVFIMonitor -MC; ) > vsrc/RVFIMonitor.v
 	sed -i 's/--top-module/-Wno-fatal &/' emulator/Makefrag-verilator
 
 	cd ..
