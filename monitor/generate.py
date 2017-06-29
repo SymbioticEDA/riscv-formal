@@ -179,7 +179,7 @@ for chidx in range(channels):
     print("    begin")
 
     if not quiet_mode:
-        print("      $display(\"-------- RVFI Monitor error %%0d in channel %d: %%m --------\", code);" % (chidx))
+        print("      $display(\"-------- RVFI Monitor error %%0d in channel %d: %%m at time %%0t --------\", code, $time);" % (chidx))
         print("      $display(\"Error message: %0s\", msg);")
         for p in """rvfi_valid rvfi_order rvfi_insn rvfi_trap rvfi_halt rvfi_intr
                     rvfi_rs1_addr rvfi_rs2_addr rvfi_rs1_rdata rvfi_rs2_rdata
@@ -199,14 +199,15 @@ for chidx in range(channels):
 
     print("  always @(posedge clock) begin")
     print("    ch%d_errcode <= 0;" % (chidx))
-    print("    if (!reset && ch%d_spec_valid) begin" % (chidx))
+    print("    if (!reset && ch%d_rvfi_valid) begin" % (chidx))
 
     if verbose_mode:
-        print("      $display(\"-------- RVFI Monitor insn in channel %d: %%m --------\");" % (chidx))
+        print("      $display(\"-------- RVFI Monitor insn in channel %d: %%m at time %%0t --------\", $time);" % (chidx))
         for p in """rvfi_valid rvfi_order rvfi_insn rvfi_trap rvfi_halt rvfi_intr
                     rvfi_rs1_addr rvfi_rs2_addr rvfi_rs1_rdata rvfi_rs2_rdata
                     rvfi_rd_addr rvfi_rd_wdata rvfi_pc_rdata rvfi_pc_wdata
-                    rvfi_mem_addr rvfi_mem_rmask rvfi_mem_wmask rvfi_mem_rdata rvfi_mem_wdata""".split():
+                    rvfi_mem_addr rvfi_mem_rmask rvfi_mem_wmask rvfi_mem_rdata rvfi_mem_wdata
+                    spec_valid spec_trap""".split():
             print("      $display(\"%s = %%x\", ch%d_%s);" % (p, chidx, p))
 
     if not noconsistency:
@@ -214,49 +215,53 @@ for chidx in range(channels):
         print("        ch%d_handle_error(%d, \"monitor without reordering\");" % (chidx, 100*(1+chidx)))
         print("      end")
 
-    print("      if (ch%d_rvfi_trap != ch%d_spec_trap) begin" % (chidx, chidx))
-    print("        ch%d_handle_error(%d, \"mismatch in trap\");" % (chidx, 100*(1+chidx)+1))
-    print("      end")
+    print("      if (ch%d_spec_valid) begin" % (chidx))
 
-    print("      if (ch%d_rvfi_rs1_addr != ch%d_spec_rs1_addr && ch%d_spec_rs1_addr != 0) begin" % (chidx, chidx, chidx))
-    print("        ch%d_handle_error(%d, \"mismatch in rs1_addr\");" % (chidx, 100*(1+chidx)+2))
-    print("      end")
-    print("      if (ch%d_rvfi_rs2_addr != ch%d_spec_rs2_addr && ch%d_spec_rs2_addr != 0) begin" % (chidx, chidx, chidx))
-    print("        ch%d_handle_error(%d, \"mismatch in rs2_addr\");" % (chidx, 100*(1+chidx)+3))
-    print("      end")
-    print("      if (ch%d_rvfi_rd_addr != ch%d_spec_rd_addr) begin" % (chidx, chidx))
-    print("        ch%d_handle_error(%d, \"mismatch in rd_addr\");" % (chidx, 100*(1+chidx)+4))
-    print("      end")
+    print("        if (ch%d_rvfi_trap != ch%d_spec_trap) begin" % (chidx, chidx))
+    print("          ch%d_handle_error(%d, \"mismatch in trap\");" % (chidx, 100*(1+chidx)+1))
+    print("        end")
+
+    print("        if (ch%d_rvfi_rs1_addr != ch%d_spec_rs1_addr && ch%d_spec_rs1_addr != 0) begin" % (chidx, chidx, chidx))
+    print("          ch%d_handle_error(%d, \"mismatch in rs1_addr\");" % (chidx, 100*(1+chidx)+2))
+    print("        end")
+    print("        if (ch%d_rvfi_rs2_addr != ch%d_spec_rs2_addr && ch%d_spec_rs2_addr != 0) begin" % (chidx, chidx, chidx))
+    print("          ch%d_handle_error(%d, \"mismatch in rs2_addr\");" % (chidx, 100*(1+chidx)+3))
+    print("        end")
+    print("        if (ch%d_rvfi_rd_addr != ch%d_spec_rd_addr) begin" % (chidx, chidx))
+    print("          ch%d_handle_error(%d, \"mismatch in rd_addr\");" % (chidx, 100*(1+chidx)+4))
+    print("        end")
 
     if ignore_mem:
-        print("      if (ch%d_rvfi_rd_wdata != ch%d_spec_rd_wdata && !ch%d_spec_mem_rmask) begin" % (chidx, chidx, chidx))
-        print("        ch%d_handle_error(%d, \"mismatch in rd_wdata\");" % (chidx, 100*(1+chidx)+5))
-        print("      end")
+        print("        if (ch%d_rvfi_rd_wdata != ch%d_spec_rd_wdata && !ch%d_spec_mem_rmask) begin" % (chidx, chidx, chidx))
+        print("          ch%d_handle_error(%d, \"mismatch in rd_wdata\");" % (chidx, 100*(1+chidx)+5))
+        print("        end")
     else:
-        print("      if (ch%d_rvfi_rd_wdata != ch%d_spec_rd_wdata) begin" % (chidx, chidx))
-        print("        ch%d_handle_error(%d, \"mismatch in rd_wdata\");" % (chidx, 100*(1+chidx)+5))
-        print("      end")
+        print("        if (ch%d_rvfi_rd_wdata != ch%d_spec_rd_wdata) begin" % (chidx, chidx))
+        print("          ch%d_handle_error(%d, \"mismatch in rd_wdata\");" % (chidx, 100*(1+chidx)+5))
+        print("        end")
 
-    print("      if (ch%d_rvfi_pc_wdata != ch%d_spec_pc_wdata) begin" % (chidx, chidx))
-    print("        ch%d_handle_error(%d, \"mismatch in pc_wdata\");" % (chidx, 100*(1+chidx)+6))
-    print("      end")
+    print("        if (ch%d_rvfi_pc_wdata != ch%d_spec_pc_wdata) begin" % (chidx, chidx))
+    print("          ch%d_handle_error(%d, \"mismatch in pc_wdata\");" % (chidx, 100*(1+chidx)+6))
+    print("        end")
 
     if not ignore_mem:
-        print("      if (ch%d_rvfi_mem_addr != ch%d_spec_mem_addr) begin" % (chidx, chidx))
-        print("        ch%d_handle_error(%d, \"mismatch in mem_addr\");" % (chidx, 100*(1+chidx)+7))
-        print("      end")
-        print("      if (ch%d_rvfi_mem_wmask != ch%d_spec_mem_wmask) begin" % (chidx, chidx))
-        print("        ch%d_handle_error(%d, \"mismatch in mem_wmask\");" % (chidx, 100*(1+chidx)+8))
-        print("      end")
+        print("        if (ch%d_rvfi_mem_wmask != ch%d_spec_mem_wmask) begin" % (chidx, chidx))
+        print("          ch%d_handle_error(%d, \"mismatch in mem_wmask\");" % (chidx, 100*(1+chidx)+8))
+        print("        end")
 
         for i in range(xlen//8):
-            print("      if (!ch%d_rvfi_mem_rmask[%d] && ch%d_spec_mem_rmask[%d]) begin" % (chidx, i, chidx, i))
-            print("        ch%d_handle_error(%d, \"mismatch in mem_rmask[%d]\");" % (chidx, 100*(1+chidx)+10+i, i))
-            print("      end")
-            print("      if (ch%d_rvfi_mem_wmask[%d] && ch%d_rvfi_mem_wdata[%d:%d] != ch%d_spec_mem_wdata[%d:%d]) begin" % (chidx, i, chidx, 8*i+7, 8*i, chidx, 8*i+7, 8*i))
-            print("        ch%d_handle_error(%d, \"mismatch in mem_wdata[%d:%d]\");" % (chidx, 100*(1+chidx)+20+i, 8*i+7, 8*i))
-            print("      end")
+            print("        if (!ch%d_rvfi_mem_rmask[%d] && ch%d_spec_mem_rmask[%d]) begin" % (chidx, i, chidx, i))
+            print("          ch%d_handle_error(%d, \"mismatch in mem_rmask[%d]\");" % (chidx, 100*(1+chidx)+10+i, i))
+            print("        end")
+            print("        if (ch%d_rvfi_mem_wmask[%d] && ch%d_rvfi_mem_wdata[%d:%d] != ch%d_spec_mem_wdata[%d:%d]) begin" % (chidx, i, chidx, 8*i+7, 8*i, chidx, 8*i+7, 8*i))
+            print("          ch%d_handle_error(%d, \"mismatch in mem_wdata[%d:%d]\");" % (chidx, 100*(1+chidx)+20+i, 8*i+7, 8*i))
+            print("        end")
 
+        print("        if (ch%d_rvfi_mem_addr != ch%d_spec_mem_addr && (ch%d_rvfi_mem_wmask || ch%d_rvfi_mem_rmask)) begin" % (chidx, chidx, chidx, chidx))
+        print("          ch%d_handle_error(%d, \"mismatch in mem_addr\");" % (chidx, 100*(1+chidx)+7))
+        print("        end")
+
+    print("      end")
     print("    end")
     print("  end")
     print()
@@ -311,7 +316,7 @@ if not noconsistency:
         print("    begin")
 
         if not quiet_mode:
-            print("      $display(\"-------- RVFI Monitor error %%0d in reordered channel %d: %%m --------\", code);" % (chidx))
+            print("      $display(\"-------- RVFI Monitor error %%0d in reordered channel %d: %%m at time %%0t --------\", code, $time);" % (chidx))
             print("      $display(\"Error message: %0s\", msg);")
             for p in """rvfi_valid rvfi_order rvfi_insn rvfi_trap rvfi_halt rvfi_intr
                         rvfi_rs1_addr rvfi_rs2_addr rvfi_rs1_rdata rvfi_rs2_rdata
