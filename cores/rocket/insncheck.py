@@ -34,6 +34,8 @@ with open("../../insns/isa_rv32i.txt") as isa_file:
             print_hfmt(sby_file, """
                     : [options]
                     : mode bmc
+                    : append 10
+                    : tbtop uut.rocket
                     : depth @depth_plus_5@
                     :
                     : [engines]
