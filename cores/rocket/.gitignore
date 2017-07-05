@@ -8,3 +8,6 @@
 /rocketio-bmc
 /cover
 /insncheck
+/testbench
+/testbench.v
+/testbench.vcd
