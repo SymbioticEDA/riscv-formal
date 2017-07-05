@@ -25,6 +25,8 @@ with open("../../insns/isa_rv32ic.txt") as f:
 read_verilog isa_coverage_rv32i.v
 read_verilog isa_coverage_rv32ic.v
 
+read_verilog riscv_rv32i_insn.v
+
 read_verilog -sv coverage.sv
 prep -flatten -top coverage
 
@@ -43,4 +45,6 @@ with open("../../insns/isa_rv32ic.txt") as f:
 
 isa_coverage_rv32i.v
 isa_coverage_rv32ic.v
+
+riscv_rv32i_insn.v
 

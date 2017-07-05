@@ -283,7 +283,11 @@ module tilelink_ad_dummy (
 	reg [3:0]  op_mask;
 	reg [31:0] op_data;
 
+`ifdef FAST_MEM
+	wire delay_a = 0, delay_d = 0;
+`else
 	wire delay_a = $anyseq, delay_d = $anyseq;
+`endif
 	assign channel_a_ready = (!busy || (last && channel_d_ready && channel_d_valid)) && !reset && !delay_a;
 	assign channel_d_valid = ready && !reset && !delay_d;
 
