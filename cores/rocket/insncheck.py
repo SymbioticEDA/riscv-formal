@@ -30,7 +30,7 @@ if use_aiger:
     hargs["engine"] = "abc bmc3"
     hargs["ilang_file"] = "rocket-chip-gates.il"
 else:
-    hargs["engine"] = "smtbmc yices"
+    hargs["engine"] = "smtbmc --presat yices"
     hargs["ilang_file"] = "rocket-chip.il"
 
 with open("../../insns/isa_rv32i.txt") as isa_file:
