@@ -1,7 +1,7 @@
 RISC-V Formal Verification Framework
 ====================================
 
-**This is work in progress. The interfaces described below are likely to change and the current implementation of everything mentioned below is incomplete.**
+**This is work in progress. The interfaces described here are likely to change as the project matures.**
 
 About
 -----
@@ -12,6 +12,7 @@ It consists of the following components:
 - A processor-independent formal description of the RISC-V ISA
 - A set of formal testbenches for each processor supported by the framework
 - The specification for the [RISC-V Formal Interface (RVFI)](docs/rvfi.md) that must be implemented by a processor core to interface with `riscv-formal`.
+- Some auxiliary proofs and scripts, for example to prove correctness of the ISA spec agains riscv-isa-sim.
 
 See [cores/picorv32/](cores/picorv32/) for example bindings for the PicoRV32 processor core.
 
@@ -21,13 +22,10 @@ The current focus is on implementing formal models of all instructions from the 
 
 `riscv-formal` uses the FOSS SymbiYosys formal verification flow. All properties are expressed using immediate assertions/assumptions for maximal compatibility with other tools.
 
-See [docs/rvfi.md](docs/rvfi.md) for a description of the RISC-V Formal Interface (RVFI).
-
 Table of contents
 -----------------
 
 - [The RVFI Interface Specification](docs/rvfi.md)
 - [The riscv-formal Verification Procedure](docs/procedure.md)
 - [References and related work](docs/references.md)
-
 
