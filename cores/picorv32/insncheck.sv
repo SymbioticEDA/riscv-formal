@@ -8,7 +8,7 @@ module testbench (
 	output [3:0]  mem_wstrb,
 	input  [31:0] mem_rdata
 );
-	`RFVI_WIRES
+	`RVFI_WIRES
 
 	reg resetn = 0;
 	wire trap;
@@ -28,7 +28,7 @@ module testbench (
 	rvfi_insn_check checker_inst (
 		.clk    (clk   ),
 		.enable (enable),
-		`RFVI_CONN
+		`RVFI_CONN
 	);
 
 	picorv32 #(
@@ -47,7 +47,7 @@ module testbench (
 		.mem_wstrb (mem_wstrb),
 		.mem_rdata (mem_rdata),
 
-		`RFVI_CONN
+		`RVFI_CONN
 	);
 
 	reg [4:0] mem_wait = 0;

@@ -15,7 +15,7 @@ module testbench (
 	always @(posedge clk)
 		resetn <= 1;
 
-	`RFVI_WIRES
+	`RVFI_WIRES
 
 	wire [31:0] dmem_addr;
 	reg [31:0] dmem_data;
@@ -24,7 +24,7 @@ module testbench (
 		.clk       (clk      ),
 		.resetn    (resetn   ),
 		.dmem_addr (dmem_addr),
-		`RFVI_CONN
+		`RVFI_CONN
 	);
 
 	always @(posedge clk) begin
@@ -58,7 +58,7 @@ module testbench (
 		.mem_wstrb      (mem_wstrb     ),
 		.mem_rdata      (mem_rdata     ),
 
-		`RFVI_CONN
+		`RVFI_CONN
 	);
 
 	reg [4:0] mem_wait = 0;

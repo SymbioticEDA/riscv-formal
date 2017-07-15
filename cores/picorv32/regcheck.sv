@@ -15,14 +15,14 @@ module testbench (
 	always @(posedge clk)
 		resetn <= 1;
 
-	`RFVI_WIRES
+	`RVFI_WIRES
 
 	rvfi_reg_check #(
 		.ZERO_INIT(1)
 	) checker_inst (
 		.clk    (clk   ),
 		.resetn (resetn),
-		`RFVI_CONN
+		`RVFI_CONN
 	);
 
 	picorv32 #(
@@ -42,7 +42,7 @@ module testbench (
 		.mem_wstrb      (mem_wstrb     ),
 		.mem_rdata      (mem_rdata     ),
 
-		`RFVI_CONN
+		`RVFI_CONN
 	);
 
 	reg [4:0] mem_wait = 0;

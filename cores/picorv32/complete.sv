@@ -16,7 +16,7 @@ module testbench (
 	always @(posedge clk)
 		resetn <= 1;
 
-	`RFVI_WIRES
+	`RVFI_WIRES
 
 	picorv32 #(
 		.COMPRESSED_ISA(1),
@@ -34,7 +34,7 @@ module testbench (
 		.mem_wstrb      (mem_wstrb     ),
 		.mem_rdata      (mem_rdata     ),
 
-		`RFVI_CONN
+		`RVFI_CONN
 	);
 
 	(* keep *) wire                                spec_valid;

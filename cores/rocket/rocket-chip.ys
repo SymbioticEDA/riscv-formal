@@ -14,7 +14,7 @@ EOT
 
 hierarchy -top RocketTile_rocket
 
-# ---- Create RFVI on RocketWithRVFI ----
+# ---- Create RVFI on RocketWithRVFI ----
 
 cd RocketWithRVFI
 
@@ -61,7 +61,7 @@ rename rvfi_mon_rvfi_valid     rvfi_valid
 delete rvfi_mon
 cd ..
 
-# ---- Create RFVI on RocketTile_rocket ----
+# ---- Create RVFI on RocketTile_rocket ----
 
 cd RocketTile_rocket
 

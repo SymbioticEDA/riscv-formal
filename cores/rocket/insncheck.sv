@@ -1,7 +1,7 @@
 module testbench (
 	input clk
 );
-	`RFVI_WIRES
+	`RVFI_WIRES
 
 	reg reset = 1;
 	reg enable = 0;
@@ -37,12 +37,12 @@ module testbench (
 	rvfi_insn_check checker_inst (
 		.clk    (clk   ),
 		.enable (enable),
-		`RFVI_CONN
+		`RVFI_CONN
 	);
 
 	rocket_wrapper uut (
 		.clock (clk  ),
 		.reset (reset),
-		`RFVI_CONN
+		`RVFI_CONN
 	);
 endmodule

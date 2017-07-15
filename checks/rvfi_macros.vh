@@ -1,5 +1,5 @@
 
-`define RFVI_WIRES                                                                   \
+`define RVFI_WIRES                                                                   \
 (* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid;      \
 (* keep *) wire [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order;      \
 (* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn;       \
@@ -20,7 +20,7 @@
 (* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata;  \
 (* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata;
 
-`define RFVI_CONN                  \
+`define RVFI_CONN                  \
 .rvfi_valid     (rvfi_valid    ),  \
 .rvfi_order     (rvfi_order    ),  \
 .rvfi_insn      (rvfi_insn     ),  \

@@ -2,7 +2,7 @@
 RISC-V Formal Interface (RVFI)
 ==============================
 
-RFVI Specification
+RVFI Specification
 ------------------
 
 In the following specification the term `XLEN` refers to the width of an `x` register in bits, as described in the RISC-V ISA specification. The term `NRET` refers to the maximum number of instructions that the core under test can retire in one cycle. If more than one of the retired instruction writes the same register, the channel with the highest index contains the instruction that wins the conflict. The term `ILEN` refers to the maximum instruction width for the processor under test.
