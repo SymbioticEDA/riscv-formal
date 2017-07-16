@@ -90,6 +90,6 @@ with open("insncheck/makefile", "w") as mkfile:
     with open("../../insns/isa_rv32i.txt") as isa_file:
         for insn in isa_file:
             for chanidx in range(2):
-                print("insn_%s_%d/PASS:" % (insn.strip(), chanidx), file=mkfile)
+                print("insn_%s_ch%d/PASS:" % (insn.strip(), chanidx), file=mkfile)
                 print("\t%s insn_%s_ch%d.sby" % (sbycmd, insn.strip(), chanidx), file=mkfile)
 
