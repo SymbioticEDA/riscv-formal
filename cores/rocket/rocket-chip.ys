@@ -65,25 +65,25 @@ cd ..
 
 cd RocketTile_rocket
 
-add -output rvfi_insn        32
-add -output rvfi_mem_addr    32
-add -output rvfi_mem_rdata   32
-add -output rvfi_mem_rmask    4
-add -output rvfi_mem_wdata   32
-add -output rvfi_mem_wmask    4
-add -output rvfi_order        8
-add -output rvfi_pc_rdata    32
-add -output rvfi_pc_wdata    32
-add -output rvfi_rd_addr      5
-add -output rvfi_rd_wdata    32
-add -output rvfi_rs1_addr     5
-add -output rvfi_rs1_rdata   32
-add -output rvfi_rs2_addr     5
-add -output rvfi_rs2_rdata   32
-add -output rvfi_trap         1
-add -output rvfi_halt         1
-add -output rvfi_intr         1
-add -output rvfi_valid        1
+add -output rvfi_insn        64
+add -output rvfi_mem_addr    64
+add -output rvfi_mem_rdata   64
+add -output rvfi_mem_rmask    8
+add -output rvfi_mem_wdata   64
+add -output rvfi_mem_wmask    8
+add -output rvfi_order       16
+add -output rvfi_pc_rdata    64
+add -output rvfi_pc_wdata    64
+add -output rvfi_rd_addr     10
+add -output rvfi_rd_wdata    64
+add -output rvfi_rs1_addr    10
+add -output rvfi_rs1_rdata   64
+add -output rvfi_rs2_addr    10
+add -output rvfi_rs2_rdata   64
+add -output rvfi_trap         2
+add -output rvfi_halt         2
+add -output rvfi_intr         2
+add -output rvfi_valid        2
 
 connect -port core rvfi_insn      rvfi_insn
 connect -port core rvfi_mem_addr  rvfi_mem_addr
