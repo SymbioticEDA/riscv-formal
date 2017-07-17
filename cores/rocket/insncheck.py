@@ -3,7 +3,8 @@
 import os, shutil, re
 
 basedir = "%s/../.." % os.getcwd()
-bmc_depth = 50
+smt_solver = "boolector"
+bmc_depth = 30
 use_aiger = False
 fast_mem = True
 no_system = True
@@ -30,7 +31,7 @@ if use_aiger:
     hargs["engine"] = "abc bmc3"
     hargs["ilang_file"] = "rocket-chip-gates.il"
 else:
-    hargs["engine"] = "smtbmc --presat yices"
+    hargs["engine"] = "smtbmc --presat %s" % smt_solver
     hargs["ilang_file"] = "rocket-chip.il"
 
 with open("../../insns/isa_rv32i.txt") as isa_file:

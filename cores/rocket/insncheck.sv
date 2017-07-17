@@ -33,8 +33,8 @@ module testbench (
 			assume (!rvfi_halt[0]);
 			assume (!rvfi_intr[0]);
 			assume (rvfi_insn[6:0] != 7'b1110011); // no SYSTEM instructions
-			assume (rvfi_insn[6:0] != 7'b0000011); // no LOAD instructions
-			assume (rvfi_insn[6:0] != 7'b0100011); // no STORE instructions
+			// assume (rvfi_insn[6:0] != 7'b0000011); // no LOAD instructions
+			// assume (rvfi_insn[6:0] != 7'b0100011); // no STORE instructions
 			assume (riscv_rv32i_valid_ch0); // no illegal instructions
 		end
 		if (rvfi_valid[1]) begin
@@ -42,8 +42,8 @@ module testbench (
 			assume (!rvfi_halt[1]);
 			assume (!rvfi_intr[1]);
 			assume (rvfi_insn[38:32] != 7'b1110011); // no SYSTEM instructions
-			assume (rvfi_insn[38:32] != 7'b0000011); // no LOAD instructions
-			assume (rvfi_insn[38:32] != 7'b0100011); // no STORE instructions
+			// assume (rvfi_insn[38:32] != 7'b0000011); // no LOAD instructions
+			// assume (rvfi_insn[38:32] != 7'b0100011); // no STORE instructions
 			assume (riscv_rv32i_valid_ch1); // no illegal instructions
 		end
 	end
