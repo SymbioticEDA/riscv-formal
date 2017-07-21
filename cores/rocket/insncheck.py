@@ -4,7 +4,7 @@ import os, shutil, re
 
 basedir = "%s/../.." % os.getcwd()
 smt_solver = "boolector"
-bmc_depth = 30
+bmc_depth = 50
 use_aiger = False
 fast_mem = True
 no_system = True
@@ -45,7 +45,7 @@ with open("../../insns/isa_rv32i.txt") as isa_file:
                 print_hfmt(sby_file, """
                         : [options]
                         : mode bmc
-                        : append 10
+                        : append 5
                         : tbtop uut.rocket
                         : depth @depth_plus_5@
                         :
