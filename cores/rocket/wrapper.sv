@@ -154,9 +154,6 @@ module rocket_wrapper (
 		.clock                     (clock                     ),
 		.reset                     (reset                     ),
 
-		.io_hartid                 (io_hartid                 ),
-		.io_resetVector            (io_resetVector            ),
-
 		.io_interrupts_0_0         (io_interrupts_0_0         ),
 		.io_interrupts_0_1         (io_interrupts_0_1         ),
 		.io_interrupts_0_2         (io_interrupts_0_2         ),
@@ -208,6 +205,7 @@ module rocket_wrapper (
 		.io_slave_0_d_bits_error   (io_slave_0_d_bits_error   ),
 		.io_slave_0_e_valid        (io_slave_0_e_valid        ),
 
+`ifndef ROCKET_HIER_REF
 		.rvfi_insn                 (rvfi_insn                 ),
 		.rvfi_mem_addr             (rvfi_mem_addr             ),
 		.rvfi_mem_rdata            (rvfi_mem_rdata            ),
@@ -226,8 +224,34 @@ module rocket_wrapper (
 		.rvfi_trap                 (rvfi_trap                 ),
 		.rvfi_halt                 (rvfi_halt                 ),
 		.rvfi_intr                 (rvfi_intr                 ),
-		.rvfi_valid                (rvfi_valid                )
+		.rvfi_valid                (rvfi_valid                ),
+`endif
+
+		.io_hartid                 (io_hartid                 ),
+		.io_resetVector            (io_resetVector            )
 	);
+
+`ifdef ROCKET_HIER_REF
+	assign rvfi_insn = rocket.core.rvfi_mon.rvfi_insn;
+	assign rvfi_mem_addr = rocket.core.rvfi_mon.rvfi_mem_addr;
+	assign rvfi_mem_rdata = rocket.core.rvfi_mon.rvfi_mem_rdata;
+	assign rvfi_mem_rmask = rocket.core.rvfi_mon.rvfi_mem_rmask;
+	assign rvfi_mem_wdata = rocket.core.rvfi_mon.rvfi_mem_wdata;
+	assign rvfi_mem_wmask = rocket.core.rvfi_mon.rvfi_mem_wmask;
+	assign rvfi_order = rocket.core.rvfi_mon.rvfi_order;
+	assign rvfi_pc_rdata = rocket.core.rvfi_mon.rvfi_pc_rdata;
+	assign rvfi_pc_wdata = rocket.core.rvfi_mon.rvfi_pc_wdata;
+	assign rvfi_rd_addr = rocket.core.rvfi_mon.rvfi_rd_addr;
+	assign rvfi_rd_wdata = rocket.core.rvfi_mon.rvfi_rd_wdata;
+	assign rvfi_rs1_addr = rocket.core.rvfi_mon.rvfi_rs1_addr;
+	assign rvfi_rs1_rdata = rocket.core.rvfi_mon.rvfi_rs1_rdata;
+	assign rvfi_rs2_addr = rocket.core.rvfi_mon.rvfi_rs2_addr;
+	assign rvfi_rs2_rdata = rocket.core.rvfi_mon.rvfi_rs2_rdata;
+	assign rvfi_trap = rocket.core.rvfi_mon.rvfi_trap;
+	assign rvfi_halt = rocket.core.rvfi_mon.rvfi_halt;
+	assign rvfi_intr = rocket.core.rvfi_mon.rvfi_intr;
+	assign rvfi_valid = rocket.core.rvfi_mon.rvfi_valid;
+`endif
 endmodule
 
 module tilelink_ad_dummy (
@@ -352,3 +376,12 @@ module tilelink_ad_dummy (
 	end
 endmodule
 
+`ifdef ROCKET_HIER_REF
+module RVFIMonitor (
+	input clock,
+	input reset,
+	`RVFI_INPUTS,
+	output errcode
+);
+endmodule
+`endif
