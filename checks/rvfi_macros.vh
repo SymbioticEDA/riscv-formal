@@ -20,6 +20,48 @@
 (* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata;  \
 (* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata;
 
+`define RVFI_OUTPUTS                                                        \
+output [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid,      \
+output [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order,      \
+output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,       \
+output [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap,       \
+output [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt,       \
+output [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_intr,       \
+output [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,   \
+output [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,   \
+output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,  \
+output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,  \
+output [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rd_addr,    \
+output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rd_wdata,   \
+output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,   \
+output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_wdata,   \
+output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_addr,   \
+output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_rmask,  \
+output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_wmask,  \
+output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,  \
+output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata
+
+`define RVFI_INPUTS                                                        \
+input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid,      \
+input [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order,      \
+input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,       \
+input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap,       \
+input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt,       \
+input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_intr,       \
+input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,   \
+input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,   \
+input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,  \
+input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,  \
+input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rd_addr,    \
+input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rd_wdata,   \
+input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,   \
+input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_wdata,   \
+input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_addr,   \
+input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_rmask,  \
+input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_wmask,  \
+input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,  \
+input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata
+
 `define RVFI_CONN                  \
 .rvfi_valid     (rvfi_valid    ),  \
 .rvfi_order     (rvfi_order    ),  \
