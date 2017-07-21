@@ -22,6 +22,7 @@ module rvfi_insn_c_beqz (
 );
 
   // CB-type instruction format
+  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 16;
   wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = $signed({rvfi_insn[12], rvfi_insn[6:5], rvfi_insn[2], rvfi_insn[11:10], rvfi_insn[4:3], 1'b0});
   wire [2:0] insn_funct3 = rvfi_insn[15:13];
   wire [4:0] insn_rs1 = {1'b1, rvfi_insn[9:7]};
@@ -30,7 +31,7 @@ module rvfi_insn_c_beqz (
   // C_BEQZ instruction
   wire cond = rvfi_rs1_rdata == 0;
   wire [`RISCV_FORMAL_XLEN-1:0] next_pc = cond ? rvfi_pc_rdata + insn_imm : rvfi_pc_rdata + 2;
-  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 110 && insn_opcode == 2'b 01;
+  assign spec_valid = rvfi_valid && !insn_padding && insn_funct3 == 3'b 110 && insn_opcode == 2'b 01;
   assign spec_rs1_addr = insn_rs1;
   assign spec_pc_wdata = next_pc;
   assign spec_trap = next_pc[0] != 0;

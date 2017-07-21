@@ -22,6 +22,7 @@ module rvfi_insn_c_j (
 );
 
   // CJ-type instruction format
+  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 16;
   wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = $signed({rvfi_insn[12], rvfi_insn[8], rvfi_insn[10], rvfi_insn[9],
       rvfi_insn[6], rvfi_insn[7], rvfi_insn[2], rvfi_insn[11], rvfi_insn[5], rvfi_insn[4], rvfi_insn[3], 1'b0});
   wire [2:0] insn_funct3 = rvfi_insn[15:13];
@@ -29,7 +30,7 @@ module rvfi_insn_c_j (
 
   // C_J instruction
   wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_pc_rdata + insn_imm;
-  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 101 && insn_opcode == 2'b 01;
+  assign spec_valid = rvfi_valid && !insn_padding && insn_funct3 == 3'b 101 && insn_opcode == 2'b 01;
   assign spec_pc_wdata = next_pc;
 
   // default assignments

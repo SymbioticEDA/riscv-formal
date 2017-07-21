@@ -22,6 +22,7 @@ module rvfi_insn_sub (
 );
 
   // R-type instruction format
+  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 32;
   wire [6:0] insn_funct7 = rvfi_insn[31:25];
   wire [4:0] insn_rs2    = rvfi_insn[24:20];
   wire [4:0] insn_rs1    = rvfi_insn[19:15];
@@ -31,7 +32,7 @@ module rvfi_insn_sub (
 
   // SUB instruction
   wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata - rvfi_rs2_rdata;
-  assign spec_valid = rvfi_valid && insn_funct7 == 7'b 0100000 && insn_funct3 == 3'b 000 && insn_opcode == 7'b 0110011;
+  assign spec_valid = rvfi_valid && !insn_padding && insn_funct7 == 7'b 0100000 && insn_funct3 == 3'b 000 && insn_opcode == 7'b 0110011;
   assign spec_rs1_addr = insn_rs1;
   assign spec_rs2_addr = insn_rs2;
   assign spec_rd_addr = insn_rd;

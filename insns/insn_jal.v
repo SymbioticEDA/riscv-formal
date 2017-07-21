@@ -22,13 +22,14 @@ module rvfi_insn_jal (
 );
 
   // UJ-type instruction format
+  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 32;
   wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = $signed({rvfi_insn[31], rvfi_insn[19:12], rvfi_insn[20], rvfi_insn[30:21], 1'b0});
   wire [4:0] insn_rd     = rvfi_insn[11:7];
   wire [6:0] insn_opcode = rvfi_insn[6:0];
 
   // JAL instruction
   wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_pc_rdata + insn_imm;
-  assign spec_valid = rvfi_valid && insn_opcode == 7'b 1101111;
+  assign spec_valid = rvfi_valid && !insn_padding && insn_opcode == 7'b 1101111;
   assign spec_rd_addr = insn_rd;
   assign spec_rd_wdata = spec_rd_addr ? rvfi_pc_rdata + 4 : 0;
   assign spec_pc_wdata = next_pc;

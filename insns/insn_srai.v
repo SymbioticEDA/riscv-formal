@@ -22,6 +22,7 @@ module rvfi_insn_srai (
 );
 
   // I-type instruction format (shift variation)
+  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 32;
   wire [6:0] insn_funct6 = rvfi_insn[31:26];
   wire [5:0] insn_shamt  = rvfi_insn[25:20];
   wire [4:0] insn_rs1    = rvfi_insn[19:15];
@@ -31,7 +32,7 @@ module rvfi_insn_srai (
 
   // SRAI instruction
   wire [`RISCV_FORMAL_XLEN-1:0] result = $signed(rvfi_rs1_rdata) >>> insn_shamt;
-  assign spec_valid = rvfi_valid && insn_funct6 == 6'b 010000 && insn_funct3 == 3'b 101 && insn_opcode == 7'b 0010011 && (!insn_shamt[5] || `RISCV_FORMAL_XLEN == 64);
+  assign spec_valid = rvfi_valid && !insn_padding && insn_funct6 == 6'b 010000 && insn_funct3 == 3'b 101 && insn_opcode == 7'b 0010011 && (!insn_shamt[5] || `RISCV_FORMAL_XLEN == 64);
   assign spec_rs1_addr = insn_rs1;
   assign spec_rd_addr = insn_rd;
   assign spec_rd_wdata = spec_rd_addr ? result : 0;

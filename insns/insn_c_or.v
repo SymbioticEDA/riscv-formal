@@ -22,6 +22,7 @@ module rvfi_insn_c_or (
 );
 
   // CS-type instruction format (ALU version)
+  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 16;
   wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[5], rvfi_insn[12:10], rvfi_insn[6], 2'b00};
   wire [5:0] insn_funct6 = rvfi_insn[15:10];
   wire [1:0] insn_funct2 = rvfi_insn[6:5];
@@ -31,7 +32,7 @@ module rvfi_insn_c_or (
 
   // C_OR instruction
   wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata | rvfi_rs2_rdata;
-  assign spec_valid = rvfi_valid && insn_funct6 == 6'b 100011 && insn_funct2 == 2'b 10 && insn_opcode == 2'b 01;
+  assign spec_valid = rvfi_valid && !insn_padding && insn_funct6 == 6'b 100011 && insn_funct2 == 2'b 10 && insn_opcode == 2'b 01;
   assign spec_rs1_addr = insn_rs1_rd;
   assign spec_rs2_addr = insn_rs2;
   assign spec_rd_addr = insn_rs1_rd;

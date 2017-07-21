@@ -22,6 +22,7 @@ module rvfi_insn_sb (
 );
 
   // S-type instruction format
+  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 32;
   wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = $signed({rvfi_insn[31:25], rvfi_insn[11:7]});
   wire [4:0] insn_rs2    = rvfi_insn[24:20];
   wire [4:0] insn_rs1    = rvfi_insn[19:15];
@@ -31,7 +32,7 @@ module rvfi_insn_sb (
   // SB instruction
 `ifdef RISCV_FORMAL_ALIGNED_MEM
   wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;
-  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 0100011;
+  assign spec_valid = rvfi_valid && !insn_padding && insn_funct3 == 3'b 000 && insn_opcode == 7'b 0100011;
   assign spec_rs1_addr = insn_rs1;
   assign spec_rs2_addr = insn_rs2;
   assign spec_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);
@@ -41,7 +42,7 @@ module rvfi_insn_sb (
   assign spec_trap = (addr & (1-1)) != 0;
 `else
   wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;
-  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 0100011;
+  assign spec_valid = rvfi_valid && !insn_padding && insn_funct3 == 3'b 000 && insn_opcode == 7'b 0100011;
   assign spec_rs1_addr = insn_rs1;
   assign spec_rs2_addr = insn_rs2;
   assign spec_mem_addr = addr;

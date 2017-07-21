@@ -22,6 +22,7 @@ module rvfi_insn_beq (
 );
 
   // SB-type instruction format
+  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 32;
   wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = $signed({rvfi_insn[31], rvfi_insn[7], rvfi_insn[30:25], rvfi_insn[11:8], 1'b0});
   wire [4:0] insn_rs2    = rvfi_insn[24:20];
   wire [4:0] insn_rs1    = rvfi_insn[19:15];
@@ -31,7 +32,7 @@ module rvfi_insn_beq (
   // BEQ instruction
   wire cond = rvfi_rs1_rdata == rvfi_rs2_rdata;
   wire [`RISCV_FORMAL_XLEN-1:0] next_pc = cond ? rvfi_pc_rdata + insn_imm : rvfi_pc_rdata + 4;
-  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 1100011;
+  assign spec_valid = rvfi_valid && !insn_padding && insn_funct3 == 3'b 000 && insn_opcode == 7'b 1100011;
   assign spec_rs1_addr = insn_rs1;
   assign spec_rs2_addr = insn_rs2;
   assign spec_pc_wdata = next_pc;

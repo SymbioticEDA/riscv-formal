@@ -22,6 +22,7 @@ module rvfi_insn_c_jalr (
 );
 
   // CI-type instruction format
+  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 16;
   wire [3:0] insn_funct4 = rvfi_insn[15:12];
   wire [4:0] insn_rs1_rd = rvfi_insn[11:7];
   wire [4:0] insn_rs2 = rvfi_insn[6:2];
@@ -29,7 +30,7 @@ module rvfi_insn_c_jalr (
 
   // C_JALR instruction
   wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_rs1_rdata & ~1;
-  assign spec_valid = rvfi_valid && insn_funct4 == 4'b 1001 && insn_rs1_rd && !insn_rs2 && insn_opcode == 2'b 10;
+  assign spec_valid = rvfi_valid && !insn_padding && insn_funct4 == 4'b 1001 && insn_rs1_rd && !insn_rs2 && insn_opcode == 2'b 10;
   assign spec_rs1_addr = insn_rs1_rd;
   assign spec_rd_addr = 5'd 1;
   assign spec_rd_wdata = rvfi_pc_rdata + 2;

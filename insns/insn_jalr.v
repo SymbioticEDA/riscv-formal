@@ -22,6 +22,7 @@ module rvfi_insn_jalr (
 );
 
   // I-type instruction format
+  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 32;
   wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = $signed(rvfi_insn[31:20]);
   wire [4:0] insn_rs1    = rvfi_insn[19:15];
   wire [2:0] insn_funct3 = rvfi_insn[14:12];
@@ -30,7 +31,7 @@ module rvfi_insn_jalr (
 
   // JALR instruction
   wire [`RISCV_FORMAL_XLEN-1:0] next_pc = (rvfi_rs1_rdata + insn_imm) & ~1;
-  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 7'b 1100111;
+  assign spec_valid = rvfi_valid && !insn_padding && insn_funct3 == 3'b 000 && insn_opcode == 7'b 1100111;
   assign spec_rs1_addr = insn_rs1;
   assign spec_rd_addr = insn_rd;
   assign spec_rd_wdata = spec_rd_addr ? rvfi_pc_rdata + 4 : 0;

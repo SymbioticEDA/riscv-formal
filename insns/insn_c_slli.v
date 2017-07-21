@@ -22,6 +22,7 @@ module rvfi_insn_c_slli (
 );
 
   // CI-type instruction format (SLI variation)
+  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 16;
   wire [5:0] insn_shamt = {rvfi_insn[12], rvfi_insn[6:2]};
   wire [2:0] insn_funct3 = rvfi_insn[15:13];
   wire [4:0] insn_rs1_rd = rvfi_insn[11:7];
@@ -29,7 +30,7 @@ module rvfi_insn_c_slli (
 
   // C_SLLI instruction
   wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata << insn_shamt;
-  assign spec_valid = rvfi_valid && insn_funct3 == 3'b 000 && insn_opcode == 2'b 10 && (!insn_shamt[5] || `RISCV_FORMAL_XLEN == 64);
+  assign spec_valid = rvfi_valid && !insn_padding && insn_funct3 == 3'b 000 && insn_opcode == 2'b 10 && (!insn_shamt[5] || `RISCV_FORMAL_XLEN == 64);
   assign spec_rs1_addr = insn_rs1_rd;
   assign spec_rd_addr = insn_rs1_rd;
   assign spec_rd_wdata = spec_rd_addr ? result : 0;
