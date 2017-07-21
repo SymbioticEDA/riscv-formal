@@ -26,6 +26,7 @@ Table of contents
 -----------------
 
 - [The RVFI Interface Specification](docs/rvfi.md)
+- [Configuration macros used by riscv-formal](docs/config.md)
 - [The riscv-formal Verification Procedure](docs/procedure.md)
 - [References and related work](docs/references.md)
 

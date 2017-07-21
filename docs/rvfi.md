@@ -20,7 +20,7 @@ When the core retires an instruction, it asserts the `rvfi_valid` signal and use
 
 Cores that retire all instructions in-order may set `rvfi_order` to constant zero. Cores that retire instructions out-of-order must set this field to the instruction index so that they can be sorted within `riscv-formal` test-benches when needed. Right now no such sorter is implemented and cores that retire instructions out-of-order are not supported.
 
-`rvfi_insn` is the 32-bit or 16-bit instruction word. In case of a 16-bit instruction the upper 16-bits of this output may carry an arbitrary bit pattern. The current RVFI specification does not support instructions wider than 32 bits.
+`rvfi_insn` is the instruction word for the retired instruction. In case of an instruction with fewer than `ILEN` bits, the upper bits of this output must be all zero.
 
 `rvfi_trap` must be set for an instruction that cannot be decoded as a legal instruction, such as 0x00000000.
 
