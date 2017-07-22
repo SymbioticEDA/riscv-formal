@@ -1,17 +1,21 @@
 module testbench (
-	input clk
+	input clk, rst
 );
 	`RVFI_WIRES
 
-	reg reset = 1;
-	reg enable = 0;
-	reg [7:0] cycle = 0;
+`ifdef YOSYS
+	assume property (rst == $initstate);
+`endif
+
+	reg [7:0] cycle_reg = 0;
+	wire [7:0] cycle = rst ? 0 : cycle_reg;
 
 	always @(posedge clk) begin
-		cycle <= cycle + !(&cycle);
-		enable <= cycle == `RISCV_FORMAL_BMC_DEPTH;
-		reset <= cycle < 5;
+		cycle_reg <= rst ? 1 : cycle_reg + (cycle_reg != 255);
 	end
+
+	wire reset = cycle <= 5;
+	wire enable = cycle == `RISCV_FORMAL_BMC_DEPTH;
 
 `ifdef NO_SYSTEM
 	wire riscv_rv32i_valid_ch0;

@@ -1,3 +1,16 @@
+`ifdef YOSYS
+`define formal_anyseq rand reg
+`define formal_anyconst const rand reg
+`else
+`ifdef SIMULATION
+`define formal_anyseq reg
+`define formal_anyconst reg
+`else
+`define formal_anyseq wire
+`define formal_anyconst reg
+`endif
+`endif
+
 module rocket_wrapper (
 	input         clock,
 	input         reset,
@@ -307,11 +320,24 @@ module tilelink_ad_dummy (
 	reg [3:0]  op_mask;
 	reg [31:0] op_data;
 
+	`formal_anyseq delay_a_nd;
+	`formal_anyseq delay_d_nd;
+
+	`formal_anyseq [2:0]  channel_d_bits_opcode_nd;
+	`formal_anyseq [1:0]  channel_d_bits_param_nd;
+	`formal_anyseq [3:0]  channel_d_bits_size_nd;
+	`formal_anyseq        channel_d_bits_source_nd;
+	`formal_anyseq        channel_d_bits_sink_nd;
+	`formal_anyseq [1:0]  channel_d_bits_addr_lo_nd;
+	`formal_anyseq [31:0] channel_d_bits_data_nd;
+	`formal_anyseq        channel_d_bits_error_nd;
+
 `ifdef FAST_MEM
 	wire delay_a = 0, delay_d = 0;
 `else
-	wire delay_a = $anyseq, delay_d = $anyseq;
+	wire delay_a = delay_a_nd, delay_d = delay_d_nd;
 `endif
+
 	assign channel_a_ready = (!busy || (last && channel_d_ready && channel_d_valid)) && !reset && !delay_a;
 	assign channel_d_valid = ready && !reset && !delay_d;
 
@@ -320,14 +346,14 @@ module tilelink_ad_dummy (
 		ready = 0;
 		next_count = count;
 
-		channel_d_bits_opcode = 0;
-		channel_d_bits_param = $anyseq;
-		channel_d_bits_size = $anyseq;
-		channel_d_bits_source = $anyseq;
-		channel_d_bits_sink = $anyseq;
-		channel_d_bits_addr_lo = $anyseq;
-		channel_d_bits_data = $anyseq;
-		channel_d_bits_error = 1;
+		channel_d_bits_opcode = 0; // channel_d_bits_opcode_nd
+		channel_d_bits_param = channel_d_bits_param_nd;
+		channel_d_bits_size = channel_d_bits_size_nd;
+		channel_d_bits_source = channel_d_bits_source_nd;
+		channel_d_bits_sink = channel_d_bits_sink_nd;
+		channel_d_bits_addr_lo = channel_d_bits_addr_lo_nd;
+		channel_d_bits_data = channel_d_bits_data_nd;
+		channel_d_bits_error = 1; // channel_d_bits_error_nd
 
 		if (busy) begin
 			if (op_opcode == opcode_a_get) begin
@@ -383,5 +409,6 @@ module RVFIMonitor (
 	`RVFI_INPUTS,
 	output errcode
 );
+	assign errcode = 0;
 endmodule
 `endif
