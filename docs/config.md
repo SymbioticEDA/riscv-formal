@@ -85,3 +85,43 @@ When checking for consistency of the stream of retired instructions (such as
 "regcheck") it is possible to black-box the actual ALU operations. This macro
 may be used in the core under test to black-box the ALU.
 
+
+Macros defined by rvfi_macros.vh
+================================
+
+The Verilog file `rvfi_macros.vh` defines a few useful helper macros.
+
+RVFI_WIRES, RVFI_OUTPUTS, RVFI_INPUTS, RVFI_CONN
+------------------------------------------------
+
+Macros to declare wires, ouptut ports, or input ports for all `rvfi_*` signals. The last
+macro is for creating the proper connections on module instances. This macros can be
+useful for routing the `rvfi_*` signals through the design hierarchy.
+
+formal_anyseq and formal_anyconst
+---------------------------------
+
+Macros for defining unconstrained signals (`formal_anyseq`) or constant signals with
+an unconstrained initial value (`formal_anyconst`).
+
+Usage example:
+
+    `formal_anyseq [7:0] anyseq;
+    `formal_anyconst [7:0] anyconst;
+
+For formal verification with Yosys (i.e. when `YOSYS` is defined), this will be
+converted to the following code:
+
+    rand reg [7:0] anyseq;
+    const rand reg [7:0] anyconst;
+
+For simulation (i.e. when `SIMULATION` is defined), this will be converted to:
+
+    reg [7:0] anyseq;
+    reg [7:0] anyconst;
+
+And otherwise (for use with any formal verification tool):
+
+    wire [7:0] anyseq;
+    reg [7:0] anyconst;
+

@@ -1,3 +1,15 @@
+`ifdef YOSYS
+`define formal_anyseq rand reg
+`define formal_anyconst const rand reg
+`else
+`ifdef SIMULATION
+`define formal_anyseq reg
+`define formal_anyconst reg
+`else
+`define formal_anyseq wire
+`define formal_anyconst reg
+`endif
+`endif
 
 `define RVFI_WIRES                                                                   \
 (* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid;      \

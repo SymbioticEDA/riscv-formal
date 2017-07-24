@@ -1,16 +1,3 @@
-`ifdef YOSYS
-`define formal_anyseq rand reg
-`define formal_anyconst const rand reg
-`else
-`ifdef SIMULATION
-`define formal_anyseq reg
-`define formal_anyconst reg
-`else
-`define formal_anyseq wire
-`define formal_anyconst reg
-`endif
-`endif
-
 module rocket_wrapper (
 	input         clock,
 	input         reset,
