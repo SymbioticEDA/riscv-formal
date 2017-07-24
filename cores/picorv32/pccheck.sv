@@ -18,8 +18,9 @@ module testbench (
 	`RVFI_WIRES
 
 	rvfi_pc_check checker_inst (
-		.clk    (clk   ),
-		.resetn (resetn),
+		.clock  (clk    ),
+		.reset  (!resetn),
+		.enable (1'b1   ),
 		`RVFI_CONN
 	);
 

@@ -21,8 +21,9 @@ module testbench (
 	wire [15:0] imem_data;
 
 	rvfi_imem_check checker_inst (
-		.clk       (clk      ),
-		.resetn    (resetn   ),
+		.clock     (clk      ),
+		.reset     (!resetn  ),
+		.enable    (1'b1     ),
 		.imem_addr (imem_addr),
 		.imem_data (imem_data),
 		`RVFI_CONN

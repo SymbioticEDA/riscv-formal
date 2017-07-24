@@ -1,6 +1,5 @@
 module rvfi_pc_check (
-	input clk,
-	input resetn,
+	input clock, reset, enable,
 	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid,
 	input [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
@@ -25,13 +24,13 @@ module rvfi_pc_check (
 	reg pc_written = 0;
 
 	integer channel_idx;
-	always @(posedge clk) begin
-		if (!resetn) begin
+	always @(posedge clock) begin
+		if (reset) begin
 			pc_written = 0;
 		end else begin
 			for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin
 				if (rvfi_valid[channel_idx]) begin
-					if (pc_written)
+					if (enable && pc_written)
 						assert(pc_shadow == rvfi_pc_rdata[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN]);
 					pc_shadow = rvfi_pc_wdata[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
 					pc_written = 1;

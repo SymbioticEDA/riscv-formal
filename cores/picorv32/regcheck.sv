@@ -20,8 +20,9 @@ module testbench (
 	rvfi_reg_check #(
 		.ZERO_INIT(1)
 	) checker_inst (
-		.clk    (clk   ),
-		.resetn (resetn),
+		.clock  (clk    ),
+		.reset  (!resetn),
+		.enable (1'b1   ),
 		`RVFI_CONN
 	);
 

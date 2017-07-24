@@ -21,8 +21,9 @@ module testbench (
 	reg [31:0] dmem_data;
 
 	rvfi_dmem_check checker_inst (
-		.clk       (clk      ),
-		.resetn    (resetn   ),
+		.clock     (clk      ),
+		.reset     (!resetn  ),
+		.enable    (1'b1     ),
 		.dmem_addr (dmem_addr),
 		`RVFI_CONN
 	);

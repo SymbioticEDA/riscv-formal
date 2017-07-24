@@ -50,7 +50,8 @@ module testbench (
 `endif
 
 	rvfi_insn_check checker_inst (
-		.clk    (clk   ),
+		.clock  (clk   ),
+		.reset  (reset ),
 		.enable (enable),
 		`RVFI_CONN
 	);

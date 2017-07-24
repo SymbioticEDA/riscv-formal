@@ -26,8 +26,9 @@ module testbench (
 	end
 
 	rvfi_insn_check checker_inst (
-		.clk    (clk   ),
-		.enable (enable),
+		.clock  (clk    ),
+		.reset  (!resetn),
+		.enable (enable ),
 		`RVFI_CONN
 	);
 
