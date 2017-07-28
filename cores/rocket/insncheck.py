@@ -70,6 +70,7 @@ with open("../../insns/isa_rv32i.txt") as isa_file:
 
                 print_hfmt(sby_file, """
                         : read_verilog -sv @basedir@/checks/rvfi_macros.vh
+                        : read_verilog -sv @basedir@/checks/rvfi_channel.sv
                         : read_verilog -sv @basedir@/cores/rocket/wrapper.sv
                         : read_verilog -sv @basedir@/cores/rocket/insncheck.sv
                         : read_verilog -sv @basedir@/checks/rvfi_insn_check.sv

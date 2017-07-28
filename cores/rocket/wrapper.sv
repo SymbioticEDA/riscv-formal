@@ -1,26 +1,7 @@
 module rocket_wrapper (
 	input         clock,
 	input         reset,
-
-	output [63:0] rvfi_insn,
-	output [63:0] rvfi_mem_addr,
-	output [63:0] rvfi_mem_rdata,
-	output [7:0]  rvfi_mem_rmask,
-	output [63:0] rvfi_mem_wdata,
-	output [7:0]  rvfi_mem_wmask,
-	output [15:0]  rvfi_order,
-	output [63:0] rvfi_pc_rdata,
-	output [63:0] rvfi_pc_wdata,
-	output [9:0]  rvfi_rd_addr,
-	output [63:0] rvfi_rd_wdata,
-	output [9:0]  rvfi_rs1_addr,
-	output [63:0] rvfi_rs1_rdata,
-	output [9:0]  rvfi_rs2_addr,
-	output [63:0] rvfi_rs2_rdata,
-	output [1:0]  rvfi_trap,
-	output [1:0]  rvfi_halt,
-	output [1:0]  rvfi_intr,
-	output [1:0]  rvfi_valid
+	`RVFI_OUTPUTS
 );
 	// Rocket Tile Inputs
 
@@ -206,25 +187,7 @@ module rocket_wrapper (
 		.io_slave_0_e_valid        (io_slave_0_e_valid        ),
 
 `ifndef ROCKET_HIER_REF
-		.rvfi_insn                 (rvfi_insn                 ),
-		.rvfi_mem_addr             (rvfi_mem_addr             ),
-		.rvfi_mem_rdata            (rvfi_mem_rdata            ),
-		.rvfi_mem_rmask            (rvfi_mem_rmask            ),
-		.rvfi_mem_wdata            (rvfi_mem_wdata            ),
-		.rvfi_mem_wmask            (rvfi_mem_wmask            ),
-		.rvfi_order                (rvfi_order                ),
-		.rvfi_pc_rdata             (rvfi_pc_rdata             ),
-		.rvfi_pc_wdata             (rvfi_pc_wdata             ),
-		.rvfi_rd_addr              (rvfi_rd_addr              ),
-		.rvfi_rd_wdata             (rvfi_rd_wdata             ),
-		.rvfi_rs1_addr             (rvfi_rs1_addr             ),
-		.rvfi_rs1_rdata            (rvfi_rs1_rdata            ),
-		.rvfi_rs2_addr             (rvfi_rs2_addr             ),
-		.rvfi_rs2_rdata            (rvfi_rs2_rdata            ),
-		.rvfi_trap                 (rvfi_trap                 ),
-		.rvfi_halt                 (rvfi_halt                 ),
-		.rvfi_intr                 (rvfi_intr                 ),
-		.rvfi_valid                (rvfi_valid                ),
+		`RVFI_CONN,
 `endif
 
 		.io_hartid                 (io_hartid                 ),
@@ -252,6 +215,9 @@ module rocket_wrapper (
 	assign rvfi_intr = rocket.core.rvfi_mon.rvfi_intr;
 	assign rvfi_valid = rocket.core.rvfi_mon.rvfi_valid;
 `endif
+
+	(* keep *) rvfi_channel #(.CHANNEL_IDX(0)) rvfi_channel_0 (`RVFI_CONN);
+	(* keep *) rvfi_channel #(.CHANNEL_IDX(1)) rvfi_channel_1 (`RVFI_CONN);
 endmodule
 
 module tilelink_ad_dummy (
