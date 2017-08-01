@@ -13,6 +13,7 @@ verilog_defines -D RISCV_FORMAL_NRET=2
 verilog_defines -D RISCV_FORMAL_XLEN=32
 verilog_defines -D RISCV_FORMAL_ILEN=32
 verilog_defines -D RISCV_FORMAL_BMC_DEPTH=50
+verilog_defines -D RISCV_FORMAL_BMC_START=30
 verilog_defines -D FAST_MEM
 verilog_defines -D NO_SYSTEM
 read_verilog -sv ../../../../checks/rvfi_macros.vh

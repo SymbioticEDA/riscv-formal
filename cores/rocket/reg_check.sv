@@ -15,7 +15,6 @@ module testbench (
 	end
 
 	wire reset = cycle <= 5;
-	wire enable = cycle == `RISCV_FORMAL_BMC_DEPTH;
 
 `ifdef NO_SYSTEM
 	wire riscv_rv32i_valid_ch0;
@@ -51,8 +50,8 @@ module testbench (
 
 	rvfi_reg_check checker_inst (
 		.clock  (clk   ),
-		.reset  (reset ),
-		.enable (enable),
+		.reset  (cycle < `RISCV_FORMAL_BMC_START),
+		.check  (cycle == `RISCV_FORMAL_BMC_DEPTH),
 		`RVFI_CONN
 	);
 

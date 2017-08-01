@@ -1,7 +1,7 @@
 module rvfi_reg_check #(
 	parameter [0:0] ZERO_INIT = 0
 ) (
-	input clock, reset, enable,
+	input clock, reset, check,
 	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid,
 	input [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order,
 	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
@@ -34,7 +34,7 @@ module rvfi_reg_check #(
 		end else begin
 			for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin
 				if (rvfi_valid[channel_idx]) begin
-					if (enable && register_written) begin
+					if (check && register_written) begin
 						if (register_index == rvfi_rs1_addr[channel_idx*5 +: 5])
 							assert(register_shadow == rvfi_rs1_rdata[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN]);
 						if (register_index == rvfi_rs2_addr[channel_idx*5 +: 5])

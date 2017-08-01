@@ -22,7 +22,7 @@ module testbench (
 	) checker_inst (
 		.clock  (clk    ),
 		.reset  (!resetn),
-		.enable (1'b1   ),
+		.check  (1'b1   ),
 		`RVFI_CONN
 	);
 
