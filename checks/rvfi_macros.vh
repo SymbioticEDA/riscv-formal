@@ -13,7 +13,7 @@
 
 `define RVFI_WIRES                                                                   \
 (* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid;      \
-(* keep *) wire [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order;      \
+(* keep *) wire [`RISCV_FORMAL_NRET *                 64   - 1 : 0] rvfi_order;      \
 (* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn;       \
 (* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap;       \
 (* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt;       \
@@ -34,7 +34,7 @@
 
 `define RVFI_OUTPUTS                                                        \
 output [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid,      \
-output [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order,      \
+output [`RISCV_FORMAL_NRET *                 64   - 1 : 0] rvfi_order,      \
 output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,       \
 output [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap,       \
 output [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt,       \
@@ -55,7 +55,7 @@ output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata
 
 `define RVFI_INPUTS                                                        \
 input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid,      \
-input [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order,      \
+input [`RISCV_FORMAL_NRET *                 64   - 1 : 0] rvfi_order,      \
 input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,       \
 input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap,       \
 input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt,       \

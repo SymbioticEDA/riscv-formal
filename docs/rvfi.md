@@ -10,7 +10,7 @@ In the following specification the term `XLEN` refers to the width of an `x` reg
 The Interface consists only of output signals. Each signal is a concatenation of `NRET` values of constant width, effectively creating `NRET` channels. For simplicity, the following descriptions refer to one such channel. For example, we refer to `rvfi_valid` as a 1-bit signal, not a `NRET`-bits signal.
 
     output [NRET        - 1 : 0] rvfi_valid
-    output [NRET *    8 - 1 : 0] rvfi_order
+    output [NRET *   64 - 1 : 0] rvfi_order
     output [NRET * ILEN - 1 : 0] rvfi_insn
     output [NRET        - 1 : 0] rvfi_trap
     output [NRET        - 1 : 0] rvfi_halt
@@ -18,7 +18,7 @@ The Interface consists only of output signals. Each signal is a concatenation of
 
 When the core retires an instruction, it asserts the `rvfi_valid` signal and uses the signals described below to output the details of the retired instruction. The signals below are only valid during such a cycle and can be driven to arbitrary values in a cycle in which `rvfi_valid` is not asserted.
 
-Cores that retire all instructions in-order may set `rvfi_order` to constant zero. Cores that retire instructions out-of-order must set this field to the instruction index so that they can be sorted within `riscv-formal` test-benches when needed. Right now no such sorter is implemented and cores that retire instructions out-of-order are not supported.
+Cores that retire all instructions in-order may set `rvfi_order` to constant zero. Cores that retire instructions out-of-order must set this field to the instruction index.
 
 `rvfi_insn` is the instruction word for the retired instruction. In case of an instruction with fewer than `ILEN` bits, the upper bits of this output must be all zero.
 

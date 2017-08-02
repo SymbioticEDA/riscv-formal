@@ -1,24 +1,6 @@
 module rvfi_insn_check (
 	input clock, reset, enable,
-	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid,
-	input [`RISCV_FORMAL_NRET *                  8   - 1 : 0] rvfi_order,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
-	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap,
-	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt,
-	input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_intr,
-	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,
-	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
-	input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rd_addr,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rd_wdata,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_wdata,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_addr,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_rmask,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_wmask,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
-	input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata
+	`RVFI_INPUTS
 );
 `ifdef RISCV_FORMAL_CHANNEL_IDX
 	localparam integer channel_idx = `RISCV_FORMAL_CHANNEL_IDX;

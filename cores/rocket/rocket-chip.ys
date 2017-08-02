@@ -71,7 +71,7 @@ add -output rvfi_mem_rdata   64
 add -output rvfi_mem_rmask    8
 add -output rvfi_mem_wdata   64
 add -output rvfi_mem_wmask    8
-add -output rvfi_order       16
+add -output rvfi_order      128
 add -output rvfi_pc_rdata    64
 add -output rvfi_pc_wdata    64
 add -output rvfi_rd_addr     10

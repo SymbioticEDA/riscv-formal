@@ -103,7 +103,7 @@ print("module %s (" % prefix);
 print("  input clock,")
 print("  input reset,")
 print("  input [%d:0] rvfi_valid," % (channels-1))
-print("  input [%d:0] rvfi_order," % (channels*8-1))
+print("  input [%d:0] rvfi_order," % (channels*64-1))
 print("  input [%d:0] rvfi_insn," % (channels*32-1))
 print("  input [%d:0] rvfi_trap," % (channels-1))
 print("  input [%d:0] rvfi_halt," % (channels-1))
@@ -128,7 +128,7 @@ errcodes = list()
 
 for chidx in range(channels):
     print("  wire ch%d_rvfi_valid = rvfi_valid[%d];" % (chidx, chidx));
-    print("  wire [7:0] ch%d_rvfi_order = rvfi_order[%d:%d];" % (chidx, 8*chidx+7, 8*chidx));
+    print("  wire [63:0] ch%d_rvfi_order = rvfi_order[%d:%d];" % (chidx, 64*chidx+63, 64*chidx));
     print("  wire [31:0] ch%d_rvfi_insn = rvfi_insn[%d:%d];" % (chidx, 32*chidx+31, 32*chidx));
     print("  wire ch%d_rvfi_trap = rvfi_trap[%d];" % (chidx, chidx));
     print("  wire ch%d_rvfi_halt = rvfi_halt[%d];" % (chidx, chidx));
@@ -278,7 +278,7 @@ if not noconsistency:
 
     for chidx in range(channels):
         print("  wire ro%d_rvfi_valid = ch%d_rvfi_valid;" % (chidx, chidx));
-        print("  wire [7:0] ro%d_rvfi_order = ch%d_rvfi_order;" % (chidx, chidx));
+        print("  wire [63:0] ro%d_rvfi_order = ch%d_rvfi_order;" % (chidx, chidx));
         print("  wire [31:0] ro%d_rvfi_insn = ch%d_rvfi_insn;" % (chidx, chidx));
         print("  wire ro%d_rvfi_trap = ch%d_rvfi_trap;" % (chidx, chidx));
         print("  wire ro%d_rvfi_halt = ch%d_rvfi_halt;" % (chidx, chidx));
