@@ -1,5 +1,5 @@
-read_verilog rocket-chip/vsim/generated-src/freechips.rocketchip.chip.DefaultConfigWithRVFIMonitors.v
-read_verilog rocket-chip/vsim/generated-src/freechips.rocketchip.chip.DefaultConfigWithRVFIMonitors.behav_srams.v
+read_verilog rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v
+read_verilog rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.behav_srams.v
 
 read_verilog <<EOT
 module plusarg_reader #(

@@ -21,7 +21,6 @@ module rocket_wrapper (
 	(* keep *) wire  [3:0]  io_master_0_d_bits_size;
 	(* keep *) wire         io_master_0_d_bits_source;
 	(* keep *) wire         io_master_0_d_bits_sink;
-	(* keep *) wire  [1:0]  io_master_0_d_bits_addr_lo;
 	(* keep *) wire  [31:0] io_master_0_d_bits_data;
 	(* keep *) wire         io_master_0_d_bits_error;
 
@@ -59,7 +58,6 @@ module rocket_wrapper (
 	(* keep *) wire [2:0]  io_slave_0_d_bits_size;
 	(* keep *) wire [4:0]  io_slave_0_d_bits_source;
 	(* keep *) wire        io_slave_0_d_bits_sink;
-	(* keep *) wire [1:0]  io_slave_0_d_bits_addr_lo;
 	(* keep *) wire [31:0] io_slave_0_d_bits_data;
 	(* keep *) wire        io_slave_0_d_bits_error;
 
@@ -81,7 +79,6 @@ module rocket_wrapper (
 
 		.channel_d_ready        (io_master_0_d_ready       ),
 		.channel_d_valid        (io_master_0_d_valid       ),
-		.channel_d_bits_addr_lo (io_master_0_d_bits_addr_lo),
 		.channel_d_bits_data    (io_master_0_d_bits_data   ),
 		.channel_d_bits_error   (io_master_0_d_bits_error  ),
 		.channel_d_bits_opcode  (io_master_0_d_bits_opcode ),
@@ -158,7 +155,6 @@ module rocket_wrapper (
 		.io_master_0_d_bits_size   (io_master_0_d_bits_size   ),
 		.io_master_0_d_bits_source (io_master_0_d_bits_source ),
 		.io_master_0_d_bits_sink   (io_master_0_d_bits_sink   ),
-		.io_master_0_d_bits_addr_lo(io_master_0_d_bits_addr_lo),
 		.io_master_0_d_bits_data   (io_master_0_d_bits_data   ),
 		.io_master_0_d_bits_error  (io_master_0_d_bits_error  ),
 		.io_master_0_e_valid       (io_master_0_e_valid       ),
@@ -181,7 +177,6 @@ module rocket_wrapper (
 		.io_slave_0_d_bits_size    (io_slave_0_d_bits_size    ),
 		.io_slave_0_d_bits_source  (io_slave_0_d_bits_source  ),
 		.io_slave_0_d_bits_sink    (io_slave_0_d_bits_sink    ),
-		.io_slave_0_d_bits_addr_lo (io_slave_0_d_bits_addr_lo ),
 		.io_slave_0_d_bits_data    (io_slave_0_d_bits_data    ),
 		.io_slave_0_d_bits_error   (io_slave_0_d_bits_error   ),
 		.io_slave_0_e_valid        (io_slave_0_e_valid        ),
@@ -241,7 +236,6 @@ module tilelink_ad_dummy (
 	output reg [3:0]  channel_d_bits_size,
 	output reg        channel_d_bits_source,
 	output reg        channel_d_bits_sink,
-	output reg [1:0]  channel_d_bits_addr_lo,
 	output reg [31:0] channel_d_bits_data,
 	output reg        channel_d_bits_error
 );
@@ -281,7 +275,6 @@ module tilelink_ad_dummy (
 	`formal_anyseq [3:0]  channel_d_bits_size_nd;
 	`formal_anyseq        channel_d_bits_source_nd;
 	`formal_anyseq        channel_d_bits_sink_nd;
-	`formal_anyseq [1:0]  channel_d_bits_addr_lo_nd;
 	`formal_anyseq [31:0] channel_d_bits_data_nd;
 	`formal_anyseq        channel_d_bits_error_nd;
 
@@ -304,7 +297,6 @@ module tilelink_ad_dummy (
 		channel_d_bits_size = channel_d_bits_size_nd;
 		channel_d_bits_source = channel_d_bits_source_nd;
 		channel_d_bits_sink = channel_d_bits_sink_nd;
-		channel_d_bits_addr_lo = channel_d_bits_addr_lo_nd;
 		channel_d_bits_data = channel_d_bits_data_nd;
 		channel_d_bits_error = 1; // channel_d_bits_error_nd
 
@@ -314,7 +306,6 @@ module tilelink_ad_dummy (
 				channel_d_bits_param = 0;
 				channel_d_bits_size = op_size;
 				channel_d_bits_source = op_source;
-				channel_d_bits_addr_lo = op_address;
 				channel_d_bits_error = 0;
 				next_count = count + 4;
 				last = next_count >= (1 << op_size);
