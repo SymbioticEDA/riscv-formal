@@ -13,7 +13,10 @@ ignore_mem = False
 use_assert = False
 quiet_mode = False
 verbose_mode = False
-noconsistency = False
+noregscheck = False
+nopccheck = False
+nocausality = False
+nocompleteness = False
 
 def usage():
     print("""
@@ -36,8 +39,17 @@ Usage: %s [options] > outfile.v
   -M
       do not check the mem_ RVFI signals in the monitor
 
-  -C
-      do not check consistency of xreg/pc reads and writes
+  -R
+      do not check consistency of reg reads and writes
+
+  -P
+      do not check consistency of pc reads and writes
+
+  -U
+      do not check for causality in OoO instruction order
+
+  -O
+      do not check for completeness in instruction sequence
 
   -A
       add assert(0) statements to the error handlers
@@ -51,7 +63,7 @@ Usage: %s [options] > outfile.v
     sys.exit(1)
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "i:p:c:aMCAQV")
+    opts, args = getopt.getopt(sys.argv[1:], "i:p:c:aMRPUOAQV")
 except:
     usage()
 
@@ -66,8 +78,14 @@ for o, a in opts:
         aligned = True
     elif o == "-M":
         ignore_mem = True
-    elif o == "-C":
-        noconsistency = True
+    elif o == "-R":
+        noregscheck = True
+    elif o == "-P":
+        nopccheck = True
+    elif o == "-U":
+        nocausality = True
+    elif o == "-O":
+        nocompleteness = True
     elif o == "-A":
         use_assert = True
     elif o == "-Q":
@@ -210,11 +228,6 @@ for chidx in range(channels):
                     spec_valid spec_trap""".split():
             print("      $display(\"%s = %%x\", ch%d_%s);" % (p, chidx, p))
 
-    if not noconsistency:
-        print("      if (ch%d_rvfi_order != 0) begin" % (chidx))
-        print("        ch%d_handle_error(%d, \"monitor without reordering\");" % (chidx, 100*(1+chidx)))
-        print("      end")
-
     print("      if (ch%d_spec_valid) begin" % (chidx))
 
     print("        if (ch%d_rvfi_trap != ch%d_spec_trap) begin" % (chidx, chidx))
@@ -266,51 +279,21 @@ for chidx in range(channels):
     print("  end")
     print()
 
-if not noconsistency:
-    print("  // FIXME: Add reordering")
-    print()
-
-    print("  reg [31:0] shadow_xregs_valid;")
-    print("  reg [%d:0] shadow_xregs [0:31];" % (xlen-1))
+if not nopccheck:
     print("  reg shadow_pc_valid;")
     print("  reg [%d:0] shadow_pc;" % (xlen-1))
     print()
 
     for chidx in range(channels):
-        print("  wire ro%d_rvfi_valid = ch%d_rvfi_valid;" % (chidx, chidx));
-        print("  wire [63:0] ro%d_rvfi_order = ch%d_rvfi_order;" % (chidx, chidx));
-        print("  wire [31:0] ro%d_rvfi_insn = ch%d_rvfi_insn;" % (chidx, chidx));
-        print("  wire ro%d_rvfi_trap = ch%d_rvfi_trap;" % (chidx, chidx));
-        print("  wire ro%d_rvfi_halt = ch%d_rvfi_halt;" % (chidx, chidx));
-        print("  wire ro%d_rvfi_intr = ch%d_rvfi_intr;" % (chidx, chidx));
-        print("  wire [4:0] ro%d_rvfi_rs1_addr = ch%d_rvfi_rs1_addr;" % (chidx, chidx));
-        print("  wire [4:0] ro%d_rvfi_rs2_addr = ch%d_rvfi_rs2_addr;" % (chidx, chidx));
-        print("  wire [%d:0] ro%d_rvfi_rs1_rdata = ch%d_rvfi_rs1_rdata;" % (xlen-1, chidx, chidx));
-        print("  wire [%d:0] ro%d_rvfi_rs2_rdata = ch%d_rvfi_rs2_rdata;" % (xlen-1, chidx, chidx));
-        print("  wire [4:0] ro%d_rvfi_rd_addr = ch%d_rvfi_rd_addr;" % (chidx, chidx));
-        print("  wire [%d:0] ro%d_rvfi_rd_wdata = ch%d_rvfi_rd_wdata;" % (xlen-1, chidx, chidx));
-        print("  wire [%d:0] ro%d_rvfi_pc_rdata = ch%d_rvfi_pc_rdata;" % (xlen-1, chidx, chidx));
-        print("  wire [%d:0] ro%d_rvfi_pc_wdata = ch%d_rvfi_pc_wdata;" % (xlen-1, chidx, chidx));
-        print("  wire [%d:0] ro%d_rvfi_mem_addr = ch%d_rvfi_mem_addr;" % (xlen-1, chidx, chidx));
-        print("  wire [%d:0] ro%d_rvfi_mem_rmask = ch%d_rvfi_mem_rmask;" % (xlen//8-1, chidx, chidx));
-        print("  wire [%d:0] ro%d_rvfi_mem_wmask = ch%d_rvfi_mem_wmask;" % (xlen//8-1, chidx, chidx));
-        print("  wire [%d:0] ro%d_rvfi_mem_rdata = ch%d_rvfi_mem_rdata;" % (xlen-1, chidx, chidx));
-        print("  wire [%d:0] ro%d_rvfi_mem_wdata = ch%d_rvfi_mem_wdata;" % (xlen-1, chidx, chidx));
-        print()
-
         print("  reg shadow%d_pc_valid;" % (chidx))
-        print("  reg shadow%d_rs1_valid;" % (chidx))
-        print("  reg shadow%d_rs2_valid;" % (chidx))
         print("  reg [%d:0] shadow%d_pc_rdata;" % (xlen-1, chidx))
-        print("  reg [%d:0] shadow%d_rs1_rdata;" % (xlen-1, chidx))
-        print("  reg [%d:0] shadow%d_rs2_rdata;" % (xlen-1, chidx))
         print()
 
-        errcodes.append("ro%d_errcode" % (chidx))
-        print("  reg [15:0] ro%d_errcode;" % (chidx))
+        errcodes.append("ch%d_errcode_p" % (chidx))
+        print("  reg [15:0] ch%d_errcode_p;" % (chidx))
         print()
 
-        print("  task ro%d_handle_error;" % (chidx))
+        print("  task ch%d_handle_error_p;" % (chidx))
         print("    input [15:0] code;")
         print("    input [511:0] msg;")
         print("    begin")
@@ -322,10 +305,10 @@ if not noconsistency:
                         rvfi_rs1_addr rvfi_rs2_addr rvfi_rs1_rdata rvfi_rs2_rdata
                         rvfi_rd_addr rvfi_rd_wdata rvfi_pc_rdata rvfi_pc_wdata
                         rvfi_mem_addr rvfi_mem_rmask rvfi_mem_wmask rvfi_mem_rdata rvfi_mem_wdata""".split():
-                print("      $display(\"%s = %%x\", ro%d_%s);" % (p, chidx, p))
-            for p in """pc_valid pc_rdata rs1_valid rs1_rdata rs2_valid rs2_rdata""".split():
+                print("      $display(\"%s = %%x\", ch%d_%s);" % (p, chidx, p))
+            for p in """pc_valid pc_rdata""".split():
                 print("      $display(\"shadow_%s = %%x\", shadow%d_%s);" % (p, chidx, p))
-        print("      ro%d_errcode <= code;" % (chidx))
+        print("      ch%d_errcode_r <= code;" % (chidx))
 
         if use_assert:
             print("      assert(0);")
@@ -339,26 +322,87 @@ if not noconsistency:
         print("    shadow%d_pc_rdata = shadow_pc;" % (chidx))
 
         for i in range(chidx):
-            print("    if (!reset && ro%d_rvfi_valid) begin" % (i))
+            print("    if (!reset && ch%d_rvfi_valid) begin" % (i))
             print("      shadow%d_pc_valid = 1;" % (chidx))
-            print("      shadow%d_pc_rdata = ro%d_rvfi_pc_wdata;" % (chidx, i))
+            print("      shadow%d_pc_rdata = ch%d_rvfi_pc_wdata;" % (chidx, i))
             print("    end")
 
         print("  end")
+        print()
+
+    print("  always @(posedge clock) begin")
+
+    for chidx in range(channels):
+        print("    ch%d_errcode <= 0;" % chidx)
+
+    print("    if (reset) begin")
+    print("      shadow_pc_valid <= 0;")
+    print("    end")
+
+    for chidx in range(channels):
+        print("    if (!reset && ch%d_rvfi_valid) begin" % (chidx))
+        print("      if (shadow%d_pc_valid && shadow%d_pc_rdata != ch%d_rvfi_pc_rdata) begin" % (chidx, chidx, chidx))
+        print("        ch%d_handle_error_p(%d, \"mismatch with shadow pc\");" % (chidx, 100*(1+chidx)+30))
+        print("      end")
+        print("      shadow_pc_valid <= 1;")
+        print("      shadow_pc <= ch%d_rvfi_pc_wdata;" % (chidx))
+        print("    end")
+
+    print("  end")
+    print()
+
+if not noregscheck:
+    print("  reg [31:0] shadow_xregs_valid;")
+    print("  reg [%d:0] shadow_xregs [0:31];" % (xlen-1))
+    print()
+
+    for chidx in range(channels):
+        print("  reg shadow%d_rs1_valid;" % (chidx))
+        print("  reg shadow%d_rs2_valid;" % (chidx))
+        print("  reg [%d:0] shadow%d_rs1_rdata;" % (xlen-1, chidx))
+        print("  reg [%d:0] shadow%d_rs2_rdata;" % (xlen-1, chidx))
+        print()
+
+        errcodes.append("ch%d_errcode_r" % (chidx))
+        print("  reg [15:0] ch%d_errcode_r;" % (chidx))
+        print()
+
+        print("  task ch%d_handle_error_r;" % (chidx))
+        print("    input [15:0] code;")
+        print("    input [511:0] msg;")
+        print("    begin")
+
+        if not quiet_mode:
+            print("      $display(\"-------- RVFI Monitor error %%0d in reordered channel %d: %%m at time %%0t --------\", code, $time);" % (chidx))
+            print("      $display(\"Error message: %0s\", msg);")
+            for p in """rvfi_valid rvfi_order rvfi_insn rvfi_trap rvfi_halt rvfi_intr
+                        rvfi_rs1_addr rvfi_rs2_addr rvfi_rs1_rdata rvfi_rs2_rdata
+                        rvfi_rd_addr rvfi_rd_wdata rvfi_pc_rdata rvfi_pc_wdata
+                        rvfi_mem_addr rvfi_mem_rmask rvfi_mem_wmask rvfi_mem_rdata rvfi_mem_wdata""".split():
+                print("      $display(\"%s = %%x\", ch%d_%s);" % (p, chidx, p))
+            for p in """rs1_valid rs1_rdata rs2_valid rs2_rdata""".split():
+                print("      $display(\"shadow_%s = %%x\", shadow%d_%s);" % (p, chidx, p))
+        print("      ch%d_errcode_r <= code;" % (chidx))
+
+        if use_assert:
+            print("      assert(0);")
+
+        print("    end")
+        print("  endtask")
         print()
 
         for rs in ["rs1", "rs2"]:
             print("  always @* begin")
             print("    shadow%d_%s_valid = 0;" % (chidx, rs))
             print("    shadow%d_%s_rdata = 0;" % (chidx, rs))
-            print("    if (!reset && ro%d_rvfi_valid) begin" % (chidx))
-            print("      shadow%d_%s_valid = shadow_xregs_valid[ro%d_rvfi_%s_addr];" % (chidx, rs, chidx, rs))
-            print("      shadow%d_%s_rdata = shadow_xregs[ro%d_rvfi_%s_addr];" % (chidx, rs, chidx, rs))
+            print("    if (!reset && ch%d_rvfi_valid) begin" % (chidx))
+            print("      shadow%d_%s_valid = shadow_xregs_valid[ch%d_rvfi_%s_addr];" % (chidx, rs, chidx, rs))
+            print("      shadow%d_%s_rdata = shadow_xregs[ch%d_rvfi_%s_addr];" % (chidx, rs, chidx, rs))
 
             for i in range(chidx):
-                print("      if (ro%d_rvfi_valid && ro%d_rvfi_rd_addr == ro%d_rvfi_%s_addr) begin" % (i, i, chidx, rs))
+                print("      if (ch%d_rvfi_valid && ch%d_rvfi_rd_addr == ch%d_rvfi_%s_addr) begin" % (i, i, chidx, rs))
                 print("        shadow%d_%s_valid = 1;" % (chidx, rs))
-                print("        shadow%d_%s_rdata = ro%d_rvfi_rd_wdata;" % (chidx, rs, i))
+                print("        shadow%d_%s_rdata = ch%d_rvfi_rd_wdata;" % (chidx, rs, i))
                 print("      end")
 
             print("    end")
@@ -368,24 +412,21 @@ if not noconsistency:
     print("  always @(posedge clock) begin")
 
     for chidx in range(channels):
-        print("    ro%d_errcode <= 0;" % chidx)
+        print("    ch%d_errcode <= 0;" % chidx)
 
     print("    if (reset) begin")
     print("      shadow_xregs_valid <= 1;")
     print("      shadow_xregs[0] <= 0;")
-    print("      shadow_pc_valid <= 0;")
     print("    end")
 
     for chidx in range(channels):
-        print("    if (!reset && ro%d_rvfi_valid) begin" % (chidx))
-        for rs in ["rs1", "rs2", "pc"]:
-            print("      if (shadow%d_%s_valid && shadow%d_%s_rdata != ro%d_rvfi_%s_rdata) begin" % (chidx, rs, chidx, rs, chidx, rs))
-            print("        ro%d_handle_error(%d, \"mismatch with shadow %s\");" % (chidx, 100*(1+chidx)+(31 if rs == "rs1" else 32), rs))
+        print("    if (!reset && ch%d_rvfi_valid) begin" % (chidx))
+        for rs in ["rs1", "rs2"]:
+            print("      if (shadow%d_%s_valid && shadow%d_%s_rdata != ch%d_rvfi_%s_rdata) begin" % (chidx, rs, chidx, rs, chidx, rs))
+            print("        ch%d_handle_error_r(%d, \"mismatch with shadow %s\");" % (chidx, 100*(1+chidx)+(31 if rs == "rs1" else 32), rs))
             print("      end")
-        print("      shadow_xregs_valid[ro%d_rvfi_rd_addr] <= 1;" % (chidx))
-        print("      shadow_xregs[ro%d_rvfi_rd_addr] <= ro%d_rvfi_rd_wdata;" % (chidx, chidx))
-        print("      shadow_pc_valid <= 1;")
-        print("      shadow_pc <= ro%d_rvfi_pc_wdata;" % (chidx))
+        print("      shadow_xregs_valid[ch%d_rvfi_rd_addr] <= 1;" % (chidx))
+        print("      shadow_xregs[ch%d_rvfi_rd_addr] <= ch%d_rvfi_rd_wdata;" % (chidx, chidx))
         print("    end")
 
     print("  end")
