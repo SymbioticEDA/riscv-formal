@@ -64,6 +64,9 @@ module rvfi_insn_check (
 		integer i;
 
 		always @* begin
+			if (!reset && enable) begin
+				assume(spec_valid);
+			end
 			if (spec_valid) begin
 `ifndef RISCV_FORMAL_STRICT_READ
 				if (spec_rs1_addr)

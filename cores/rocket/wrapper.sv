@@ -299,16 +299,16 @@ module tilelink_ad_dummy (
 	reg [3:0]  op_mask;
 	reg [31:0] op_data;
 
-	`formal_anyseq delay_a_nd;
-	`formal_anyseq delay_d_nd;
+	`rvformal_rand_reg delay_a_nd;
+	`rvformal_rand_reg delay_d_nd;
 
-	`formal_anyseq [2:0]  channel_d_bits_opcode_nd;
-	`formal_anyseq [1:0]  channel_d_bits_param_nd;
-	`formal_anyseq [3:0]  channel_d_bits_size_nd;
-	`formal_anyseq        channel_d_bits_source_nd;
-	`formal_anyseq        channel_d_bits_sink_nd;
-	`formal_anyseq [31:0] channel_d_bits_data_nd;
-	`formal_anyseq        channel_d_bits_error_nd;
+	`rvformal_rand_reg [2:0]  channel_d_bits_opcode_nd;
+	`rvformal_rand_reg [1:0]  channel_d_bits_param_nd;
+	`rvformal_rand_reg [3:0]  channel_d_bits_size_nd;
+	`rvformal_rand_reg        channel_d_bits_source_nd;
+	`rvformal_rand_reg        channel_d_bits_sink_nd;
+	`rvformal_rand_reg [31:0] channel_d_bits_data_nd;
+	`rvformal_rand_reg        channel_d_bits_error_nd;
 
 `ifdef FAST_MEM
 	wire delay_a = 0, delay_d = 0;

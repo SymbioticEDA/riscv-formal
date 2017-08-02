@@ -1,13 +1,13 @@
 `ifdef YOSYS
-`define formal_anyseq rand reg
-`define formal_anyconst const rand reg
+`define rvformal_rand_reg rand reg
+`define rvformal_const_rand_reg const rand reg
 `else
 `ifdef SIMULATION
-`define formal_anyseq reg
-`define formal_anyconst reg
+`define rvformal_rand_reg reg
+`define rvformal_const_rand_reg reg
 `else
-`define formal_anyseq wire
-`define formal_anyconst reg
+`define rvformal_rand_reg wire
+`define rvformal_const_rand_reg reg
 `endif
 `endif
 
