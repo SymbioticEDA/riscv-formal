@@ -60,6 +60,7 @@ with open("../../insns/isa_rv32i.txt") as isa_file:
                         : verilog_defines -D RISCV_FORMAL_BMC_DEPTH=@depth@
                         : verilog_defines -D RISCV_FORMAL_INSN_MODEL=rvfi_insn_@insn@
                         : verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=@channel@
+                        : verilog_defines -D RISCV_FORMAL_STRICT_READ
                 """, **hargs)
 
                 if fast_mem:
