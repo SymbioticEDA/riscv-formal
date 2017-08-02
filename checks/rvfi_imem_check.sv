@@ -4,8 +4,8 @@ module rvfi_imem_check (
 	output [15:0] imem_data,
 	`RVFI_INPUTS
 );
-	`formal_anyconst [`RISCV_FORMAL_XLEN-1:0] imem_addr_randval;
-	`formal_anyconst [15:0] imem_data_randval;
+	`rvformal_const_rand_reg [`RISCV_FORMAL_XLEN-1:0] imem_addr_randval;
+	`rvformal_const_rand_reg [15:0] imem_data_randval;
 	assign imem_addr = imem_addr_randval;
 	assign imem_data = imem_data_randval;
 

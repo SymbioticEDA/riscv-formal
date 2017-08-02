@@ -4,7 +4,7 @@ module rvfi_reg_check #(
 	input clock, reset, check,
 	`RVFI_INPUTS
 );
-	`formal_anyconst [4:0] register_index;
+	`rvformal_const_rand_reg [4:0] register_index;
 	reg [`RISCV_FORMAL_XLEN-1:0] register_shadow = 0;
 	reg register_written = ZERO_INIT;
 
