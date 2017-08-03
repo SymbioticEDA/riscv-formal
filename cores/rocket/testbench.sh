@@ -14,7 +14,7 @@ if $use_iverilog; then
 			rocket-chip/vsrc/plusarg_reader.v rocket-chip/vsrc/RVFIMonitor.v
 	./testbench +vcd=testbench.vcd
 else
-	verilator --exe --cc -Wno-fatal --top-module testbench --trace -DSIMULATION testbench.v testbench.cc \
+	verilator --exe --cc -Wno-fatal --top-module testbench --trace --trace-underscore -DSIMULATION testbench.v testbench.cc \
 			rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v \
 			rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.behav_srams.v \
 			rocket-chip/vsrc/plusarg_reader.v rocket-chip/vsrc/RVFIMonitor.v
