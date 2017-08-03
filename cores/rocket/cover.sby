@@ -1,0 +1,24 @@
+[options]
+mode cover
+tbtop uut.rocket
+depth 55
+
+[engines]
+smtbmc --presat boolector
+
+[script]
+verilog_defines -D RISCV_FORMAL
+verilog_defines -D RISCV_FORMAL_NRET=2
+verilog_defines -D RISCV_FORMAL_XLEN=32
+verilog_defines -D RISCV_FORMAL_ILEN=32
+verilog_defines -D RISCV_FORMAL_BMC_DEPTH=50
+verilog_defines -D RISCV_FORMAL_BMC_START=30
+# verilog_defines -D NO_TL_AD_DUMMY
+verilog_defines -D FAST_MEM
+read_verilog -sv ../../../../checks/rvfi_macros.vh
+read_verilog -sv ../../../../checks/rvfi_channel.sv
+read_verilog -sv ../../../../tests/coverage/riscv_rv32i_insn.v
+read_verilog -sv ../../wrapper.sv
+read_verilog -sv ../../cover.sv
+read_ilang ../../rocket-chip.il
+prep -top testbench
