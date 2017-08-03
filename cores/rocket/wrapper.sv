@@ -63,6 +63,7 @@ module rocket_wrapper (
 
 	// TileLink A-D Dummy Slave
 
+`ifndef NO_TL_AD_DUMMY
 	tilelink_ad_dummy TL_AD_DUMMY (
 		.clock                  (clock                     ),
 		.reset                  (reset                     ),
@@ -87,43 +88,6 @@ module rocket_wrapper (
 		.channel_d_bits_size    (io_master_0_d_bits_size   ),
 		.channel_d_bits_source  (io_master_0_d_bits_source )
 	);
-
-	// Input Constraints
-
-	always @(posedge clock) begin
-		if (reset) begin
-			// assume(io_master_0_a_ready == 0);
-			// assume(io_master_0_d_valid == 0);
-		end
-
-		// Also make sure we don't toggle source on channel D during reset (makes d_ready toggle)
-		if (reset && !io_master_0_d_valid) assume(io_master_0_d_bits_source == 0);
-	end
-
-	// Formal Checker for IO interfaces
-
-`ifdef FORMAL_CHECK_ROCKET_IO
-	localparam integer reset_depth = 5;
-
-	reg [7:0] cycle = 0;
-	always @(posedge clock) cycle <= cycle + !(&cycle);
-
-	always @(posedge clock) begin
-		assume(reset == (cycle <= reset_depth));
-
-		if (cycle == reset_depth) begin
-			// assert(!io_master_0_a_valid);
-			// assert(!io_master_0_d_ready);
-			assert(!rvfi_valid);
-		end
-
-		if (cycle > reset_depth) begin
-			cover(io_master_0_a_valid && io_master_0_a_ready);
-			cover(io_master_0_d_valid && io_master_0_d_ready);
-		end
-
-		cover(cycle == 30);
-	end
 `endif
 
 	// Rocket Tile
