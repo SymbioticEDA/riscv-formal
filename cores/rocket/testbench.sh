@@ -9,14 +9,14 @@ egrep -v 'UUT.(core.rvfi_|core.io_status_dprv|core.csr.io_time|core.csr.io_statu
 
 if $use_iverilog; then
 	iverilog -o testbench -s testbench -DSIMULATION testbench.v \
-			rocket-chip/vsim/generated-src/freechips.rocketchip.chip.DefaultConfigWithRVFIMonitors.v \
-			rocket-chip/vsim/generated-src/freechips.rocketchip.chip.DefaultConfigWithRVFIMonitors.behav_srams.v \
+			rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v \
+			rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.behav_srams.v \
 			rocket-chip/vsrc/plusarg_reader.v rocket-chip/vsrc/RVFIMonitor.v
 	./testbench +vcd=testbench.vcd
 else
 	verilator --exe --cc -Wno-fatal --top-module testbench --trace -DSIMULATION testbench.v testbench.cc \
-			rocket-chip/vsim/generated-src/freechips.rocketchip.chip.DefaultConfigWithRVFIMonitors.v \
-			rocket-chip/vsim/generated-src/freechips.rocketchip.chip.DefaultConfigWithRVFIMonitors.behav_srams.v \
+			rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v \
+			rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.behav_srams.v \
 			rocket-chip/vsrc/plusarg_reader.v rocket-chip/vsrc/RVFIMonitor.v
 	make -C obj_dir -f Vtestbench.mk
 	./obj_dir/Vtestbench
