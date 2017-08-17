@@ -308,7 +308,7 @@ if not nopccheck:
                 print("      $display(\"%s = %%x\", ch%d_%s);" % (p, chidx, p))
             for p in """pc_valid pc_rdata""".split():
                 print("      $display(\"shadow_%s = %%x\", shadow%d_%s);" % (p, chidx, p))
-        print("      ch%d_errcode_r <= code;" % (chidx))
+        print("      ch%d_errcode_p <= code;" % (chidx))
 
         if use_assert:
             print("      assert(0);")
