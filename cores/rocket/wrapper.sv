@@ -6,7 +6,12 @@ module rvfi_wrapper (
 `ifdef ROCKET_NORESET
 	wire actual_reset = 0;
 `else
-	wire actual_reset = reset;
+	reg [3:0] reset_cnt = 0;
+	wire actual_reset = reset || |reset_cnt;
+
+	always @(posedge clock) begin
+		reset_cnt <= reset ? 5 : reset_cnt - |reset_cnt;
+	end
 `endif
 
 	// Rocket Tile Inputs
@@ -110,7 +115,7 @@ module rvfi_wrapper (
 
 	// Rocket Tile
 
-	RocketTile_rocket rocket (
+	RocketTile_rocket uut (
 		.clock                     (clock                     ),
 		.reset                     (actual_reset              ),
 

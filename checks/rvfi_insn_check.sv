@@ -1,5 +1,5 @@
 module rvfi_insn_check (
-	input clock, reset, enable,
+	input clock, reset, check,
 	`RVFI_INPUTS
 );
 `ifdef RISCV_FORMAL_CHANNEL_IDX
@@ -8,7 +8,7 @@ module rvfi_insn_check (
 	genvar channel_idx;
 	generate for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin:channel
 `endif
-		(* keep *) wire valid = !reset && enable && rvfi_valid[channel_idx];
+		(* keep *) wire valid = !reset && check && rvfi_valid[channel_idx];
 		(* keep *) wire [`RISCV_FORMAL_ILEN   - 1 : 0] insn      = rvfi_insn     [channel_idx*`RISCV_FORMAL_ILEN   +: `RISCV_FORMAL_ILEN];
 		(* keep *) wire                                trap      = rvfi_trap     [channel_idx];
 		(* keep *) wire                                halt      = rvfi_halt     [channel_idx];
@@ -64,7 +64,7 @@ module rvfi_insn_check (
 		integer i;
 
 		always @* begin
-			if (!reset && enable) begin
+			if (!reset && check) begin
 				assume(spec_valid);
 			end
 			if (spec_valid) begin

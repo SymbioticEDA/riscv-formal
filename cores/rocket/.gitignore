@@ -8,7 +8,7 @@
 /pc_check_fwd1
 /pc_check_bwd0
 /pc_check_bwd1
-/insncheck
+/checks
 /testbench
 /testbench.v
 /testbench.vcd

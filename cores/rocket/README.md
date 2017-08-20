@@ -17,11 +17,11 @@ sudo apt-get install autoconf automake autotools-dev curl \
 bash rocket-chip.sh
 ```
 
-Then generate the instruction checker proofs and run them:
+Then generate the formal checks and run them:
 
 ```
-python3 insncheck.py
-cd insncheck
+python3 ../../checks/genchecks.py
+cd checks
 make -j$(nproc)
 ```
 

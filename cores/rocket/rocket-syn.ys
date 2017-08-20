@@ -129,7 +129,7 @@ sim -clock clock -reset reset -rstlen 10 -zinit -w -vcd rocket-syn/init.vcd -n 3
 
 # ---- Generate netlists ----
 
-rename rvfi_wrapper.rocket RocketTile_rocket
+rename rvfi_wrapper.uut RocketTile_rocket
 hierarchy -top RocketTile_rocket
 uniquify
 hierarchy
