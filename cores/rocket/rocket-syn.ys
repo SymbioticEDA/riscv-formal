@@ -12,7 +12,14 @@ module plusarg_reader #(
 endmodule
 EOT
 
-hierarchy -top RocketTile_rocket
+verilog_defines -D RISCV_FORMAL
+verilog_defines -D RISCV_FORMAL_NRET=2
+verilog_defines -D RISCV_FORMAL_XLEN=32
+verilog_defines -D RISCV_FORMAL_ILEN=32
+
+read_verilog -sv ../../checks/rvfi_macros.vh
+read_verilog -sv ../../checks/rvfi_channel.sv
+read_verilog -sv -D ROCKET_INIT wrapper.sv
 
 # ---- Create RVFI on RocketWithRVFI ----
 
@@ -107,23 +114,43 @@ connect -port core rvfi_valid     rvfi_valid
 
 cd ..
 
+# ---- Simulate init sequence ----
+
+hierarchy -top rvfi_wrapper
+prep -nordff
+uniquify
+hierarchy
+
+setundef -undriven -zero w:*
+opt -fast
+
+write_ilang rocket-syn/init.il
+sim -clock clock -reset reset -rstlen 10 -zinit -w -vcd rocket-syn/init.vcd -n 300
+
 # ---- Generate netlists ----
+
+rename rvfi_wrapper.rocket RocketTile_rocket
+hierarchy -top RocketTile_rocket
+uniquify
+hierarchy
 
 rename -hide w:_*
 
-prep -nordff
-write_ilang rocket-chip.il
+write_ilang rocket-syn/rocket-hier.il
 
-flatten
-write_ilang rocket-chip-flat.il
+# flatten
+# opt -fast
+#
+# write_ilang rocket-syn/rocket-flat.il
+#
+# opt -full
+# memory_map
+# opt -fast
+# techmap
+# opt -fast
+# abc -fast
+# opt_clean
+# stat
+#
+# write_ilang rocket-syn/rocket-gates.il
 
-opt -full
-memory_map
-opt -fast
-techmap
-opt -fast
-abc -fast
-opt_clean
-stat
-
-write_ilang rocket-chip-gates.il

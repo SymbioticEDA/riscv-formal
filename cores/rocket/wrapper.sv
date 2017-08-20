@@ -1,8 +1,14 @@
-module rocket_wrapper (
+module rvfi_wrapper (
 	input         clock,
 	input         reset,
 	`RVFI_OUTPUTS
 );
+`ifdef ROCKET_NORESET
+	wire actual_reset = 0;
+`else
+	wire actual_reset = reset;
+`endif
+
 	// Rocket Tile Inputs
 
 	(* keep *) wire        io_hartid = 0;
@@ -61,12 +67,23 @@ module rocket_wrapper (
 	(* keep *) wire [31:0] io_slave_0_d_bits_data;
 	(* keep *) wire        io_slave_0_d_bits_error;
 
+`ifdef ROCKET_INIT
+	assign io_master_0_a_ready = 0;
+	assign io_master_0_d_valid = 0;
+	assign io_master_0_d_bits_opcode = 0;
+	assign io_master_0_d_bits_param = 0;
+	assign io_master_0_d_bits_size = 0;
+	assign io_master_0_d_bits_source = 0;
+	assign io_master_0_d_bits_sink = 0;
+	assign io_master_0_d_bits_data = 0;
+	assign io_master_0_d_bits_error = 0;
+`else
 	// TileLink A-D Dummy Slave
 
 `ifndef NO_TL_AD_DUMMY
 	tilelink_ad_dummy TL_AD_DUMMY (
 		.clock                  (clock                     ),
-		.reset                  (reset                     ),
+		.reset                  (actual_reset              ),
 
 		.channel_a_ready        (io_master_0_a_ready       ),
 		.channel_a_valid        (io_master_0_a_valid       ),
@@ -89,12 +106,13 @@ module rocket_wrapper (
 		.channel_d_bits_source  (io_master_0_d_bits_source )
 	);
 `endif
+`endif
 
 	// Rocket Tile
 
 	RocketTile_rocket rocket (
 		.clock                     (clock                     ),
-		.reset                     (reset                     ),
+		.reset                     (actual_reset              ),
 
 		.io_interrupts_0_0         (io_interrupts_0_0         ),
 		.io_interrupts_0_1         (io_interrupts_0_1         ),
@@ -211,6 +229,7 @@ module rocket_wrapper (
 	(* keep *) rvfi_channel #(.CHANNEL_IDX(1)) rvfi_channel_1 (`RVFI_CONN);
 endmodule
 
+`ifndef ROCKET_INIT
 module tilelink_ad_dummy (
 	input clock,
 	input reset,
@@ -235,7 +254,7 @@ module tilelink_ad_dummy (
 	output reg [31:0] channel_d_bits_data,
 	output reg        channel_d_bits_error
 );
-	reg busy, ready, last;
+	reg busy = 0, ready, last;
 	reg [15:0] count, next_count;
 
 	// -- TL-UL --
@@ -351,4 +370,5 @@ module RVFIMonitor (
 );
 	assign errcode = 0;
 endmodule
+`endif
 `endif

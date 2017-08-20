@@ -23,7 +23,7 @@ module testbench (
 		`RVFI_CONN
 	);
 
-	rocket_wrapper uut (
+	rvfi_wrapper uut (
 		.clock (clk  ),
 		.reset (reset),
 		`RVFI_CONN

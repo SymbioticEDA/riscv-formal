@@ -31,6 +31,9 @@ if [ ! -d riscv-tools ]; then
 	cd ../..
 fi
 
+rm -rf rocket-syn
 make -C rocket-chip/vsim verilog
-yosys -v2 -l rocket-chip.yslog rocket-chip.ys
+
+mkdir -p rocket-syn
+yosys -v2 -l rocket-syn/rocket-syn.log rocket-syn.ys
 

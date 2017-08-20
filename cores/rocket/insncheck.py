@@ -6,7 +6,7 @@ basedir = "%s/../.." % os.getcwd()
 smt_solver = "boolector"
 bmc_depth = 50
 use_aiger = False
-fast_mem = True
+fast_mem = False
 no_system = True
 sbycmd = "sby"
 
@@ -29,10 +29,10 @@ hargs["depth_plus_5"] = bmc_depth + 5
 
 if use_aiger:
     hargs["engine"] = "abc bmc3"
-    hargs["ilang_file"] = "rocket-chip-gates.il"
+    hargs["ilang_file"] = "rocket-gates.il"
 else:
     hargs["engine"] = "smtbmc --presat %s" % smt_solver
-    hargs["ilang_file"] = "rocket-chip.il"
+    hargs["ilang_file"] = "rocket-hier.il"
 
 with open("../../insns/isa_rv32i.txt") as isa_file:
     for insn in isa_file:
@@ -61,6 +61,7 @@ with open("../../insns/isa_rv32i.txt") as isa_file:
                         : verilog_defines -D RISCV_FORMAL_INSN_MODEL=rvfi_insn_@insn@
                         : verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=@channel@
                         : verilog_defines -D RISCV_FORMAL_STRICT_READ
+                        : verilog_defines -D ROCKET_NORESET
                 """, **hargs)
 
                 if fast_mem:
@@ -77,7 +78,7 @@ with open("../../insns/isa_rv32i.txt") as isa_file:
                         : read_verilog -sv @basedir@/checks/rvfi_insn_check.sv
                         : read_verilog -sv @basedir@/insns/insn_@insn@.v
                         : read_verilog -sv @basedir@/tests/coverage/riscv_rv32i_insn.v
-                        : read_ilang @basedir@/cores/rocket/@ilang_file@
+                        : read_ilang @basedir@/cores/rocket/rocket-syn/@ilang_file@
                         : prep -top testbench
                 """, **hargs)
 

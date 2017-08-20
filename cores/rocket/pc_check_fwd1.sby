@@ -16,12 +16,13 @@ verilog_defines -D RISCV_FORMAL_BMC_START=30
 verilog_defines -D RISCV_FORMAL_BMC_DEPTH=50
 verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=1
 verilog_defines -D RISCV_FORMAL_CHECKER=rvfi_pc_check_fwd
-verilog_defines -D FAST_MEM
+verilog_defines -D ROCKET_NORESET
+# verilog_defines -D FAST_MEM
 verilog_defines -D NO_SYSTEM
 read_verilog -sv ../../../../checks/rvfi_macros.vh
 read_verilog -sv ../../../../checks/rvfi_channel.sv
 read_verilog -sv ../../../../tests/coverage/riscv_rv32i_insn.v
 read_verilog -sv ../../wrapper.sv
 read_verilog -sv ../../pc_check.sv
-read_ilang ../../rocket-chip.il
+read_ilang ../../rocket-syn/rocket-hier.il
 prep -top testbench
