@@ -25,3 +25,11 @@ cd checks
 make -j$(nproc)
 ```
 
+Important Notes
+===============
+
+This check sets all dangling wires in the design to constant zero. Without this
+there would be a problem with propagating Xs and the checks would fail. Obviously
+this is a problem that needs to be addressed in the design, but for now we work
+around it here so we can continue writing checks.
+
