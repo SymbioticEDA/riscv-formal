@@ -20,7 +20,7 @@ When the core retires an instruction, it asserts the `rvfi_valid` signal and use
 
 Cores that retire all instructions in-order may set `rvfi_order` to constant zero. Cores that retire instructions out-of-order must set this field to the instruction index.
 
-`rvfi_insn` is the instruction word for the retired instruction. In case of an instruction with fewer than `ILEN` bits, the upper bits of this output must be all zero.
+`rvfi_insn` is the instruction word for the retired instruction. In case of an instruction with fewer than `ILEN` bits, the upper bits of this output must be all zero. For compressed instructions the compressed instruction word must be output on this port. For fused instructions the complete fused instruction sequence must be output.
 
 `rvfi_trap` must be set for an instruction that cannot be decoded as a legal instruction, such as 0x00000000.
 
@@ -75,91 +75,61 @@ When `RISCV_FORMAL_ALIGNED_MEM` is set then `riscv-formal` assumes that unaligne
 RVFI TODOs and Requests for Comments
 ------------------------------------
 
-The following section contains notes on future extensions to RVFI. They will come part of the spec as soon as there is at least one core that implements the feature, and a matching formal check that utilises the feature.
+The following section contains notes on future extensions to RVFI. They will come part of the spec as soon as there is at least one core that implements the feature, and a matching formal check that utilises the feature. In many cases the additional ports will only be used (and expected from the core) when additional to-be-defined `RISCV_FORMAL_*` Verilog defines are set.
 
 ### Support for RV64 ISAs
 
-Models for RV64I-only instructions are still missing. They will be added as soon as a RV64 processor with RVFI support is available.
+Models for RV64I-only instructions are still missing. They will be added as soon as a RV64 processor with RVFI support becomes available.
 
-### Support for Compressed ISAs
+### Support for fused instructions
 
-There are no models for the compressed instructions yet. The proposal is to verify them as if they where separate instructions, i.e. not merge them with the models for uncompressed instructions.
+Fused instructions are simply handled as larger instructions in RVFI. Additional `rvfi_rs*` ports (or even `rvfi_rd*` ports) may be added to accommodate the fused instructions.
+
+No instruction models for fused instructions have been created yet.
+
+Alternatively fused instructions may be output as individual instructions in separate RVFI channels.
+
+### Control and Status Registers (CSRs)
+
+For each supported CSR there will be four additional output ports:
+
+    output [NRET * XLEN - 1 : 0] rvfi_csr_<csrname>_rmask
+    output [NRET * XLEN - 1 : 0] rvfi_csr_<csrname>_wmask
+    output [NRET * XLEN - 1 : 0] rvfi_csr_<csrname>_rdata
+    output [NRET * XLEN - 1 : 0] rvfi_csr_<csrname>_wdata
+
+The `rmask` and `wmask` ports specify which bits of `rdata` and `wdata` are valid.
 
 ### Modelling of Floating-Point State
 
 The following is the proposed RVFI extension for floating point ISAs:
 
-```
-output [NRET *    5 - 1 : 0] rvfi_frs1_addr,
-output [NRET *    5 - 1 : 0] rvfi_frs2_addr,
-output [NRET *    5 - 1 : 0] rvfi_frs3_addr,
-output [NRET *    5 - 1 : 0] rvfi_frd_addr,
-output [NRET        - 1 : 0] rvfi_frs1_valid,
-output [NRET        - 1 : 0] rvfi_frs2_valid,
-output [NRET        - 1 : 0] rvfi_frs3_valid,
-output [NRET        - 1 : 0] rvfi_frd_valid,
-output [NRET * FLEN - 1 : 0] rvfi_frs1_rdata,
-output [NRET * FLEN - 1 : 0] rvfi_frs2_rdata,
-output [NRET * FLEN - 1 : 0] rvfi_frs3_rdata,
-output [NRET *    3 - 1 : 0] rvfi_frm_rdata,
-output [NRET * FLEN - 1 : 0] rvfi_frd_wdata,
-output [NRET *    5 - 1 : 0] rvfi_sfflags,
-```
+    output [NRET *    5 - 1 : 0] rvfi_frs1_addr
+    output [NRET *    5 - 1 : 0] rvfi_frs2_addr
+    output [NRET *    5 - 1 : 0] rvfi_frs3_addr
+    output [NRET *    5 - 1 : 0] rvfi_frd_addr
+    output [NRET        - 1 : 0] rvfi_frs1_rvalid
+    output [NRET        - 1 : 0] rvfi_frs2_rvalid
+    output [NRET        - 1 : 0] rvfi_frs3_rvalid
+    output [NRET        - 1 : 0] rvfi_frd_wvalid
+    output [NRET * FLEN - 1 : 0] rvfi_frs1_rdata
+    output [NRET * FLEN - 1 : 0] rvfi_frs2_rdata
+    output [NRET * FLEN - 1 : 0] rvfi_frs3_rdata
+    output [NRET * FLEN - 1 : 0] rvfi_frd_wdata
+    output [NRET * XLEN - 1 : 0] rvfi_csr_fcsr_rmask
+    output [NRET * XLEN - 1 : 0] rvfi_csr_fcsr_wmask
+    output [NRET * XLEN - 1 : 0] rvfi_csr_fcsr_rdata
+    output [NRET * XLEN - 1 : 0] rvfi_csr_fcsr_wdata
 
-Since `f0` is not a zero register, additional `*_valid` signals are required to indicate if `frs1`, `frs2`, `frs3`, and `frd` and their corresponding pre- or post-values are valid.
-
-For instructions that do not use the floating point rounding mode the signal `rvfi_frm_rdata` may be set to `3'b111` instead of the current rounding mode.
-
-The signal `rvfi_sfflags` has the bits set that this instruction sets in the `fflags` CSR. A bit in `fflags` that was already set in the pre-state, and is not set again by this instruction, must not be set in `rvfi_sfflags`.
+Since `f0` is not a zero register, additional `*_[rw]valid` signals are required to indicate if `frs1`, `frs2`, `frs3`, and `frd` and their corresponding pre- or post-values are valid.
 
 The FPU model in `riscv-formal` will be swappable (using a Verilog define) with with a pseudo-model that is using cheaper operations instead of proper floating point math. This enables efficient verification of cores that can be configured to support a similar FPU model. (A similar functionality will be provided for M-extension instructions.)
-
-### RVFI Peep Interface
-
-The RVFI Peep Interface is an optional list of additional RVFI ports that significantly simplify the formal proofs to verify consistency between instructions.
-
-```
-input  [NRET *    5 - 1 : 0] rvfi_peep_rx_addr,
-output [NRET * XLEN - 1 : 0] rvfi_peep_rx_rdata,
-output [NRET * XLEN - 1 : 0] rvfi_peep_rx_wdata,
-```
-
-The `_addr` port is guaranteed to be driven to a constant value by the formal test-bench. The `_rdata` and `_wdata` ports will be driven to the pre- and post-state values for the specified register, independent of if the current instruction reads or modifies the specified register.
-
-A similar interface is proposed for floating point registers:
-
-```
-input  [NRET *    5 - 1 : 0] rvfi_peep_rf_addr,
-output [NRET * FLEN - 1 : 0] rvfi_peep_rf_rdata,
-output [NRET * FLEN - 1 : 0] rvfi_peep_rf_wdata,
-```
 
 ### Modelling of Atomic Memory Operations
 
 AMO instructions (`AMOSWAP.W`, etc.) can be modelled using the existing `rvfi_mem_*` interface by asserting bits in both `rvfi_mem_rmask` and `rvfi_mem_wmask`.
 
-The is also no extension to the RVFI port necessary to accommodate the `LR`, `SC`, `FENCE` and `FENCE.I` instructions.
+There is also no extension to the RVFI port necessary to accommodate the `LR`, `SC`, `FENCE` and `FENCE.I` instructions.
 
-Verification of this instructions for a single-core systems can be done using the RVFI port only. A strategy must be defined to verify their correct behavior in multicore systems. This is TBD.
-
-### Modelling of CSRs and Privileged Machine State
-
-The current thinking is along the following lines: At least two CSR peep ports are added as well as a port for the privilege mode in pre- and post-state.
-
-```
-input  [NRET *   12 - 1 : 0] rvfi_peep_csr0_addr,
-output [NRET * XLEN - 1 : 0] rvfi_peep_csr0_rdata,
-output [NRET * XLEN - 1 : 0] rvfi_peep_csr0_wdata,
-
-input  [NRET *   12 - 1 : 0] rvfi_peep_csr1_addr,
-output [NRET * XLEN - 1 : 0] rvfi_peep_csr1_rdata,
-output [NRET * XLEN - 1 : 0] rvfi_peep_csr1_wdata,
-
-output [NRET *    2 - 1 : 0] rvfi_mode_rdata,
-output [NRET *    2 - 1 : 0] rvfi_mode_wdata,
-```
-
-Like there is an individual proof for each instruction, individual proofs (or set of proofs) can be added for each processor feature using CSRs.
-
-A careful investigation of the draft privileged spec is required to determine if two CSR peep ports are sufficient to prove all features described in the spec. For some CSRs, such as `mstatus`, it might be desirable to add a dedicated RVFI port, similar to the `rvfi_mode_rdata` and `rvfi_mode_wdata` ports.
+Verification of this instructions for a single-core systems can be done using the RVFI port only. A strategy must be defined to verify their correct behavior in multicore systems.
 
