@@ -8,6 +8,13 @@ ilen = 32
 
 insn_depth = 30
 
+reg_start = 20
+reg_depth = 30
+
+pc_start = 20
+pc_trig = 25
+pc_depth = 30
+
 basedir = "%s/../.." % os.getcwd()
 corename = os.getcwd().split("/")[-1]
 smt_solver = "boolector"
@@ -41,6 +48,16 @@ if "options" in config:
                 nret = int(v)
             elif k == "insn_depth":
                 insn_depth = int(v)
+            elif k == "reg_start":
+                reg_start = int(v)
+            elif k == "reg_depth":
+                reg_depth = int(v)
+            elif k == "pc_start":
+                pc_start = int(v)
+            elif k == "pc_trig":
+                pc_trig = int(v)
+            elif k == "pc_depth":
+                pc_depth = int(v)
             else:
                 assert 0
         else:
@@ -77,14 +94,16 @@ else:
     hargs["ilang_file"] = corename + "-hier.il"
 
 def test_disabled(check):
-    if "disable" in config:
-        for line in config["disable"].split("\n"):
-            line = line.strip()
-            if line != "" and re.match(line, check):
-                return True
+    if "filter-checks" in config:
+        for line in config["filter-checks"].split("\n"):
+            line = line.strip().split()
+            if len(line) == 0: continue
+            assert len(line) == 2 and line[0] in ["-", "+"]
+            if re.match(line[1], check):
+                return line[0] == "-"
     return False
 
-# ------------------------------ INSN Checkers ------------------------------
+# ------------------------------ Instruction Checkers ------------------------------
 
 def check_insn(insn, chanidx):
     check = "insn_%s_ch%d" % (insn, chanidx)
@@ -142,6 +161,72 @@ with open("../../insns/isa_rv32i.txt") as isa_file:
     for insn in isa_file:
         for chanidx in range(nret):
             check_insn(insn.strip(), chanidx)
+
+# ------------------------------ Consistency Checkers ------------------------------
+
+def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
+    hargs["check"] = check
+    hargs["start"] = start
+
+    hargs["depth"] = depth
+    hargs["depth_plus_5"] = depth + 5
+
+    if chanidx is not None:
+        hargs["channel"] = "%d" % chanidx
+        check += "_ch%d" % chanidx
+
+    if test_disabled(check): return
+    checks.add(check)
+
+    with open("checks/%s.sby" % check, "w") as sby_file:
+        print_hfmt(sby_file, """
+                : [options]
+                : mode bmc
+                : append 5
+                : tbtop wrapper.uut
+                : depth @depth_plus_5@
+                :
+                : [engines]
+                : @engine@
+                :
+                : [script]
+                : verilog_defines -D RISCV_FORMAL
+                : verilog_defines -D RISCV_FORMAL_NRET=@nret@
+                : verilog_defines -D RISCV_FORMAL_XLEN=@xlen@
+                : verilog_defines -D RISCV_FORMAL_ILEN=@ilen@
+                : verilog_defines -D RISCV_FORMAL_CHECKER=rvfi_@check@_check
+                : verilog_defines -D RISCV_FORMAL_RESET_CYCLES=@start@
+                : verilog_defines -D RISCV_FORMAL_CHECK_CYCLE=@depth@
+                : verilog_defines -D RISCV_FORMAL_INSN_MODEL=rvfi_insn_@insn@
+        """, **hargs)
+
+        if chanidx is not None:
+            print("verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=%d" % chanidx, file=sby_file)
+
+        if trig is not None:
+            print("verilog_defines -D RISCV_FORMAL_TRIG_CYCLE=%d" % trig, file=sby_file)
+
+        if "script-defines" in config:
+            print_hfmt(sby_file, config["script-defines"], **hargs)
+
+        print_hfmt(sby_file, """
+                : read_verilog -sv @basedir@/checks/rvfi_macros.vh
+                : read_verilog -sv @basedir@/checks/rvfi_channel.sv
+                : read_verilog -sv @basedir@/checks/rvfi_testbench.sv
+                : read_verilog -sv @basedir@/checks/rvfi_@check@_check.sv
+        """, **hargs)
+
+        if "script-sources" in config:
+            print_hfmt(sby_file, config["script-sources"], **hargs)
+
+        print_hfmt(sby_file, """
+                : prep -top rvfi_testbench
+        """, **hargs)
+
+check_cons("reg", start=reg_start, depth=reg_depth)
+
+for i in range(nret):
+    check_cons("pc", chanidx=i, start=pc_start, trig=pc_trig, depth=pc_depth)
 
 # ------------------------------ Makefile ------------------------------
 

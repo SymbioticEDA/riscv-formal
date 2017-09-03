@@ -1,18 +1,16 @@
-module rvfi_reg_check #(
-	parameter [0:0] ZERO_INIT = 0
-) (
+module rvfi_reg_check (
 	input clock, reset, check,
 	`RVFI_INPUTS
 );
 	`rvformal_const_rand_reg [4:0] register_index;
 	reg [`RISCV_FORMAL_XLEN-1:0] register_shadow = 0;
-	reg register_written = ZERO_INIT;
+	reg register_written = 0;
 
 	integer channel_idx;
 	always @(posedge clock) begin
 		if (reset) begin
 			register_shadow <= 0;
-			register_written <= ZERO_INIT;
+			register_written <= 0;
 		end else begin
 			for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin
 				if (rvfi_valid[channel_idx]) begin
