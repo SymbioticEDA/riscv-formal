@@ -11,9 +11,11 @@ insn_depth = 30
 reg_start = 20
 reg_depth = 30
 
-pc_start = 20
-pc_trig = 25
-pc_depth = 30
+pc_fwd_start = 20
+pc_fwd_depth = 30
+
+pc_bwd_start = 20
+pc_bwd_depth = 30
 
 basedir = "%s/../.." % os.getcwd()
 corename = os.getcwd().split("/")[-1]
@@ -52,11 +54,13 @@ if "options" in config:
                 reg_start = int(v)
             elif k == "reg_depth":
                 reg_depth = int(v)
-            elif k == "pc_start":
+            elif k == "pc_fwd_start":
                 pc_start = int(v)
-            elif k == "pc_trig":
-                pc_trig = int(v)
-            elif k == "pc_depth":
+            elif k == "pc_fwd_depth":
+                pc_depth = int(v)
+            elif k == "pc_bwd_start":
+                pc_start = int(v)
+            elif k == "pc_bwd_depth":
                 pc_depth = int(v)
             else:
                 assert 0
@@ -197,7 +201,6 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
                 : verilog_defines -D RISCV_FORMAL_CHECKER=rvfi_@check@_check
                 : verilog_defines -D RISCV_FORMAL_RESET_CYCLES=@start@
                 : verilog_defines -D RISCV_FORMAL_CHECK_CYCLE=@depth@
-                : verilog_defines -D RISCV_FORMAL_INSN_MODEL=rvfi_insn_@insn@
         """, **hargs)
 
         if chanidx is not None:
@@ -226,7 +229,8 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
 check_cons("reg", start=reg_start, depth=reg_depth)
 
 for i in range(nret):
-    check_cons("pc", chanidx=i, start=pc_start, trig=pc_trig, depth=pc_depth)
+    check_cons("pc_fwd", chanidx=i, start=pc_fwd_start, depth=pc_fwd_depth)
+    check_cons("pc_bwd", chanidx=i, start=pc_bwd_start, depth=pc_bwd_depth)
 
 # ------------------------------ Makefile ------------------------------
 
