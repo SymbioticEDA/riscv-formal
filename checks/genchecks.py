@@ -158,7 +158,7 @@ def check_insn(insn, chanidx):
             print_hfmt(sby_file, config["script-sources"], **hargs)
 
         print_hfmt(sby_file, """
-                : prep -top rvfi_testbench
+                : prep -nordff -top rvfi_testbench
         """, **hargs)
 
 with open("../../insns/isa_rv32i.txt") as isa_file:
