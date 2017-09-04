@@ -226,7 +226,8 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
                 : prep -top rvfi_testbench
         """, **hargs)
 
-check_cons("reg", start=reg_start, depth=reg_depth)
+for i in range(nret):
+    check_cons("reg", chanidx=i, start=reg_start, depth=reg_depth)
 
 for i in range(nret):
     check_cons("pc_fwd", chanidx=i, start=pc_fwd_start, depth=pc_fwd_depth)
