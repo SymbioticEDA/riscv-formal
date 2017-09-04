@@ -18,7 +18,7 @@ The Interface consists only of output signals. Each signal is a concatenation of
 
 When the core retires an instruction, it asserts the `rvfi_valid` signal and uses the signals described below to output the details of the retired instruction. The signals below are only valid during such a cycle and can be driven to arbitrary values in a cycle in which `rvfi_valid` is not asserted.
 
-Cores that retire all instructions in-order may set `rvfi_order` to constant zero. Cores that retire instructions out-of-order must set this field to the instruction index.
+The `rvfi_order` field must be set to the instruction index. No indices must be used twice and there must be no gaps. Instructions may be retired in a reordered fashion, as long as causality is preserved (register and memory write operations must be retired before the read operations that depend on them).
 
 `rvfi_insn` is the instruction word for the retired instruction. In case of an instruction with fewer than `ILEN` bits, the upper bits of this output must be all zero. For compressed instructions the compressed instruction word must be output on this port. For fused instructions the complete fused instruction sequence must be output.
 
