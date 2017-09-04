@@ -3,8 +3,10 @@
 import os, shutil, re
 
 nret = 1
-xlen = 32
+isa = "rv32i"
 ilen = 32
+xlen = 32
+compr = False
 
 insn_depth = 30
 
@@ -48,6 +50,8 @@ if "options" in config:
             k, v = match.group(1), match.group(2)
             if k == "nret":
                 nret = int(v)
+            elif k == "isa":
+                isa = v
             elif k == "insn_depth":
                 insn_depth = int(v)
             elif k == "reg_start":
@@ -66,6 +70,12 @@ if "options" in config:
                 assert 0
         else:
             assert line == ""
+
+if "64" in isa:
+    xlen = 64
+
+if "c" in isa:
+    compr = True
 
 shutil.rmtree("checks", ignore_errors=True)
 os.mkdir("checks")
@@ -143,6 +153,9 @@ def check_insn(insn, chanidx):
                 : verilog_defines -D RISCV_FORMAL_STRICT_READ
         """, **hargs)
 
+        if compr:
+            print("verilog_defines -D RISCV_FORMAL_COMPRESSED", file=sby_file)
+
         if "script-defines" in config:
             print_hfmt(sby_file, config["script-defines"], **hargs)
 
@@ -161,7 +174,7 @@ def check_insn(insn, chanidx):
                 : prep -nordff -top rvfi_testbench
         """, **hargs)
 
-with open("../../insns/isa_rv32i.txt") as isa_file:
+with open("../../insns/isa_%s.txt" % isa) as isa_file:
     for insn in isa_file:
         for chanidx in range(nret):
             check_insn(insn.strip(), chanidx)
