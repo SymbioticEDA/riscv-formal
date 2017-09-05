@@ -57,19 +57,31 @@ The following checks are not yet managed by `genchecks.py` and can not be implem
 
 This check adds a memory abstraction that only emulates a single word of memory (at an unconstrained address). This memory word is read-only and has an unconstrained value. The check makes sure that instructions fetched from this memory word are handled correctly and that the data from that memory word makes its way into `rvfi_insn` unharmed.
 
-See `imemcheck.v` in [cores/picorv32/](../cores/picorv32/) for an example implementation.
+See `imemcheck.sv` in [cores/picorv32/](../cores/picorv32/) for an example implementation.
 
 ### Data Memcheck
 
 This check adds a memory abstraction that only emulates a single word of memory (at an unconstrained address). The memory word is read/write. The check tests if writes to and reads from the memory location (as reported via RVFI) are consistent.
 
-See `dmemcheck.v` in [cores/picorv32/](../cores/picorv32/) for one possible implementation of this test.
+See `dmemcheck.sv` in [cores/picorv32/](../cores/picorv32/) for one possible implementation of this test.
 
 ### Checking for equivalence of core with and without RVFI
 
 An equivalence check of the core with and without RVFI (with respect to the non-RVFI outputs) is performed. This proves that the verification results for the core with enabled RVFI also prove that the (non-RVFI) production core is correct without extra burden on the core designer to isolate the RVFI implementation from the rest of the core.
 
 See `equiv.sh` in [cores/picorv32/](../cores/picorv32/) for an example implementation.
+
+### Complete
+
+An additional check to make sure the core can not (without trap) retire any instructions that are not covered by the riscv-formal instruction checks.
+
+See `complete.sv` in [cores/picorv32/](../cores/picorv32/) for one possible implementation of this test.
+
+### Cover
+
+A formal check using `cover()` SystemVerilog statements for various interesting RVFI events or sequences of events. The purpose of this formal check is to collect some data about the required bounds to reach certain states to set the bounds for the other bounded model checks.
+
+See `cover.sv` in [cores/picorv32/](../cores/picorv32/) for one possible implementation of this test.
 
 ### Verification of riscv-formal models against spike models
 
