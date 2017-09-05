@@ -23,8 +23,8 @@ RISCV_FORMAL
 ------------
 
 This macro should be set whenever riscv-formal is used. It is actually never
-used by any of the riscv-formal Verilog files, it it can be used for example
-by cores under test to enable or disable generation of the RVFI ports.
+used by any of the riscv-formal Verilog files, it can be used by cores under
+test to enable or disable generation of the RVFI ports.
 
 RISCV_FORMAL_NRET
 -----------------

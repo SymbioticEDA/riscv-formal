@@ -100,6 +100,13 @@ For each supported CSR there will be four additional output ports:
 
 The `rmask` and `wmask` ports specify which bits of `rdata` and `wdata` are valid.
 
+It is always valid for an instruction to activate more `rmask`/`rdata` bits
+than required by the instruction, as long as the reported bits correctly reflect
+the machine state.
+
+If reading a CSR has side effects, those side effects are not triggered by raised
+`rmask` bits but by the type of the instruction.
+
 ### Modelling of Floating-Point State
 
 The following is the proposed RVFI extension for floating point ISAs:
