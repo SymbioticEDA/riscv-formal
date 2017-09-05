@@ -19,6 +19,17 @@ pc_fwd_depth = 30
 pc_bwd_start = 20
 pc_bwd_depth = 30
 
+liveness_start = 10
+liveness_trig = 20
+liveness_depth = 30
+
+unique_start = 10
+unique_trig = 20
+unique_depth = 30
+
+causal_start = 20
+causal_depth = 30
+
 basedir = "%s/../.." % os.getcwd()
 corename = os.getcwd().split("/")[-1]
 smt_solver = "boolector"
@@ -59,13 +70,29 @@ if "options" in config:
             elif k == "reg_depth":
                 reg_depth = int(v)
             elif k == "pc_fwd_start":
-                pc_start = int(v)
+                pc_fwd_start = int(v)
             elif k == "pc_fwd_depth":
-                pc_depth = int(v)
+                pc_fwd_depth = int(v)
             elif k == "pc_bwd_start":
-                pc_start = int(v)
+                pc_bwd_start = int(v)
             elif k == "pc_bwd_depth":
-                pc_depth = int(v)
+                pc_bwd_depth = int(v)
+            elif k == "liveness_start":
+                liveness_start = int(v)
+            elif k == "liveness_trig":
+                liveness_trig = int(v)
+            elif k == "liveness_depth":
+                liveness_depth = int(v)
+            elif k == "unique_start":
+                unique_start = int(v)
+            elif k == "unique_trig":
+                unique_trig = int(v)
+            elif k == "unique_depth":
+                unique_depth = int(v)
+            elif k == "causal_start":
+                causal_start = int(v)
+            elif k == "causal_depth":
+                causal_depth = int(v)
             else:
                 assert 0
         else:
@@ -98,7 +125,8 @@ hargs["xlen"] = xlen
 hargs["ilen"] = ilen
 hargs["core"] = corename
 
-checks = set()
+instruction_checks = set()
+consistency_checks = set()
 
 if use_aiger:
     hargs["engine"] = "abc bmc3"
@@ -122,12 +150,12 @@ def test_disabled(check):
 def check_insn(insn, chanidx):
     check = "insn_%s_ch%d" % (insn, chanidx)
     if test_disabled(check): return
-    checks.add(check)
+    instruction_checks.add(check)
 
     hargs["insn"] = insn
     hargs["channel"] = "%d" % chanidx
     hargs["depth"] = insn_depth
-    hargs["depth_plus_5"] = insn_depth + 5
+    hargs["depth_plus"] = insn_depth + 2
 
     with open("checks/%s.sby" % check, "w") as sby_file:
         print_hfmt(sby_file, """
@@ -135,7 +163,7 @@ def check_insn(insn, chanidx):
                 : mode bmc
                 : append 5
                 : tbtop wrapper.uut
-                : depth @depth_plus_5@
+                : depth @depth_plus@
                 :
                 : [engines]
                 : @engine@
@@ -150,7 +178,6 @@ def check_insn(insn, chanidx):
                 : verilog_defines -D RISCV_FORMAL_CHECK_CYCLE=@depth@
                 : verilog_defines -D RISCV_FORMAL_INSN_MODEL=rvfi_insn_@insn@
                 : verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=@channel@
-                : verilog_defines -D RISCV_FORMAL_STRICT_READ
         """, **hargs)
 
         if compr:
@@ -186,14 +213,14 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
     hargs["start"] = start
 
     hargs["depth"] = depth
-    hargs["depth_plus_5"] = depth + 5
+    hargs["depth_plus"] = depth + 2
 
     if chanidx is not None:
         hargs["channel"] = "%d" % chanidx
         check += "_ch%d" % chanidx
 
     if test_disabled(check): return
-    checks.add(check)
+    consistency_checks.add(check)
 
     with open("checks/%s.sby" % check, "w") as sby_file:
         print_hfmt(sby_file, """
@@ -201,7 +228,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
                 : mode bmc
                 : append 5
                 : tbtop wrapper.uut
-                : depth @depth_plus_5@
+                : depth @depth_plus@
                 :
                 : [engines]
                 : @engine@
@@ -225,6 +252,9 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
         if "script-defines" in config:
             print_hfmt(sby_file, config["script-defines"], **hargs)
 
+        if ("script-defines %s" % hargs["check"]) in config:
+            print_hfmt(sby_file, config["script-defines %s" % hargs["check"]], **hargs)
+
         print_hfmt(sby_file, """
                 : read_verilog -sv @basedir@/checks/rvfi_macros.vh
                 : read_verilog -sv @basedir@/checks/rvfi_channel.sv
@@ -236,7 +266,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
             print_hfmt(sby_file, config["script-sources"], **hargs)
 
         print_hfmt(sby_file, """
-                : prep -top rvfi_testbench
+                : prep -nordff -top rvfi_testbench
         """, **hargs)
 
 for i in range(nret):
@@ -246,10 +276,19 @@ for i in range(nret):
     check_cons("pc_fwd", chanidx=i, start=pc_fwd_start, depth=pc_fwd_depth)
     check_cons("pc_bwd", chanidx=i, start=pc_bwd_start, depth=pc_bwd_depth)
 
+for i in range(nret):
+    check_cons("liveness", chanidx=i, start=liveness_start, trig=liveness_trig, depth=liveness_depth)
+    check_cons("unique", chanidx=i, start=unique_start, trig=unique_trig, depth=unique_depth)
+
+for i in range(nret):
+    check_cons("causal", chanidx=i, start=causal_start, depth=causal_depth)
+
 # ------------------------------ Makefile ------------------------------
 
 with open("checks/makefile", "w") as mkfile:
     print("all:", end="", file=mkfile)
+
+    checks = list(sorted(consistency_checks)) + list(sorted(instruction_checks))
 
     for check in checks:
         print(" %s/PASS" % check, end="", file=mkfile)
