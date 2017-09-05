@@ -1,12 +1,12 @@
 #!/bin/bash
 set -ex
 yosys -p '
-	read_verilog ../../../picorv32/picorv32.v
+	read_verilog picorv32.v
 	chparam -set COMPRESSED_ISA 0 -set BARREL_SHIFTER 1 picorv32
 	prep -flatten -top picorv32
 	design -stash gold
 
-	read_verilog -D RISCV_FORMAL ../../../picorv32/picorv32.v
+	read_verilog -D RISCV_FORMAL picorv32.v
 	chparam -set COMPRESSED_ISA 0 -set BARREL_SHIFTER 1 picorv32
 	prep -flatten -top picorv32
 	delete -port picorv32/rvfi_*
@@ -20,5 +20,6 @@ yosys -p '
 
 	opt -fast
 	equiv_simple
+	equiv_induct
 	equiv_status -assert
 '

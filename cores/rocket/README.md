@@ -21,8 +21,7 @@ Then generate the formal checks and run them:
 
 ```
 python3 ../../checks/genchecks.py
-cd checks
-make -j$(nproc)
+make -C checks -j$(nproc)
 ```
 
 Important Notes
