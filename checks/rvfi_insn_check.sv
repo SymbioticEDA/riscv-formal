@@ -68,14 +68,8 @@ module rvfi_insn_check (
 				assume(spec_valid);
 			end
 			if (spec_valid) begin
-`ifndef RISCV_FORMAL_STRICT_READ
-				if (spec_rs1_addr)
-`endif
-					assert(spec_rs1_addr == rs1_addr);
-`ifndef RISCV_FORMAL_STRICT_READ
-				if (spec_rs2_addr)
-`endif
-					assert(spec_rs2_addr == rs2_addr);
+				assert(spec_rs1_addr == rs1_addr);
+				assert(spec_rs2_addr == rs2_addr);
 
 				if (!spec_trap) begin
 					assert(spec_rd_addr == rd_addr);

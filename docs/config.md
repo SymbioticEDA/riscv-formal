@@ -71,15 +71,6 @@ A core may report a misaligned instruction as "illegal instruction" by raising
 the `rvfi_trap` line when retiring the instruction via RVFI. For those cores the
 macro `RISCV_FORMAL_TRAP_ALIGNED_INSN` must be defined.
 
-RISCV_FORMAL_STRICT_READ
-------------------------
-
-By default the instruction checkers allow the core to read a register even if
-the specification says the instruction shouldn't read a register (e.g. a read
-on the `rs2` port for an instruction that only uses `rs1`). When this define is
-set the instruction checker enforces that instructions that shouldn't read from
-a register file port actually don't read from that port.
-
 RISCV_FORMAL_BLACKBOX_REGS
 --------------------------
 
