@@ -23,7 +23,6 @@ module rvfi_insn_c_and (
 
   // CS-type instruction format (ALU version)
   wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 16;
-  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[5], rvfi_insn[12:10], rvfi_insn[6], 2'b00};
   wire [5:0] insn_funct6 = rvfi_insn[15:10];
   wire [1:0] insn_funct2 = rvfi_insn[6:5];
   wire [4:0] insn_rs1_rd = {1'b1, rvfi_insn[9:7]};

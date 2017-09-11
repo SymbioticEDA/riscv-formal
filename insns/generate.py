@@ -272,7 +272,6 @@ def format_cs_alu(f):
     print("", file=f)
     print("  // CS-type instruction format (ALU version)", file=f)
     print("  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 16;", file=f)
-    print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[5], rvfi_insn[12:10], rvfi_insn[6], 2'b00};", file=f)
     print("  wire [5:0] insn_funct6 = rvfi_insn[15:10];", file=f)
     print("  wire [1:0] insn_funct2 = rvfi_insn[6:5];", file=f)
     print("  wire [4:0] insn_rs1_rd = {1'b1, rvfi_insn[9:7]};", file=f)
