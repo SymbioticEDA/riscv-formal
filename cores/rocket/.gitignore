@@ -13,3 +13,5 @@
 /testbench.v
 /testbench.vcd
 /obj_dir
+/disasm.s
+/disasm.o
