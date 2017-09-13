@@ -341,7 +341,7 @@ if not nopccheck:
 
     for chidx in range(channels):
         print("    if (!reset && ch%d_rvfi_valid) begin" % (chidx))
-        print("      if (shadow%d_pc_valid && shadow%d_pc_rdata != ch%d_rvfi_pc_rdata) begin" % (chidx, chidx, chidx))
+        print("      if (shadow%d_pc_valid && shadow%d_pc_rdata != ch%d_rvfi_pc_rdata && !ch%d_rvfi_intr) begin" % (chidx, chidx, chidx, chidx))
         print("        ch%d_handle_error_p(%d, \"mismatch with shadow pc\");" % (chidx, 100*(1+chidx)+30))
         print("      end")
         print("      shadow_pc_valid <= 1;")
