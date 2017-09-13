@@ -1,0 +1,58 @@
+[*]
+[*] GTKWave Analyzer v3.3.65 (w)1999-2015 BSI
+[*] Tue Sep 12 08:17:07 2017
+[*]
+[dumpfile] "/home/clifford/Work/riscv-formal/cores/rocket/checks/pc_fwd_ch0/engine_0/trace.vcd"
+[dumpfile_mtime] "Tue Sep 12 00:05:15 2017"
+[dumpfile_size] 4236356
+[savefile] "/home/clifford/Work/riscv-formal/cores/rocket/checks.gtkw"
+[timestart] 218
+[size] 1024 1256
+[pos] 999 -429
+*-6.374269 285 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] rvfi_testbench.
+[treeopen] rvfi_testbench.wrapper.
+[sst_width] 225
+[signals_width] 269
+[sst_expanded] 1
+[sst_vpaned_height] 391
+@24
+smt_step
+@28
+rvfi_testbench.checker_inst.reset
+rvfi_testbench.checker_inst.check
+@200
+-
+@22
+rvfi_testbench.checker_inst.insn_order[63:0]
+rvfi_testbench.checker_inst.expect_pc[31:0]
+@29
+rvfi_testbench.checker_inst.expect_pc_valid
+@200
+-
+-RVFI #0
+@28
+rvfi_testbench.wrapper.rvfi_channel_0.valid
+rvfi_testbench.wrapper.rvfi_channel_0.trap
+rvfi_testbench.wrapper.rvfi_channel_0.intr
+@24
+rvfi_testbench.wrapper.rvfi_channel_0.order[63:0]
+@22
+rvfi_testbench.wrapper.rvfi_channel_0.insn[31:0]
+rvfi_testbench.wrapper.rvfi_channel_0.pc_rdata[31:0]
+rvfi_testbench.wrapper.rvfi_channel_0.pc_wdata[31:0]
+@200
+-
+-RVFI #1
+@28
+rvfi_testbench.wrapper.rvfi_channel_1.valid
+rvfi_testbench.wrapper.rvfi_channel_1.trap
+rvfi_testbench.wrapper.rvfi_channel_1.intr
+@24
+rvfi_testbench.wrapper.rvfi_channel_1.order[63:0]
+@22
+rvfi_testbench.wrapper.rvfi_channel_1.insn[31:0]
+rvfi_testbench.wrapper.rvfi_channel_1.pc_rdata[31:0]
+rvfi_testbench.wrapper.rvfi_channel_1.pc_wdata[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

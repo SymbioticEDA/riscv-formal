@@ -1,0 +1,83 @@
+[*]
+[*] GTKWave Analyzer v3.3.65 (w)1999-2015 BSI
+[*] Wed Sep 13 00:29:24 2017
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/clifford/Work/riscv-formal/cores/picorv32/checks.gtkw"
+[timestart] 0
+[size] 1263 878
+[pos] -1 -1
+*-6.814997 100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] rvfi_testbench.
+[treeopen] rvfi_testbench.wrapper.
+[sst_width] 225
+[signals_width] 335
+[sst_expanded] 1
+[sst_vpaned_height] 258
+@24
+smt_step
+@200
+-
+-PicoRV32
+@28
+rvfi_testbench.wrapper.uut.resetn
+@820
+rvfi_testbench.wrapper.uut.dbg_ascii_state[127:0]
+rvfi_testbench.wrapper.uut.dbg_ascii_instr[63:0]
+@200
+-
+@28
+rvfi_testbench.wrapper.mem_valid
+rvfi_testbench.wrapper.mem_ready
+rvfi_testbench.wrapper.mem_instr
+@22
+rvfi_testbench.wrapper.mem_addr[31:0]
+rvfi_testbench.wrapper.mem_wstrb[3:0]
+rvfi_testbench.wrapper.mem_rdata[31:0]
+rvfi_testbench.wrapper.mem_wdata[31:0]
+@200
+-
+-RVFI
+@28
+rvfi_testbench.checker_inst.reset
+rvfi_testbench.checker_inst.trig
+rvfi_testbench.checker_inst.check
+@200
+-
+@28
+rvfi_testbench.checker_inst.rvfi_valid
+rvfi_testbench.checker_inst.rvfi_trap
+rvfi_testbench.checker_inst.rvfi_intr
+rvfi_testbench.checker_inst.rvfi_halt
+@200
+-
+@25
+rvfi_testbench.checker_inst.rvfi_order[63:0]
+@22
+rvfi_testbench.checker_inst.rvfi_insn[31:0]
+rvfi_testbench.checker_inst.rvfi_pc_rdata[31:0]
+rvfi_testbench.checker_inst.rvfi_pc_wdata[31:0]
+@200
+-
+@22
+rvfi_testbench.checker_inst.rvfi_rs1_addr[4:0]
+rvfi_testbench.checker_inst.rvfi_rs2_addr[4:0]
+rvfi_testbench.checker_inst.rvfi_rd_addr[4:0]
+@200
+-
+@22
+rvfi_testbench.checker_inst.rvfi_rs1_rdata[31:0]
+rvfi_testbench.checker_inst.rvfi_rs2_rdata[31:0]
+rvfi_testbench.checker_inst.rvfi_rd_wdata[31:0]
+@200
+-
+@22
+rvfi_testbench.checker_inst.rvfi_mem_addr[31:0]
+rvfi_testbench.checker_inst.rvfi_mem_rmask[3:0]
+rvfi_testbench.checker_inst.rvfi_mem_wmask[3:0]
+rvfi_testbench.checker_inst.rvfi_mem_rdata[31:0]
+rvfi_testbench.checker_inst.rvfi_mem_wdata[31:0]
+@200
+-
+[pattern_trace] 1
+[pattern_trace] 0
