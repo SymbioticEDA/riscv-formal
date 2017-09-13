@@ -30,6 +30,8 @@ unique_depth = 30
 causal_start = 20
 causal_depth = 30
 
+blackbox = False
+
 basedir = "%s/../.." % os.getcwd()
 corename = os.getcwd().split("/")[-1]
 smt_solver = "boolector"
@@ -93,6 +95,8 @@ if "options" in config:
                 causal_start = int(v)
             elif k == "causal_depth":
                 causal_depth = int(v)
+            elif k == "blackbox":
+                blackbox = bool(int(v))
             else:
                 assert 0
         else:
@@ -180,6 +184,9 @@ def check_insn(insn, chanidx):
                 : verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=@channel@
         """, **hargs)
 
+        if blackbox:
+            print("verilog_defines -D RISCV_FORMAL_BLACKBOX_REGS", file=sby_file)
+
         if compr:
             print("verilog_defines -D RISCV_FORMAL_COMPRESSED", file=sby_file)
 
@@ -242,6 +249,12 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
                 : verilog_defines -D RISCV_FORMAL_RESET_CYCLES=@start@
                 : verilog_defines -D RISCV_FORMAL_CHECK_CYCLE=@depth@
         """, **hargs)
+
+        if blackbox and hargs["check"] != "liveness":
+            print("verilog_defines -D RISCV_FORMAL_BLACKBOX_ALU", file=sby_file)
+
+        if blackbox and hargs["check"] != "reg":
+            print("verilog_defines -D RISCV_FORMAL_BLACKBOX_REGS", file=sby_file)
 
         if chanidx is not None:
             print("verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=%d" % chanidx, file=sby_file)
