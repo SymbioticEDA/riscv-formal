@@ -90,3 +90,9 @@ And then run the test bench with RVFI monitor support:
 make test_rvf
 ```
 
+You can now try making changes to `picorv32.v` and see if the RVFI monitor catches
+errors in the test bench when you re-run `make test_rvf`.
+
+You can also try running `generate.py` with `-V`. This will generate a monitor that
+prints some information about each packet it sees on the RVFI port.
+
