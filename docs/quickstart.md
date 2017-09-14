@@ -5,17 +5,29 @@ Quick Start Guide
 So you want to get your hands dirty with riscv-formal? Install the tools and
 pick one of the exercises below.
 
-Installation
-------------
+Prerequisites
+-------------
 
-First install Yosys, SymbiYosys, and the solvers. See
+You'll need Yosys, SymbiYosys, and Boolector for the formal proofs. See
 [here](http://symbiyosys.readthedocs.io/en/latest/quickstart.html#installing)
-for instructions. You need boolector installed to run most of the proofs in
-their default configuration.
+for install instructions.
 
 Some of those tools are packaged for some of the major Linux distribution, but
 those packages are sometimes a few years old and do not work with riscv-formal.
 Follow the descriptions linked above and install from the latest sources instead.
+
+If you want to inspect counter example traces you will need
+[gtkwave](http://gtkwave.sourceforge.net/). Whatever version of gtkwave is
+pre-packaged in your distribution is probably fine.
+
+If you want to disasample the code executed in the counter example traces you
+will need an installation of 32 bit [riscv-tools](https://github.com/riscv/riscv-tools),
+specifically you'll need `riscv32-unknown-elf-gcc` and `riscv32-unknown-elf-objdump`
+in your `$PATH`.
+
+For the second example you will need [Icarus Verilog](http://iverilog.icarus.com/).
+If your distribution packages v10 or better then this is fine, otherwise you'll
+need to build it from source.
 
 Exercise 1: Formally verify a core
 ----------------------------------
