@@ -58,7 +58,7 @@ make -C checks -j$(nproc)
 The check will likely fail now. (It will if the change did break ISA compliance
 of the core.)
 
-If you have a 32 bit version of riscv-tool installed (`riscv32-unknown-elf-gcc` and
+If you have a 32 bit version of riscv-tools installed (`riscv32-unknown-elf-gcc` and
 `riscv32-unknown-elf-objdump` are in `$PATH`) then you can use `disasm.py` to display
 the sequence of instructions that caused the error.
 
