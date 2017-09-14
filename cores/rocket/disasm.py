@@ -45,7 +45,10 @@ for tv_valid, tv_order, tv_insn in zip(rvfi_valid_1, rvfi_order_1, rvfi_insn_1):
 
 with open("disasm.s", "w") as f:
     for tv_order, tv_insn in sorted(prog):
-        print(".word 0x%08x # %d" % (tv_insn, tv_order), file=f)
+        if tv_insn & 3 != 3 and tv_insn & 0xffff0000 == 0:
+            print(".hword 0x%04x # %d" % (tv_insn, tv_order), file=f)
+        else:
+            print(".word 0x%08x # %d" % (tv_insn, tv_order), file=f)
 
 system("riscv32-unknown-elf-gcc -c disasm.s")
 system("riscv32-unknown-elf-objdump -d -M numeric,no-aliases disasm.o")
