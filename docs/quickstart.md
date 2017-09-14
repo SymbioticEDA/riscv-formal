@@ -27,7 +27,13 @@ will need an installation of 32 bit [riscv-tools](https://github.com/riscv/riscv
 specifically you'll need `riscv32-unknown-elf-gcc` and `riscv32-unknown-elf-objdump`
 in your `$PATH`.
 
-For the second example you will need [Icarus Verilog](http://iverilog.icarus.com/).
+For the 2nd exercise the PicoRV32 Makefile expects a toolchain with certain
+properties in `/opt/riscv32i`. The easiest way to build this is to check out
+the [PicoRV32 github repo](https://github.com/cliffordwolf/picorv32) and run
+`make -j$(nproc) build-riscv32i-tools` (see [this](https://github.com/cliffordwolf/picorv32#building-a-pure-rv32i-toolchain)
+for prerequisites and more documentation on the process).
+
+For the 2nd exercise you will also need [Icarus Verilog](http://iverilog.icarus.com/).
 If your distribution packages v10 or better then this is fine, otherwise you'll
 need to build it from source.
 
@@ -43,7 +49,7 @@ python3 ../../checks/genchecks.py
 make -C checks -j$(nproc)
 ```
 
-This will run for approximately four CPU hours (AMD Bulldozer at 3.6 GHz). It
+This will run in the order of four CPU hours (AMD Bulldozer at 3.6 GHz). It
 is over 60 individual checks than can all run in parallel if the machine has
 sufficient memory and cores. So if you run it on a large server you can
 completely verify the core in just a few minutes.
@@ -103,6 +109,9 @@ And then run the test bench with RVFI monitor support:
 ```
 make test_rvf
 ```
+
+(You will need to make minor changes to the Makefile if you don't have an rv32i
+toolchain installed in `/opt/riscv32i`.)
 
 You can now try making changes to `picorv32.v` and see if the RVFI monitor catches
 errors in the test bench when you re-run `make test_rvf`.
