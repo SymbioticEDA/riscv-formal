@@ -29,10 +29,10 @@ python3 ../../checks/genchecks.py
 make -C checks -j$(nproc)
 ```
 
-This will run for approximately four CPU hours. It is over 60 individual checks
-than can all run in parallel if the machine has sufficient memory and cores. So
-if you run it on a large server you can completely verify the core in just a
-few minutes.
+This will run for approximately four CPU hours (AMD Bulldozer at 3.6 GHz). It
+is over 60 individual checks than can all run in parallel if the machine has
+sufficient memory and cores. So if you run it on a large server you can
+completely verify the core in just a few minutes.
 
 Now make a random change to `picorv32.v` and re-run the tests:
 
