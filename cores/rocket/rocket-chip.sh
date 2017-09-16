@@ -14,6 +14,8 @@ if [ ! -d rocket-chip ]; then
 	git checkout RVFI
 	git submodule update --init
 
+	sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /WithoutCompressed/ s,//,,; };' src/main/scala/system/Configs.scala
+
 	( cd ../../../monitor && python3 generate.py -p RVFIMonitor -c 2 -P; ) > vsrc/RVFIMonitor.v
 	sed -i '/^module/ s/\([A-Z]\+=\)/parameter &/g' vsrc/plusarg_reader.v
 	sed -i 's/--top-module/-Wno-fatal &/' emulator/Makefrag-verilator

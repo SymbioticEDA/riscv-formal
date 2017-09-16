@@ -17,7 +17,7 @@ module rvfi_wrapper (
 	// Rocket Tile Inputs
 
 	(* keep *) wire        io_hartid = 0;
-	(* keep *) wire [31:0] io_resetVector = 32'h 0001_0000;
+	(* keep *) wire [31:0] io_reset_vector = 32'h 0001_0000;
 
 	(* keep *) wire        io_interrupts_0_0 = 0;
 	(* keep *) wire        io_interrupts_0_1 = 0;
@@ -43,9 +43,7 @@ module rvfi_wrapper (
 	(* keep *) wire  [31:0] io_slave_0_a_bits_address = 0;
 	(* keep *) wire  [3:0]  io_slave_0_a_bits_mask = 0;
 	(* keep *) wire  [31:0] io_slave_0_a_bits_data = 0;
-	(* keep *) wire         io_slave_0_c_valid = 0;
 	(* keep *) wire         io_slave_0_d_ready = 0;
-	(* keep *) wire         io_slave_0_e_valid = 0;
 
 	// Rocket Tile Outputs
 
@@ -156,7 +154,6 @@ module rvfi_wrapper (
 		.io_slave_0_a_bits_mask    (io_slave_0_a_bits_mask    ),
 		.io_slave_0_a_bits_data    (io_slave_0_a_bits_data    ),
 		.io_slave_0_b_valid        (io_slave_0_b_valid        ),
-		.io_slave_0_c_valid        (io_slave_0_c_valid        ),
 		.io_slave_0_d_ready        (io_slave_0_d_ready        ),
 		.io_slave_0_d_valid        (io_slave_0_d_valid        ),
 		.io_slave_0_d_bits_opcode  (io_slave_0_d_bits_opcode  ),
@@ -166,14 +163,13 @@ module rvfi_wrapper (
 		.io_slave_0_d_bits_sink    (io_slave_0_d_bits_sink    ),
 		.io_slave_0_d_bits_data    (io_slave_0_d_bits_data    ),
 		.io_slave_0_d_bits_error   (io_slave_0_d_bits_error   ),
-		.io_slave_0_e_valid        (io_slave_0_e_valid        ),
 
 `ifndef ROCKET_HIER_REF
 		`RVFI_CONN,
 `endif
 
 		.io_hartid                 (io_hartid                 ),
-		.io_resetVector            (io_resetVector            )
+		.io_reset_vector           (io_reset_vector           )
 	);
 
 `ifdef ROCKET_HIER_REF
