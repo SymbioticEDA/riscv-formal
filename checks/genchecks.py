@@ -8,27 +8,30 @@ ilen = 32
 xlen = 32
 compr = False
 
-insn_depth = 30
+insn_depth = None
 
-reg_start = 20
-reg_depth = 30
+reg_start = None
+reg_depth = None
 
-pc_fwd_start = 20
-pc_fwd_depth = 30
+pc_fwd_start = None
+pc_fwd_depth = None
 
-pc_bwd_start = 20
-pc_bwd_depth = 30
+pc_bwd_start = None
+pc_bwd_depth = None
 
-liveness_start = 10
-liveness_trig = 20
-liveness_depth = 30
+liveness_start = None
+liveness_trig = None
+liveness_depth = None
 
-unique_start = 10
-unique_trig = 20
-unique_depth = 30
+unique_start = None
+unique_trig = None
+unique_depth = None
 
-causal_start = 20
-causal_depth = 30
+causal_start = None
+causal_depth = None
+
+hang_start = None
+hang_depth = None
 
 blackbox = False
 
@@ -58,49 +61,66 @@ with open("genchecks.cfg", "r") as f:
 
 if "options" in config:
     for line in config["options"].split("\n"):
-        match = re.match(r"(\S+)\s*=\s*(.*)", line)
-        if match:
-            k, v = match.group(1), match.group(2)
-            if k == "nret":
-                nret = int(v)
-            elif k == "isa":
-                isa = v
-            elif k == "insn_depth":
-                insn_depth = int(v)
-            elif k == "reg_start":
-                reg_start = int(v)
-            elif k == "reg_depth":
-                reg_depth = int(v)
-            elif k == "pc_fwd_start":
-                pc_fwd_start = int(v)
-            elif k == "pc_fwd_depth":
-                pc_fwd_depth = int(v)
-            elif k == "pc_bwd_start":
-                pc_bwd_start = int(v)
-            elif k == "pc_bwd_depth":
-                pc_bwd_depth = int(v)
-            elif k == "liveness_start":
-                liveness_start = int(v)
-            elif k == "liveness_trig":
-                liveness_trig = int(v)
-            elif k == "liveness_depth":
-                liveness_depth = int(v)
-            elif k == "unique_start":
-                unique_start = int(v)
-            elif k == "unique_trig":
-                unique_trig = int(v)
-            elif k == "unique_depth":
-                unique_depth = int(v)
-            elif k == "causal_start":
-                causal_start = int(v)
-            elif k == "causal_depth":
-                causal_depth = int(v)
-            elif k == "blackbox":
-                blackbox = bool(int(v))
-            else:
-                assert 0
+        line = line.split()
+
+        if len(line) == 0:
+            continue
+
+        elif line[0] == "nret":
+            assert len(line) == 2
+            nret = int(line[1])
+
+        elif line[0] == "isa":
+            assert len(line) == 2
+            isa = line[1]
+
+        elif line[0] == "insn":
+            assert len(line) == 2
+            insn_depth = int(line[1])
+
+        elif line[0] == "reg":
+            assert len(line) == 3
+            reg_start = int(line[1])
+            reg_depth = int(line[2])
+
+        elif line[0] == "pc_fwd":
+            assert len(line) == 3
+            pc_fwd_start = int(line[1])
+            pc_fwd_depth = int(line[2])
+
+        elif line[0] == "pc_bwd":
+            assert len(line) == 3
+            pc_bwd_start = int(line[1])
+            pc_bwd_depth = int(line[2])
+
+        elif line[0] == "liveness":
+            assert len(line) == 4
+            liveness_start = int(line[1])
+            liveness_trig = int(line[2])
+            liveness_depth = int(line[3])
+
+        elif line[0] == "unique":
+            assert len(line) == 4
+            unique_start = int(line[1])
+            unique_trig = int(line[2])
+            unique_depth = int(line[3])
+
+        elif line[0] == "causal":
+            assert len(line) == 3
+            causal_start = int(line[1])
+            causal_depth = int(line[2])
+
+        elif line[0] == "hang":
+            assert len(line) == 3
+            hang_start = int(line[1])
+            hang_depth = int(line[2])
+
+        elif line[0] == "blackbox":
+            blackbox = True
+
         else:
-            assert line == ""
+            print(line)
+            assert 0
 
 if "64" in isa:
     xlen = 64
@@ -208,10 +228,11 @@ def check_insn(insn, chanidx):
                 : prep -nordff -top rvfi_testbench
         """, **hargs)
 
-with open("../../insns/isa_%s.txt" % isa) as isa_file:
-    for insn in isa_file:
-        for chanidx in range(nret):
-            check_insn(insn.strip(), chanidx)
+if insn_depth is not None:
+    with open("../../insns/isa_%s.txt" % isa) as isa_file:
+        for insn in isa_file:
+            for chanidx in range(nret):
+                check_insn(insn.strip(), chanidx)
 
 # ------------------------------ Consistency Checkers ------------------------------
 
@@ -283,18 +304,26 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
         """, **hargs)
 
 for i in range(nret):
-    check_cons("reg", chanidx=i, start=reg_start, depth=reg_depth)
+    if reg_start is not None:
+        check_cons("reg", chanidx=i, start=reg_start, depth=reg_depth)
 
-for i in range(nret):
-    check_cons("pc_fwd", chanidx=i, start=pc_fwd_start, depth=pc_fwd_depth)
-    check_cons("pc_bwd", chanidx=i, start=pc_bwd_start, depth=pc_bwd_depth)
+    if pc_fwd_start is not None:
+        check_cons("pc_fwd", chanidx=i, start=pc_fwd_start, depth=pc_fwd_depth)
 
-for i in range(nret):
-    check_cons("liveness", chanidx=i, start=liveness_start, trig=liveness_trig, depth=liveness_depth)
-    check_cons("unique", chanidx=i, start=unique_start, trig=unique_trig, depth=unique_depth)
+    if pc_bwd_start is not None:
+        check_cons("pc_bwd", chanidx=i, start=pc_bwd_start, depth=pc_bwd_depth)
 
-for i in range(nret):
-    check_cons("causal", chanidx=i, start=causal_start, depth=causal_depth)
+    if liveness_start is not None:
+        check_cons("liveness", chanidx=i, start=liveness_start, trig=liveness_trig, depth=liveness_depth)
+
+    if unique_start is not None:
+        check_cons("unique", chanidx=i, start=unique_start, trig=unique_trig, depth=unique_depth)
+
+    if causal_start is not None:
+        check_cons("causal", chanidx=i, start=causal_start, depth=causal_depth)
+
+if hang_start is not None:
+    check_cons("hang", start=hang_start, depth=hang_depth)
 
 # ------------------------------ Makefile ------------------------------
 
