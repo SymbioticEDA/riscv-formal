@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import getopt, sys
+from math import log2, ceil
 
 isa = "rv32i"
 prefix = None
 channels = 1
+robdepth = 256
 xlen = None
 ilen = None
 aligned = False
@@ -15,8 +17,6 @@ quiet_mode = False
 verbose_mode = False
 noregscheck = False
 nopccheck = False
-nocausality = False
-nocompleteness = False
 
 def usage():
     print("""
@@ -30,8 +30,12 @@ Usage: %s [options] > outfile.v
       use <prefix> as prefix for generated verilog modules
       default: riscv_formal_monitor_<isa>
 
-  -c <number_of_rvfi_channels>
+  -c <int>
       number of RVFI channels (default: 1)
+
+  -r <int>
+      depth of reorder buffer (must be a power of two, default: 256)
+      setting this option to 0 will disabling reordering
 
   -a
       create monitor for core with aligned memory access
@@ -45,12 +49,6 @@ Usage: %s [options] > outfile.v
   -P
       do not check consistency of pc reads and writes
 
-  -U
-      do not check for causality in OoO instruction order
-
-  -O
-      do not check for completeness in instruction sequence
-
   -A
       add assert(0) statements to the error handlers
 
@@ -63,7 +61,7 @@ Usage: %s [options] > outfile.v
     sys.exit(1)
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "i:p:c:aMRPUOAQV")
+    opts, args = getopt.getopt(sys.argv[1:], "i:p:c:r:aMRPAQV")
 except:
     usage()
 
@@ -74,6 +72,8 @@ for o, a in opts:
         prefix = a
     elif o == "-c":
         channels = int(a)
+    elif o == "-r":
+        robdepth = int(a)
     elif o == "-a":
         aligned = True
     elif o == "-M":
@@ -279,6 +279,61 @@ for chidx in range(channels):
     print("  end")
     print()
 
+if not nopccheck or not noregscheck:
+    for chidx in range(channels):
+        print("  wire rob_i%d_valid;" % chidx)
+        print("  wire [63:0] rob_i%d_order;" % chidx)
+        print("  wire [%d:0] rob_i%d_data;" % (3*5 + 5*xlen, chidx))
+        print()
+        print("  wire rob_o%d_valid;" % chidx)
+        print("  wire [63:0] rob_o%d_order;" % chidx)
+        print("  wire [%d:0] rob_o%d_data;" % (3*5 + 5*xlen, chidx))
+        print()
+        print("  wire ro%d_rvfi_valid = rob_o%d_valid;" % (chidx, chidx))
+        print("  assign rob_i%d_valid = ch%d_rvfi_valid;" % (chidx, chidx))
+        print()
+        print("  wire [63:0] ro%d_rvfi_order = rob_o%d_order;" % (chidx, chidx))
+        print("  assign rob_i%d_order = ch%d_rvfi_order;" % (chidx, chidx))
+        print()
+
+        cursor = 0
+        for n, w in [("rs1_addr", 5), ("rs2_addr", 5), ("rd_addr", 5), ("rs1_rdata", xlen), ("rs2_rdata", xlen),
+                ("rd_wdata", xlen), ("pc_rdata", xlen), ("pc_wdata", xlen), ("intr", 1)]:
+            print("  wire [%d:0] ro%d_rvfi_%s = rob_o%d_data[%d:%d];" % (w-1, chidx, n, chidx, cursor+w-1, cursor))
+            print("  assign rob_i%d_data[%d:%d] = ch%d_rvfi_%s;" % (chidx, cursor+w-1, cursor, chidx, n))
+            print()
+            cursor += w
+
+    errcodes.append("rob_errcode")
+    print("  wire [15:0] rob_errcode;")
+    print()
+
+    print("  %s_rob rob (" % prefix)
+    print("    .clock(clock),")
+    print("    .reset(reset),")
+    for chidx in range(channels):
+        print("    .i%d_valid(rob_i%d_valid)," % (chidx, chidx))
+        print("    .i%d_order(rob_i%d_order)," % (chidx, chidx))
+        print("    .i%d_data(rob_i%d_data)," % (chidx, chidx))
+        print("    .o%d_valid(rob_o%d_valid)," % (chidx, chidx))
+        print("    .o%d_order(rob_o%d_order)," % (chidx, chidx))
+        print("    .o%d_data(rob_o%d_data)," % (chidx, chidx))
+    print("    .errcode(rob_errcode)")
+    print("  );")
+    print()
+
+    if not quiet_mode or use_assert:
+        print("  always @(posedge clock) begin")
+        print("    if (!reset && rob_errcode) begin")
+        if not quiet_mode:
+            print("      $display(\"-------- RVFI Monitor ROB error %0d: %m at time %0t --------\", rob_errcode, $time);")
+            print("      $display(\"No details on ROB errors available.\");")
+        if use_assert:
+            print("      assert(0);")
+        print("    end")
+        print("  end")
+        print()
+
 if not nopccheck:
     print("  reg shadow_pc_valid;")
     print("  reg [%d:0] shadow_pc;" % (xlen-1))
@@ -289,11 +344,11 @@ if not nopccheck:
         print("  reg [%d:0] shadow%d_pc_rdata;" % (xlen-1, chidx))
         print()
 
-        errcodes.append("ch%d_errcode_p" % (chidx))
-        print("  reg [15:0] ch%d_errcode_p;" % (chidx))
+        errcodes.append("ro%d_errcode_p" % (chidx))
+        print("  reg [15:0] ro%d_errcode_p;" % (chidx))
         print()
 
-        print("  task ch%d_handle_error_p;" % (chidx))
+        print("  task ro%d_handle_error_p;" % (chidx))
         print("    input [15:0] code;")
         print("    input [511:0] msg;")
         print("    begin")
@@ -301,14 +356,12 @@ if not nopccheck:
         if not quiet_mode:
             print("      $display(\"-------- RVFI Monitor error %%0d in reordered channel %d: %%m at time %%0t --------\", code, $time);" % (chidx))
             print("      $display(\"Error message: %0s\", msg);")
-            for p in """rvfi_valid rvfi_order rvfi_insn rvfi_trap rvfi_halt rvfi_intr
-                        rvfi_rs1_addr rvfi_rs2_addr rvfi_rs1_rdata rvfi_rs2_rdata
-                        rvfi_rd_addr rvfi_rd_wdata rvfi_pc_rdata rvfi_pc_wdata
-                        rvfi_mem_addr rvfi_mem_rmask rvfi_mem_wmask rvfi_mem_rdata rvfi_mem_wdata""".split():
-                print("      $display(\"%s = %%x\", ch%d_%s);" % (p, chidx, p))
+            for p in """rvfi_valid rvfi_order rvfi_rs1_addr rvfi_rs2_addr rvfi_rs1_rdata rvfi_rs2_rdata
+                        rvfi_rd_addr rvfi_rd_wdata rvfi_pc_rdata rvfi_pc_wdata rvfi_intr""".split():
+                print("      $display(\"%s = %%x\", ro%d_%s);" % (p, chidx, p))
             for p in """pc_valid pc_rdata""".split():
                 print("      $display(\"shadow_%s = %%x\", shadow%d_%s);" % (p, chidx, p))
-        print("      ch%d_errcode_p <= code;" % (chidx))
+        print("      ro%d_errcode_p <= code;" % (chidx))
 
         if use_assert:
             print("      assert(0);")
@@ -322,9 +375,9 @@ if not nopccheck:
         print("    shadow%d_pc_rdata = shadow_pc;" % (chidx))
 
         for i in range(chidx):
-            print("    if (!reset && ch%d_rvfi_valid) begin" % (i))
+            print("    if (!reset && ro%d_rvfi_valid) begin" % (i))
             print("      shadow%d_pc_valid = 1;" % (chidx))
-            print("      shadow%d_pc_rdata = ch%d_rvfi_pc_wdata;" % (chidx, i))
+            print("      shadow%d_pc_rdata = ro%d_rvfi_pc_wdata;" % (chidx, i))
             print("    end")
 
         print("  end")
@@ -333,19 +386,19 @@ if not nopccheck:
     print("  always @(posedge clock) begin")
 
     for chidx in range(channels):
-        print("    ch%d_errcode <= 0;" % chidx)
+        print("    ro%d_errcode_p <= 0;" % chidx)
 
     print("    if (reset) begin")
     print("      shadow_pc_valid <= 0;")
     print("    end")
 
     for chidx in range(channels):
-        print("    if (!reset && ch%d_rvfi_valid) begin" % (chidx))
-        print("      if (shadow%d_pc_valid && shadow%d_pc_rdata != ch%d_rvfi_pc_rdata && !ch%d_rvfi_intr) begin" % (chidx, chidx, chidx, chidx))
-        print("        ch%d_handle_error_p(%d, \"mismatch with shadow pc\");" % (chidx, 100*(1+chidx)+30))
+        print("    if (!reset && ro%d_rvfi_valid) begin" % (chidx))
+        print("      if (shadow%d_pc_valid && shadow%d_pc_rdata != ro%d_rvfi_pc_rdata && !ro%d_rvfi_intr) begin" % (chidx, chidx, chidx, chidx))
+        print("        ro%d_handle_error_p(%d, \"mismatch with shadow pc\");" % (chidx, 100*(1+chidx)+30))
         print("      end")
         print("      shadow_pc_valid <= 1;")
-        print("      shadow_pc <= ch%d_rvfi_pc_wdata;" % (chidx))
+        print("      shadow_pc <= ro%d_rvfi_pc_wdata;" % (chidx))
         print("    end")
 
     print("  end")
@@ -363,11 +416,11 @@ if not noregscheck:
         print("  reg [%d:0] shadow%d_rs2_rdata;" % (xlen-1, chidx))
         print()
 
-        errcodes.append("ch%d_errcode_r" % (chidx))
-        print("  reg [15:0] ch%d_errcode_r;" % (chidx))
+        errcodes.append("ro%d_errcode_r" % (chidx))
+        print("  reg [15:0] ro%d_errcode_r;" % (chidx))
         print()
 
-        print("  task ch%d_handle_error_r;" % (chidx))
+        print("  task ro%d_handle_error_r;" % (chidx))
         print("    input [15:0] code;")
         print("    input [511:0] msg;")
         print("    begin")
@@ -375,14 +428,12 @@ if not noregscheck:
         if not quiet_mode:
             print("      $display(\"-------- RVFI Monitor error %%0d in reordered channel %d: %%m at time %%0t --------\", code, $time);" % (chidx))
             print("      $display(\"Error message: %0s\", msg);")
-            for p in """rvfi_valid rvfi_order rvfi_insn rvfi_trap rvfi_halt rvfi_intr
-                        rvfi_rs1_addr rvfi_rs2_addr rvfi_rs1_rdata rvfi_rs2_rdata
-                        rvfi_rd_addr rvfi_rd_wdata rvfi_pc_rdata rvfi_pc_wdata
-                        rvfi_mem_addr rvfi_mem_rmask rvfi_mem_wmask rvfi_mem_rdata rvfi_mem_wdata""".split():
-                print("      $display(\"%s = %%x\", ch%d_%s);" % (p, chidx, p))
+            for p in """rvfi_valid rvfi_order rvfi_rs1_addr rvfi_rs2_addr rvfi_rs1_rdata rvfi_rs2_rdata
+                        rvfi_rd_addr rvfi_rd_wdata rvfi_pc_rdata rvfi_pc_wdata rvfi_intr""".split():
+                print("      $display(\"%s = %%x\", ro%d_%s);" % (p, chidx, p))
             for p in """rs1_valid rs1_rdata rs2_valid rs2_rdata""".split():
                 print("      $display(\"shadow_%s = %%x\", shadow%d_%s);" % (p, chidx, p))
-        print("      ch%d_errcode_r <= code;" % (chidx))
+        print("      ro%d_errcode_r <= code;" % (chidx))
 
         if use_assert:
             print("      assert(0);")
@@ -395,14 +446,14 @@ if not noregscheck:
             print("  always @* begin")
             print("    shadow%d_%s_valid = 0;" % (chidx, rs))
             print("    shadow%d_%s_rdata = 0;" % (chidx, rs))
-            print("    if (!reset && ch%d_rvfi_valid) begin" % (chidx))
-            print("      shadow%d_%s_valid = shadow_xregs_valid[ch%d_rvfi_%s_addr];" % (chidx, rs, chidx, rs))
-            print("      shadow%d_%s_rdata = shadow_xregs[ch%d_rvfi_%s_addr];" % (chidx, rs, chidx, rs))
+            print("    if (!reset && ro%d_rvfi_valid) begin" % (chidx))
+            print("      shadow%d_%s_valid = shadow_xregs_valid[ro%d_rvfi_%s_addr];" % (chidx, rs, chidx, rs))
+            print("      shadow%d_%s_rdata = shadow_xregs[ro%d_rvfi_%s_addr];" % (chidx, rs, chidx, rs))
 
             for i in range(chidx):
-                print("      if (ch%d_rvfi_valid && ch%d_rvfi_rd_addr == ch%d_rvfi_%s_addr) begin" % (i, i, chidx, rs))
+                print("      if (ro%d_rvfi_valid && ro%d_rvfi_rd_addr == ro%d_rvfi_%s_addr) begin" % (i, i, chidx, rs))
                 print("        shadow%d_%s_valid = 1;" % (chidx, rs))
-                print("        shadow%d_%s_rdata = ch%d_rvfi_rd_wdata;" % (chidx, rs, i))
+                print("        shadow%d_%s_rdata = ro%d_rvfi_rd_wdata;" % (chidx, rs, i))
                 print("      end")
 
             print("    end")
@@ -412,7 +463,7 @@ if not noregscheck:
     print("  always @(posedge clock) begin")
 
     for chidx in range(channels):
-        print("    ch%d_errcode <= 0;" % chidx)
+        print("    ro%d_errcode_r <= 0;" % chidx)
 
     print("    if (reset) begin")
     print("      shadow_xregs_valid <= 1;")
@@ -420,13 +471,13 @@ if not noregscheck:
     print("    end")
 
     for chidx in range(channels):
-        print("    if (!reset && ch%d_rvfi_valid) begin" % (chidx))
+        print("    if (!reset && ro%d_rvfi_valid) begin" % (chidx))
         for rs in ["rs1", "rs2"]:
-            print("      if (shadow%d_%s_valid && shadow%d_%s_rdata != ch%d_rvfi_%s_rdata) begin" % (chidx, rs, chidx, rs, chidx, rs))
-            print("        ch%d_handle_error_r(%d, \"mismatch with shadow %s\");" % (chidx, 100*(1+chidx)+(31 if rs == "rs1" else 32), rs))
+            print("      if (shadow%d_%s_valid && shadow%d_%s_rdata != ro%d_rvfi_%s_rdata) begin" % (chidx, rs, chidx, rs, chidx, rs))
+            print("        ro%d_handle_error_r(%d, \"mismatch with shadow %s\");" % (chidx, 100*(1+chidx)+(31 if rs == "rs1" else 32), rs))
             print("      end")
-        print("      shadow_xregs_valid[ch%d_rvfi_rd_addr] <= 1;" % (chidx))
-        print("      shadow_xregs[ch%d_rvfi_rd_addr] <= ch%d_rvfi_rd_wdata;" % (chidx, chidx))
+        print("      shadow_xregs_valid[ro%d_rvfi_rd_addr] <= 1;" % (chidx))
+        print("      shadow_xregs[ro%d_rvfi_rd_addr] <= ro%d_rvfi_rd_wdata;" % (chidx, chidx))
         print("    end")
 
     print("  end")
@@ -442,6 +493,74 @@ for v in errcodes:
 print("    end")
 print("  end")
 print("endmodule")
+
+
+if not nopccheck or not noregscheck:
+    print()
+    print("module %s_rob (" % prefix)
+    print("  input clock,")
+    print("  input reset,")
+    for chidx in range(channels):
+        print("    input i%d_valid," % (chidx))
+        print("    input [63:0] i%d_order," % (chidx))
+        print("    input [%d:0] i%d_data," % (3*5 + 5*xlen, chidx))
+        print("    output reg o%d_valid," % (chidx))
+        print("    output reg [63:0] o%d_order," % (chidx))
+        print("    output reg [%d:0] o%d_data," % (3*5 + 5*xlen, chidx))
+    print("  output reg [15:0] errcode")
+    print(");")
+
+    if robdepth == 0:
+        for chidx in range(channels):
+            print("  always @* o%d_valid = i%d_valid;" % (chidx, chidx))
+            print("  always @* o%d_order = i%d_order;" % (chidx, chidx))
+            print("  always @* o%d_data = i%d_data;" % (chidx, chidx))
+        print("  always @* errcode = 0;")
+
+    else:
+        orderbits = ceil(log2(robdepth))
+
+        print("  reg [%d:0] buffer [0:%d];" % (64 + 3*5 + 5*xlen, robdepth-1))
+        print("  reg [%d:0] valid;" % (robdepth-1))
+        print("  reg [63:0] cursor;")
+        print("  reg continue_flag;")
+        print()
+        print("  always @(posedge clock) begin")
+        for chidx in range(channels):
+            print("    o%d_valid <= 0;" % (chidx))
+        print("    errcode <= 0;")
+        print("    continue_flag = 1;")
+        print("    if (reset) begin")
+        print("      valid <= 0;")
+        print("      cursor = 0;")
+        print("    end else begin")
+
+        for chidx in range(channels):
+            print("      if (i%d_valid) begin" % (chidx))
+            print("        if (valid[i%d_order[%d:0]])" % (chidx, orderbits-1))
+            print("          errcode <= 60000 + i%d_order[7:0];" % (chidx))
+            print("        buffer[i%d_order[%d:0]] <= {i%d_data, i%d_order};" % (chidx, orderbits-1, chidx, chidx))
+            print("        valid[i%d_order[%d:0]] <= 1;" % (chidx, orderbits-1))
+            print("      end")
+
+        for chidx in range(channels):
+            print("      if (continue_flag && valid[cursor[%d:0]]) begin" % (orderbits-1))
+            print("        if (buffer[cursor[%d:0]][63:0] != cursor)" % (orderbits-1))
+            print("          errcode <= 61000 + cursor[7:0];")
+            print("        o%d_valid <= 1;" % (chidx))
+            print("        o%d_order <= buffer[cursor[%d:0]][63:0];" % (chidx, orderbits-1))
+            print("        o%d_data <= buffer[cursor[%d:0]][%d:64];" % (chidx, orderbits-1, 64 + 3*5 + 5*xlen))
+            print("        valid[cursor[%d:0]] <= 0;" % (orderbits-1))
+            print("        cursor = cursor + 1;")
+            print("      end else begin")
+            print("        continue_flag = 0;")
+            print("      end")
+
+        print("    end")
+        print("  end")
+
+    print("endmodule")
+
 
 replace_db = list()
 replace_db.append((" rvfi_isa_%s " % isa, " %s_isa_spec " % prefix))
