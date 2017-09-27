@@ -24,6 +24,16 @@ python3 ../../checks/genchecks.py
 make -C checks -j$(nproc)
 ```
 
+Or if you just want to simulate Rocket with RVFIMonitor:
+
+```
+export CONFIG=DefaultConfigWithRVFIMonitors
+export RISCV=$PWD/riscv-tools
+cd rocket-chip/emulator
+make -j$(nproc)
+
+```
+
 Important Notes
 ===============
 

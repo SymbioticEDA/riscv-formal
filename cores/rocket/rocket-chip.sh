@@ -6,6 +6,8 @@ export CONFIG=DefaultConfigWithRVFIMonitors
 export MAKEFLAGS="-j$(nproc)"
 export RISCV=$PWD/riscv-tools
 
+enable_compressed=false
+
 if [ ! -d rocket-chip ]; then
 	rm -rf rocket-chip
 	git clone https://github.com/freechipsproject/rocket-chip
@@ -14,9 +16,13 @@ if [ ! -d rocket-chip ]; then
 	git checkout RVFI
 	git submodule update --init
 
-	sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /WithoutCompressed/ s,//,,; };' src/main/scala/system/Configs.scala
+	if $enable_compressed; then
+		( cd ../../../monitor && python3 generate.py -i rv32ic -p RVFIMonitor -c 2; ) > vsrc/RVFIMonitor.v
+	else
+		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /WithoutCompressed/ s,//,,; };' src/main/scala/system/Configs.scala
+		( cd ../../../monitor && python3 generate.py -i rv32i -p RVFIMonitor -c 2; ) > vsrc/RVFIMonitor.v
+	fi
 
-	( cd ../../../monitor && python3 generate.py -p RVFIMonitor -c 2 -P; ) > vsrc/RVFIMonitor.v
 	sed -i '/^module/ s/\([A-Z]\+=\)/parameter &/g' vsrc/plusarg_reader.v
 	sed -i 's/--top-module/-Wno-fatal &/' emulator/Makefrag-verilator
 
