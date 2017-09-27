@@ -140,3 +140,24 @@ There is also no extension to the RVFI port necessary to accommodate the `LR`, `
 
 Verification of this instructions for a single-core systems can be done using the RVFI port only. A strategy must be defined to verify their correct behavior in multicore systems.
 
+### Skipping instructions
+
+Consider the following sequence of instructions:
+
+        ....
+        add t0,t1,t2
+        beqz t3,label
+	sub t0,t1,t3
+    label:
+        ....
+
+When t3 has a non-zero value the processor could decide not to schedule the add instruction because its value is never going to be used. In this case the processor would be unable to produce a valid RVFI trace for the instruction sequence.
+
+An additional signal can be added to RVFI that can be used to mark such instructions:
+
+    output [NRET        - 1 : 0] rvfi_skip
+
+When `rvfi_skip` is high the core may output arbitrary data on the `*_rdata` and `*_wdata` ports (excluding `rvfi_pc_rdata` and `rvfi_pc_wdata`). The register values written by such intrustions may only be observed by other skipped instructions. An additional formal proof must be added to check this property.
+
+Memory operations (`rvfi_mem_rmask` and/or `rvfi_mem_wmask` are non-zero) can not be skipped.
+
