@@ -31,7 +31,7 @@ export CONFIG=DefaultConfigWithRVFIMonitors
 export RISCV=$PWD/riscv-tools
 cd rocket-chip/emulator
 make -j$(nproc)
-
+make run
 ```
 
 Important Notes
