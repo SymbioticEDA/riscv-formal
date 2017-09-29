@@ -6,10 +6,6 @@ module rvfi_causal_check (
 	`rvformal_const_rand_reg [4:0] register_index;
 	reg found_non_causal = 0;
 
-	initial begin
-		assume(register_index != 0);
-	end
-
 	integer channel_idx;
 	always @(posedge clock) begin
 		if (reset) begin
@@ -23,6 +19,7 @@ module rvfi_causal_check (
 						found_non_causal = 1;
 					end
 				end
+				assume(register_index != 0);
 				assume(rvfi_valid[`RISCV_FORMAL_CHANNEL_IDX]);
 				assume((register_index == rvfi_rd_addr[`RISCV_FORMAL_CHANNEL_IDX*5 +: 5]));
 				assume(insn_order == rvfi_order[64*`RISCV_FORMAL_CHANNEL_IDX +: 64]);
