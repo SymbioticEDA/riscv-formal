@@ -505,14 +505,24 @@ def insn_shimm(insn, funct6, funct3, expr):
 
         footer(f)
 
-def insn_alu(insn, funct7, funct3, expr):
+def insn_alu(insn, funct7, funct3, expr, alt_add=None, alt_sub=None):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_r(f)
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
-        print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
+        if alt_add is not None or alt_sub is not None:
+            print("`ifdef RISCV_FORMAL_ALTOPS", file=f)
+            if alt_add is not None:
+                print("  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata + rvfi_rs2_rdata) ^ 64'h%08x%08x;" % (alt_add, alt_add), file=f)
+            else:
+                print("  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ 64'h%08x%08x;" % (alt_sub, alt_sub), file=f)
+            print("`else", file=f)
+            print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
+            print("`endif", file=f)
+        else:
+            print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
         assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct7 == 7'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b 0110011" % (funct7, funct3))
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rs2_addr", "insn_rs2")
@@ -939,6 +949,23 @@ insn_alu("sra",  "0100000", "101", "$signed(rvfi_rs1_rdata) >>> rvfi_rs2_rdata[4
 insn_alu("or",   "0000000", "110", "rvfi_rs1_rdata | rvfi_rs2_rdata")
 insn_alu("and",  "0000000", "111", "rvfi_rs1_rdata & rvfi_rs2_rdata")
 
+## Multiply/Divide ISA (M)
+
+current_isa = ["rv32im"]
+
+insn_alu("mul",    "0000001", "000", "rvfi_rs1_rdata * rvfi_rs2_rdata", alt_add=0x4D554C01)
+insn_alu("mulh",   "0000001", "001", "({{`RISCV_FORMAL_XLEN{rvfi_rs1_rdata[`RISCV_FORMAL_XLEN-1]}}, rvfi_rs1_rdata} *\n" +
+        "\t\t{{`RISCV_FORMAL_XLEN{rvfi_rs2_rdata[`RISCV_FORMAL_XLEN-1]}}, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN", alt_add=0x4D554C02)
+insn_alu("mulhsu", "0000001", "010", "({{`RISCV_FORMAL_XLEN{rvfi_rs1_rdata[`RISCV_FORMAL_XLEN-1]}}, rvfi_rs1_rdata} *\n" +
+        "\t\t{`RISCV_FORMAL_XLEN'b0, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN", alt_sub=0x4D554C03)
+insn_alu("mulhu",  "0000001", "011", "(`RISCV_FORMAL_XLEN'b0, rvfi_rs1_rdata} * {`RISCV_FORMAL_XLEN'b0, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN", alt_add=0x4D554C04)
+
+insn_alu("div",    "0000001", "100", "$signed(rvfi_rs1_rdata) / $signed(rvfi_rs2_rdata)", alt_sub=0x44495601)
+insn_alu("divu",   "0000001", "101", "rvfi_rs1_rdata / rvfi_rs2_rdata", alt_sub=0x44495602)
+
+insn_alu("rem",    "0000001", "110", "$signed(rvfi_rs1_rdata) % $signed(rvfi_rs2_rdata)", alt_sub=0x52454D01)
+insn_alu("remu",   "0000001", "111", "rvfi_rs1_rdata % rvfi_rs2_rdata", alt_sub=0x52454D02)
+
 ## Compressed Integer ISA (IC)
 
 current_isa = ["rv32ic"]
@@ -971,8 +998,18 @@ insn_c_ssp("c_swsp", "110", 4)
 
 ## ISA Propagate
 
-for insn in isa_database["rv32i"]:
-    isa_database["rv32ic"].add(insn)
+def isa_propagate(from_isa, to_isa):
+    global isa_database
+    assert from_isa in isa_database
+    if to_isa not in isa_database:
+        isa_database[to_isa] = set()
+    isa_database[to_isa] |= isa_database[from_isa]
+
+isa_propagate("rv32i", "rv32ic")
+isa_propagate("rv32i", "rv32im")
+
+isa_propagate("rv32ic", "rv32imc")
+isa_propagate("rv32im", "rv32imc")
 
 ## ISA Listings and ISA Models
 
