@@ -9,6 +9,8 @@ In the following specification the term `XLEN` refers to the width of an `x` reg
 
 The Interface consists only of output signals. Each signal is a concatenation of `NRET` values of constant width, effectively creating `NRET` channels. For simplicity, the following descriptions refer to one such channel. For example, we refer to `rvfi_valid` as a 1-bit signal, not a `NRET`-bits signal.
 
+### Instruction Metadata
+
     output [NRET        - 1 : 0] rvfi_valid
     output [NRET *   64 - 1 : 0] rvfi_order
     output [NRET * ILEN - 1 : 0] rvfi_insn
@@ -30,6 +32,8 @@ The signal `rvfi_halt` must be set when the instruction is the last instruction 
 
 Finally `rvfi_intr` must be set for the first instruction that is part of a trap handler, i.e. an instruction that has a `rvfi_pc_rdata` that does not match the `rvfi_pc_wdata` of the previous instruction.
 
+### Integer Register Read/Write
+
     output [NRET *    5 - 1 : 0] rvfi_rs1_addr
     output [NRET *    5 - 1 : 0] rvfi_rs2_addr
     output [NRET * XLEN - 1 : 0] rvfi_rs1_rdata
@@ -46,10 +50,14 @@ Finally `rvfi_intr` must be set for the first instruction that is part of a trap
 
 `rvfi_rd_wdata` is the value of the `x` register addressed by `rd` after execution of this instruction. This output must be zero when `rd` is zero.
 
+### Program Counter
+
     output [NRET * XLEN - 1 : 0] rvfi_pc_rdata
     output [NRET * XLEN - 1 : 0] rvfi_pc_wdata
 
 This is the program counter (`pc`) before (`rvfi_pc_rdata`) and after (`rvfi_pc_wdata`) execution of this instruction. I.e. this is the address of the retired instruction and the address of the next instruction.
+
+### Memory Access
 
     output [NRET * XLEN   - 1 : 0] rvfi_mem_addr
     output [NRET * XLEN/8 - 1 : 0] rvfi_mem_rmask
@@ -153,7 +161,7 @@ The following is the proposed RVFI extension for floating point ISAs:
 
 Since `f0` is not a zero register, additional `*_[rw]valid` signals are required to indicate if `frs1`, `frs2`, `frs3`, and `frd` and their corresponding pre- or post-values are valid.
 
-The FPU model in `riscv-formal` will be swappable (using a Verilog define) with with a pseudo-model that is using cheaper operations instead of proper floating point math. This enables efficient verification of cores that can be configured to support a similar FPU model. (A similar functionality will be provided for M-extension instructions.)
+Alternative arithmetic operations (`RISCV_FORMAL_ALTOPS`) will be defined for all non-trivial floating point operations.
 
 ### Modelling of Atomic Memory Operations
 
