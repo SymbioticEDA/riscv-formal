@@ -71,6 +71,29 @@ When the define `RISCV_FORMAL_ALIGNED_MEM` is set, the address must have a 4-byt
 
 When `RISCV_FORMAL_ALIGNED_MEM` is set then `riscv-formal` assumes that unaligned memory access causes a trap.
 
+### Alternative Arithmetic Operations
+
+Some arithmetic operations (such as multiplication and division) are beyond to practical capabilities of even modern hardware model checkers. In order to still be able to verify things like bypassing for the arithmetic units performing those operations we define a set of alternative arithmetic operations. When the define `RISCV_FORMAL_ALTOPS` is set riscv-formal will expect the processor under test to implement those alternative operations instead.
+
+Commutative operations (like multiplication) are replaced with addition followed by applying XOR with a bitmask that indicates the type of the operation. Noncommutative operations (like division) are replaced with subtraction followed by applying XOR with a bitmask that indicates the type of the operation.
+
+The `*W` instructions in RV64 (suchg as `MULW`) are implemented by adding or subtracting the lower 32 bits of the operands, then applying the XOR bitmask, then sign extending the result to 64 bits.
+
+The other RV64 instructions are implemented using a 64 bit addition or subtraction, then applying the 32 bits XOR bitmask to the lower and upper halfs of the 64 bit result.
+
+#### Integer Multiply/Divide Instructions
+
+| Operation |  Add/Sub |   Bitmask  |
+|:----------|:--------:| ----------:|
+| MUL       |    Add   | 0x4D554C01 |
+| MULH      |    Add   | 0x4D554C02 |
+| MULHSU    |    Sub   | 0x4D554C03 |
+| MULHU     |    Add   | 0x4D554C04 |
+| DIV       |    Sub   | 0x44495601 |
+| DIVU      |    Sub   | 0x44495602 |
+| REM       |    Sub   | 0x52454D01 |
+| REMU      |    Sub   | 0x52454D02 |
+
 
 RVFI TODOs and Requests for Comments
 ------------------------------------
@@ -131,29 +154,6 @@ The following is the proposed RVFI extension for floating point ISAs:
 Since `f0` is not a zero register, additional `*_[rw]valid` signals are required to indicate if `frs1`, `frs2`, `frs3`, and `frd` and their corresponding pre- or post-values are valid.
 
 The FPU model in `riscv-formal` will be swappable (using a Verilog define) with with a pseudo-model that is using cheaper operations instead of proper floating point math. This enables efficient verification of cores that can be configured to support a similar FPU model. (A similar functionality will be provided for M-extension instructions.)
-
-### Alternative Arithmetic Operations
-
-Some arithmetic operations (such as multiplication and division) are beyond to practical capabilities of even modern hardware model checkers. In order to still be able to verify things like bypassing for the arithmetic units performing those operations we define a set of alternative arithmetic operations. When the define `RISCV_FORMAL_ALTOPS` is set riscv-formal will expect the processor under test to implement those alternative operations instead.
-
-Commutative operations (like multiplication) are replaced with addition followed by applying XOR with a bitmask that indicates the type of the operation. Noncommutative operations (like division) are replaced with subtraction followed by applying XOR with a bitmask that indicates the type of the operation.
-
-The `*W` instructions in RV64 (suchg as `MULW`) are implemented by adding or subtracting the lower 32 bits of the operands, then applying the XOR bitmask, then sign extending the result to 64 bits.
-
-The other RV64 instructions are implemented using a 64 bit addition or subtraction, then applying the 32 bits XOR bitmask to the lower and upper halfs of the 64 bit result.
-
-#### Integer Multiply/Divide Instructions
-
-| Operation |  Add/Sub |   Bitmask  |
-|:----------|:--------:| ----------:|
-| MUL       |    Add   | 0x4D554C01 |
-| MULH      |    Add   | 0x4D554C02 |
-| MULHSU    |    Sub   | 0x4D554C03 |
-| MULHU     |    Add   | 0x4D554C04 |
-| DIV       |    Sub   | 0x44495601 |
-| DIVU      |    Sub   | 0x44495602 |
-| REM       |    Sub   | 0x52454D01 |
-| REMU      |    Sub   | 0x52454D02 |
 
 ### Modelling of Atomic Memory Operations
 
