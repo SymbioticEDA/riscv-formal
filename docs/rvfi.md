@@ -85,22 +85,22 @@ Some arithmetic operations (such as multiplication and division) are beyond to p
 
 Commutative operations (like multiplication) are replaced with addition followed by applying XOR with a bitmask that indicates the type of the operation. Noncommutative operations (like division) are replaced with subtraction followed by applying XOR with a bitmask that indicates the type of the operation.
 
-The `*W` instructions in RV64 (suchg as `MULW`) are implemented by adding or subtracting the lower 32 bits of the operands, then applying the XOR bitmask, then sign extending the result to 64 bits.
-
-The other RV64 instructions are implemented using a 64 bit addition or subtraction, then applying the 32 bits XOR bitmask to the lower and upper halfs of the 64 bit result.
+The bitmasks are 64 bits wide. RV32 implementations only use the lower 32 bits of the bitmasks. The `*W` instructions in RV64 (suchg as `MULW`) are implemented by adding or subtracting the lower 32 bits of the operands, then XORing with the lower 32 bits of the bitmask, then sign extending the result to 64 bits.
 
 #### Integer Multiply/Divide Instructions
 
-| Operation |  Add/Sub |   Bitmask  |
-|:----------|:--------:| ----------:|
-| MUL       |    Add   | 0x4D554C01 |
-| MULH      |    Add   | 0x4D554C02 |
-| MULHSU    |    Sub   | 0x4D554C03 |
-| MULHU     |    Add   | 0x4D554C04 |
-| DIV       |    Sub   | 0x44495601 |
-| DIVU      |    Sub   | 0x44495602 |
-| REM       |    Sub   | 0x52454D01 |
-| REMU      |    Sub   | 0x52454D02 |
+<!--  for n in MUL{,H,HSU,HU} DIV{,U} REM{,U}; do echo "$( echo -n $n | md5sum ) $n"; done | cut -c1-16,36- -->
+
+| Operation |  Add/Sub |      Bitmask       |
+|:----------|:--------:|:------------------:|
+| MUL       |    Add   | 0x2cdf52a55876063e |
+| MULH      |    Add   | 0x15d01651f6583fb7 |
+| MULHSU    |    Sub   | 0xea3969edecfbe137 |
+| MULHU     |    Add   | 0xd13db50d949ce5e8 |
+| DIV       |    Sub   | 0x29bbf66f7f8529ec |
+| DIVU      |    Sub   | 0x8c629acb10e8fd70 |
+| REM       |    Sub   | 0xf5b7d8538da68fa5 |
+| REMU      |    Sub   | 0xbc4402413138d0e1 |
 
 
 RVFI TODOs and Requests for Comments

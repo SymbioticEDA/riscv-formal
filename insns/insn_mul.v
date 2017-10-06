@@ -32,7 +32,8 @@ module rvfi_insn_mul (
 
   // MUL instruction
 `ifdef RISCV_FORMAL_ALTOPS
-  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata + rvfi_rs2_rdata) ^ 64'h4d554c014d554c01;
+  wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'h2cdf52a55876063e;
+  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata + rvfi_rs2_rdata) ^ altops_bitmask;
 `else
   wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata * rvfi_rs2_rdata;
 `endif

@@ -32,7 +32,8 @@ module rvfi_insn_remu (
 
   // REMU instruction
 `ifdef RISCV_FORMAL_ALTOPS
-  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ 64'h52454d0252454d02;
+  wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'hbc4402413138d0e1;
+  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ altops_bitmask;
 `else
   wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata % rvfi_rs2_rdata;
 `endif

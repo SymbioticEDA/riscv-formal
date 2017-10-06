@@ -32,7 +32,8 @@ module rvfi_insn_divu (
 
   // DIVU instruction
 `ifdef RISCV_FORMAL_ALTOPS
-  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ 64'h4449560244495602;
+  wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'h8c629acb10e8fd70;
+  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ altops_bitmask;
 `else
   wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata / rvfi_rs2_rdata;
 `endif

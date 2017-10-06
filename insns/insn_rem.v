@@ -32,7 +32,8 @@ module rvfi_insn_rem (
 
   // REM instruction
 `ifdef RISCV_FORMAL_ALTOPS
-  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ 64'h52454d0152454d01;
+  wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'hf5b7d8538da68fa5;
+  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ altops_bitmask;
 `else
   wire [`RISCV_FORMAL_XLEN-1:0] result = $signed(rvfi_rs1_rdata) % $signed(rvfi_rs2_rdata);
 `endif

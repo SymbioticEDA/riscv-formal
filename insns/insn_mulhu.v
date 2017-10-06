@@ -32,7 +32,8 @@ module rvfi_insn_mulhu (
 
   // MULHU instruction
 `ifdef RISCV_FORMAL_ALTOPS
-  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata + rvfi_rs2_rdata) ^ 64'h4d554c044d554c04;
+  wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'hd13db50d949ce5e8;
+  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata + rvfi_rs2_rdata) ^ altops_bitmask;
 `else
   wire [`RISCV_FORMAL_XLEN-1:0] result = (`RISCV_FORMAL_XLEN'b0, rvfi_rs1_rdata} * {`RISCV_FORMAL_XLEN'b0, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN;
 `endif

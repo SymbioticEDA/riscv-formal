@@ -515,9 +515,11 @@ def insn_alu(insn, funct7, funct3, expr, alt_add=None, alt_sub=None):
         if alt_add is not None or alt_sub is not None:
             print("`ifdef RISCV_FORMAL_ALTOPS", file=f)
             if alt_add is not None:
-                print("  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata + rvfi_rs2_rdata) ^ 64'h%08x%08x;" % (alt_add, alt_add), file=f)
+                print("  wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'h%016x;" % alt_add, file=f)
+                print("  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata + rvfi_rs2_rdata) ^ altops_bitmask;", file=f)
             else:
-                print("  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ 64'h%08x%08x;" % (alt_sub, alt_sub), file=f)
+                print("  wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'h%016x;" % alt_sub, file=f)
+                print("  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ altops_bitmask;", file=f)
             print("`else", file=f)
             print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
             print("`endif", file=f)
@@ -953,18 +955,18 @@ insn_alu("and",  "0000000", "111", "rvfi_rs1_rdata & rvfi_rs2_rdata")
 
 current_isa = ["rv32im"]
 
-insn_alu("mul",    "0000001", "000", "rvfi_rs1_rdata * rvfi_rs2_rdata", alt_add=0x4D554C01)
+insn_alu("mul",    "0000001", "000", "rvfi_rs1_rdata * rvfi_rs2_rdata", alt_add=0x2cdf52a55876063e)
 insn_alu("mulh",   "0000001", "001", "({{`RISCV_FORMAL_XLEN{rvfi_rs1_rdata[`RISCV_FORMAL_XLEN-1]}}, rvfi_rs1_rdata} *\n" +
-        "\t\t{{`RISCV_FORMAL_XLEN{rvfi_rs2_rdata[`RISCV_FORMAL_XLEN-1]}}, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN", alt_add=0x4D554C02)
+        "\t\t{{`RISCV_FORMAL_XLEN{rvfi_rs2_rdata[`RISCV_FORMAL_XLEN-1]}}, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN", alt_add=0x15d01651f6583fb7)
 insn_alu("mulhsu", "0000001", "010", "({{`RISCV_FORMAL_XLEN{rvfi_rs1_rdata[`RISCV_FORMAL_XLEN-1]}}, rvfi_rs1_rdata} *\n" +
-        "\t\t{`RISCV_FORMAL_XLEN'b0, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN", alt_sub=0x4D554C03)
-insn_alu("mulhu",  "0000001", "011", "(`RISCV_FORMAL_XLEN'b0, rvfi_rs1_rdata} * {`RISCV_FORMAL_XLEN'b0, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN", alt_add=0x4D554C04)
+        "\t\t{`RISCV_FORMAL_XLEN'b0, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN", alt_sub=0xea3969edecfbe137)
+insn_alu("mulhu",  "0000001", "011", "(`RISCV_FORMAL_XLEN'b0, rvfi_rs1_rdata} * {`RISCV_FORMAL_XLEN'b0, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN", alt_add=0xd13db50d949ce5e8)
 
-insn_alu("div",    "0000001", "100", "$signed(rvfi_rs1_rdata) / $signed(rvfi_rs2_rdata)", alt_sub=0x44495601)
-insn_alu("divu",   "0000001", "101", "rvfi_rs1_rdata / rvfi_rs2_rdata", alt_sub=0x44495602)
+insn_alu("div",    "0000001", "100", "$signed(rvfi_rs1_rdata) / $signed(rvfi_rs2_rdata)", alt_sub=0x29bbf66f7f8529ec)
+insn_alu("divu",   "0000001", "101", "rvfi_rs1_rdata / rvfi_rs2_rdata", alt_sub=0x8c629acb10e8fd70)
 
-insn_alu("rem",    "0000001", "110", "$signed(rvfi_rs1_rdata) % $signed(rvfi_rs2_rdata)", alt_sub=0x52454D01)
-insn_alu("remu",   "0000001", "111", "rvfi_rs1_rdata % rvfi_rs2_rdata", alt_sub=0x52454D02)
+insn_alu("rem",    "0000001", "110", "$signed(rvfi_rs1_rdata) % $signed(rvfi_rs2_rdata)", alt_sub=0xf5b7d8538da68fa5)
+insn_alu("remu",   "0000001", "111", "rvfi_rs1_rdata % rvfi_rs2_rdata", alt_sub=0xbc4402413138d0e1)
 
 ## Compressed Integer ISA (IC)
 
