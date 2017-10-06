@@ -16,6 +16,8 @@ module rvfi_wrapper (
 
 	picorv32 #(
 		.COMPRESSED_ISA(1),
+		.ENABLE_FAST_MUL(1),
+		.ENABLE_DIV(1),
 		.BARREL_SHIFTER(1)
 	) uut (
 		.clk       (clock    ),
