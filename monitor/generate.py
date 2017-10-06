@@ -114,10 +114,12 @@ if ilen is None:
 if "c" in isa:
     compressed = True
 
-print("// DO NOT EDIT -- auto-generated from riscv-formal/monitor/generate.py");
+print("// DO NOT EDIT -- auto-generated from riscv-formal/monitor/generate.py")
+print("//")
+print("// Command line options: %s" % " ".join(sys.argv[1:]))
 print()
 
-print("module %s (" % prefix);
+print("module %s (" % prefix)
 print("  input clock,")
 print("  input reset,")
 print("  input [%d:0] rvfi_valid," % (channels-1))
@@ -145,38 +147,38 @@ print(");")
 errcodes = list()
 
 for chidx in range(channels):
-    print("  wire ch%d_rvfi_valid = rvfi_valid[%d];" % (chidx, chidx));
-    print("  wire [63:0] ch%d_rvfi_order = rvfi_order[%d:%d];" % (chidx, 64*chidx+63, 64*chidx));
-    print("  wire [31:0] ch%d_rvfi_insn = rvfi_insn[%d:%d];" % (chidx, 32*chidx+31, 32*chidx));
-    print("  wire ch%d_rvfi_trap = rvfi_trap[%d];" % (chidx, chidx));
-    print("  wire ch%d_rvfi_halt = rvfi_halt[%d];" % (chidx, chidx));
-    print("  wire ch%d_rvfi_intr = rvfi_intr[%d];" % (chidx, chidx));
-    print("  wire [4:0] ch%d_rvfi_rs1_addr = rvfi_rs1_addr[%d:%d];" % (chidx, 5*chidx+4, 5*chidx));
-    print("  wire [4:0] ch%d_rvfi_rs2_addr = rvfi_rs2_addr[%d:%d];" % (chidx, 5*chidx+4, 5*chidx));
-    print("  wire [%d:0] ch%d_rvfi_rs1_rdata = rvfi_rs1_rdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx));
-    print("  wire [%d:0] ch%d_rvfi_rs2_rdata = rvfi_rs2_rdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx));
-    print("  wire [4:0] ch%d_rvfi_rd_addr = rvfi_rd_addr[%d:%d];" % (chidx, 5*chidx+4, 5*chidx));
-    print("  wire [%d:0] ch%d_rvfi_rd_wdata = rvfi_rd_wdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx));
-    print("  wire [%d:0] ch%d_rvfi_pc_rdata = rvfi_pc_rdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx));
-    print("  wire [%d:0] ch%d_rvfi_pc_wdata = rvfi_pc_wdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx));
-    print("  wire [%d:0] ch%d_rvfi_mem_addr = rvfi_mem_addr[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx));
-    print("  wire [%d:0] ch%d_rvfi_mem_rmask = rvfi_mem_rmask[%d:%d];" % (xlen//8-1, chidx, xlen//8*chidx+xlen//8-1, xlen//8*chidx));
-    print("  wire [%d:0] ch%d_rvfi_mem_wmask = rvfi_mem_wmask[%d:%d];" % (xlen//8-1, chidx, xlen//8*chidx+xlen//8-1, xlen//8*chidx));
-    print("  wire [%d:0] ch%d_rvfi_mem_rdata = rvfi_mem_rdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx));
-    print("  wire [%d:0] ch%d_rvfi_mem_wdata = rvfi_mem_wdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx));
+    print("  wire ch%d_rvfi_valid = rvfi_valid[%d];" % (chidx, chidx))
+    print("  wire [63:0] ch%d_rvfi_order = rvfi_order[%d:%d];" % (chidx, 64*chidx+63, 64*chidx))
+    print("  wire [31:0] ch%d_rvfi_insn = rvfi_insn[%d:%d];" % (chidx, 32*chidx+31, 32*chidx))
+    print("  wire ch%d_rvfi_trap = rvfi_trap[%d];" % (chidx, chidx))
+    print("  wire ch%d_rvfi_halt = rvfi_halt[%d];" % (chidx, chidx))
+    print("  wire ch%d_rvfi_intr = rvfi_intr[%d];" % (chidx, chidx))
+    print("  wire [4:0] ch%d_rvfi_rs1_addr = rvfi_rs1_addr[%d:%d];" % (chidx, 5*chidx+4, 5*chidx))
+    print("  wire [4:0] ch%d_rvfi_rs2_addr = rvfi_rs2_addr[%d:%d];" % (chidx, 5*chidx+4, 5*chidx))
+    print("  wire [%d:0] ch%d_rvfi_rs1_rdata = rvfi_rs1_rdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx))
+    print("  wire [%d:0] ch%d_rvfi_rs2_rdata = rvfi_rs2_rdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx))
+    print("  wire [4:0] ch%d_rvfi_rd_addr = rvfi_rd_addr[%d:%d];" % (chidx, 5*chidx+4, 5*chidx))
+    print("  wire [%d:0] ch%d_rvfi_rd_wdata = rvfi_rd_wdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx))
+    print("  wire [%d:0] ch%d_rvfi_pc_rdata = rvfi_pc_rdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx))
+    print("  wire [%d:0] ch%d_rvfi_pc_wdata = rvfi_pc_wdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx))
+    print("  wire [%d:0] ch%d_rvfi_mem_addr = rvfi_mem_addr[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx))
+    print("  wire [%d:0] ch%d_rvfi_mem_rmask = rvfi_mem_rmask[%d:%d];" % (xlen//8-1, chidx, xlen//8*chidx+xlen//8-1, xlen//8*chidx))
+    print("  wire [%d:0] ch%d_rvfi_mem_wmask = rvfi_mem_wmask[%d:%d];" % (xlen//8-1, chidx, xlen//8*chidx+xlen//8-1, xlen//8*chidx))
+    print("  wire [%d:0] ch%d_rvfi_mem_rdata = rvfi_mem_rdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx))
+    print("  wire [%d:0] ch%d_rvfi_mem_wdata = rvfi_mem_wdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx))
     print()
 
-    print("  wire ch%d_spec_valid;" % (chidx));
-    print("  wire ch%d_spec_trap;" % (chidx));
-    print("  wire [4:0] ch%d_spec_rs1_addr;" % (chidx));
-    print("  wire [4:0] ch%d_spec_rs2_addr;" % (chidx));
-    print("  wire [4:0] ch%d_spec_rd_addr;" % (chidx));
-    print("  wire [%d:0] ch%d_spec_rd_wdata;" % (xlen-1, chidx));
-    print("  wire [%d:0] ch%d_spec_pc_wdata;" % (xlen-1, chidx));
-    print("  wire [%d:0] ch%d_spec_mem_addr;" % (xlen-1, chidx));
-    print("  wire [%d:0] ch%d_spec_mem_rmask;" % (xlen//8-1, chidx));
-    print("  wire [%d:0] ch%d_spec_mem_wmask;" % (xlen//8-1, chidx));
-    print("  wire [%d:0] ch%d_spec_mem_wdata;" % (xlen-1, chidx));
+    print("  wire ch%d_spec_valid;" % (chidx))
+    print("  wire ch%d_spec_trap;" % (chidx))
+    print("  wire [4:0] ch%d_spec_rs1_addr;" % (chidx))
+    print("  wire [4:0] ch%d_spec_rs2_addr;" % (chidx))
+    print("  wire [4:0] ch%d_spec_rd_addr;" % (chidx))
+    print("  wire [%d:0] ch%d_spec_rd_wdata;" % (xlen-1, chidx))
+    print("  wire [%d:0] ch%d_spec_pc_wdata;" % (xlen-1, chidx))
+    print("  wire [%d:0] ch%d_spec_mem_addr;" % (xlen-1, chidx))
+    print("  wire [%d:0] ch%d_spec_mem_rmask;" % (xlen//8-1, chidx))
+    print("  wire [%d:0] ch%d_spec_mem_wmask;" % (xlen//8-1, chidx))
+    print("  wire [%d:0] ch%d_spec_mem_wdata;" % (xlen-1, chidx))
     print()
 
     print("  %s_isa_spec ch%d_isa_spec (" % (prefix, chidx))
