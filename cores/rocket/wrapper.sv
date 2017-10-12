@@ -194,6 +194,17 @@ module rvfi_wrapper (
 	assign rvfi_valid = rocket.core.rvfi_mon.rvfi_valid;
 `endif
 
+`ifdef NO_LDX0
+	always @* begin
+		if (rvfi_valid[0] && rvfi_insn[6:0] == 7'b0000011) begin
+			assume (rvfi_insn[11:7] != 0);
+		end
+		if (rvfi_valid[1] && rvfi_insn[38:32] == 7'b0000011) begin
+			assume (rvfi_insn[43:39] != 0);
+		end
+	end
+`endif
+
 `ifdef NO_SYSTEM
 	wire riscv_rv32i_valid_ch0;
 	wire riscv_rv32i_valid_ch1;
