@@ -178,7 +178,7 @@ Consider the following sequence of instructions:
         ....
         add t0,t1,t2
         beqz t3,label
-	sub t0,t1,t3
+        sub t0,t1,t3
     label:
         ....
 
