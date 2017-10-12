@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, shutil, re
+import os, sys, shutil, re
 
 nret = 1
 isa = "rv32i"
@@ -35,6 +35,7 @@ hang_depth = None
 
 blackbox = False
 
+cfgname = "checks"
 basedir = "%s/../.." % os.getcwd()
 corename = os.getcwd().split("/")[-1]
 smt_solver = "boolector"
@@ -42,7 +43,12 @@ use_aiger = False
 sbycmd = "sby"
 config = dict()
 
-with open("genchecks.cfg", "r") as f:
+if len(sys.argv) > 1:
+    assert len(sys.argv) == 2
+    cfgname = sys.argv[1]
+
+print("Reading %s.cfg." % cfgname)
+with open("%s.cfg" % cfgname, "r") as f:
     cfgsection = None
     for line in f:
         line = line.strip()
@@ -128,8 +134,9 @@ if "64" in isa:
 if "c" in isa:
     compr = True
 
-shutil.rmtree("checks", ignore_errors=True)
-os.mkdir("checks")
+print("Creating %s directory." % cfgname)
+shutil.rmtree(cfgname, ignore_errors=True)
+os.mkdir(cfgname)
 
 def print_hfmt(f, text, **kwargs):
     for line in text.split("\n"):
@@ -143,11 +150,11 @@ def print_hfmt(f, text, **kwargs):
 
 hargs = dict()
 hargs["basedir"] = basedir
+hargs["cfgname"] = cfgname
 hargs["core"] = corename
 hargs["nret"] = nret
 hargs["xlen"] = xlen
 hargs["ilen"] = ilen
-hargs["core"] = corename
 
 instruction_checks = set()
 consistency_checks = set()
@@ -181,7 +188,7 @@ def check_insn(insn, chanidx):
     hargs["depth"] = insn_depth
     hargs["depth_plus"] = insn_depth + 2
 
-    with open("checks/%s.sby" % check, "w") as sby_file:
+    with open("%s/%s.sby" % (cfgname, check), "w") as sby_file:
         print_hfmt(sby_file, """
                 : [options]
                 : mode bmc
@@ -214,10 +221,10 @@ def check_insn(insn, chanidx):
             print_hfmt(sby_file, config["script-defines"], **hargs)
 
         print_hfmt(sby_file, """
-                : read_verilog -sv @basedir@/checks/rvfi_macros.vh
-                : read_verilog -sv @basedir@/checks/rvfi_channel.sv
-                : read_verilog -sv @basedir@/checks/rvfi_testbench.sv
-                : read_verilog -sv @basedir@/checks/rvfi_insn_check.sv
+                : read_verilog -sv @basedir@/@cfgname@/rvfi_macros.vh
+                : read_verilog -sv @basedir@/@cfgname@/rvfi_channel.sv
+                : read_verilog -sv @basedir@/@cfgname@/rvfi_testbench.sv
+                : read_verilog -sv @basedir@/@cfgname@/rvfi_insn_check.sv
                 : read_verilog -sv @basedir@/insns/insn_@insn@.v
         """, **hargs)
 
@@ -250,7 +257,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
     if test_disabled(check): return
     consistency_checks.add(check)
 
-    with open("checks/%s.sby" % check, "w") as sby_file:
+    with open("%s/%s.sby" % (cfgname, check), "w") as sby_file:
         print_hfmt(sby_file, """
                 : [options]
                 : mode bmc
@@ -290,10 +297,10 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
             print_hfmt(sby_file, config["script-defines %s" % hargs["check"]], **hargs)
 
         print_hfmt(sby_file, """
-                : read_verilog -sv @basedir@/checks/rvfi_macros.vh
-                : read_verilog -sv @basedir@/checks/rvfi_channel.sv
-                : read_verilog -sv @basedir@/checks/rvfi_testbench.sv
-                : read_verilog -sv @basedir@/checks/rvfi_@check@_check.sv
+                : read_verilog -sv @basedir@/@cfgname@/rvfi_macros.vh
+                : read_verilog -sv @basedir@/@cfgname@/rvfi_channel.sv
+                : read_verilog -sv @basedir@/@cfgname@/rvfi_testbench.sv
+                : read_verilog -sv @basedir@/@cfgname@/rvfi_@check@_check.sv
         """, **hargs)
 
         if "script-sources" in config:
@@ -327,7 +334,7 @@ if hang_start is not None:
 
 # ------------------------------ Makefile ------------------------------
 
-with open("checks/makefile", "w") as mkfile:
+with open("%s/makefile" % cfgname, "w") as mkfile:
     print("all:", end="", file=mkfile)
 
     checks = list(sorted(consistency_checks)) + list(sorted(instruction_checks))
@@ -339,4 +346,6 @@ with open("checks/makefile", "w") as mkfile:
     for check in checks:
         print("%s/PASS:" % check, file=mkfile)
         print("\t%s %s.sby" % (sbycmd, check), file=mkfile)
+
+print("Generated %d checks." % (len(consistency_checks) + len(instruction_checks)))
 
