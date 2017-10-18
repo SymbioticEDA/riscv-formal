@@ -184,6 +184,7 @@ def check_insn(insn, chanidx):
     instruction_checks.add(check)
 
     hargs["insn"] = insn
+    hargs["checkch"] = check
     hargs["channel"] = "%d" % chanidx
     hargs["depth"] = insn_depth
     hargs["depth_plus"] = insn_depth + 2
@@ -200,39 +201,57 @@ def check_insn(insn, chanidx):
                 : @engine@
                 :
                 : [script]
-                : verilog_defines -D RISCV_FORMAL
-                : verilog_defines -D RISCV_FORMAL_NRET=@nret@
-                : verilog_defines -D RISCV_FORMAL_XLEN=@xlen@
-                : verilog_defines -D RISCV_FORMAL_ILEN=@ilen@
-                : verilog_defines -D RISCV_FORMAL_CHECKER=rvfi_insn_check
-                : verilog_defines -D RISCV_FORMAL_RESET_CYCLES=1
-                : verilog_defines -D RISCV_FORMAL_CHECK_CYCLE=@depth@
-                : verilog_defines -D RISCV_FORMAL_INSN_MODEL=rvfi_insn_@insn@
-                : verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=@channel@
         """, **hargs)
-
-        if blackbox:
-            print("verilog_defines -D RISCV_FORMAL_BLACKBOX_REGS", file=sby_file)
-
-        if compr:
-            print("verilog_defines -D RISCV_FORMAL_COMPRESSED", file=sby_file)
 
         if "script-defines" in config:
             print_hfmt(sby_file, config["script-defines"], **hargs)
 
-        print_hfmt(sby_file, """
-                : read_verilog -sv @basedir@/@cfgname@/rvfi_macros.vh
-                : read_verilog -sv @basedir@/@cfgname@/rvfi_channel.sv
-                : read_verilog -sv @basedir@/@cfgname@/rvfi_testbench.sv
-                : read_verilog -sv @basedir@/@cfgname@/rvfi_insn_check.sv
-                : read_verilog -sv @basedir@/insns/insn_@insn@.v
-        """, **hargs)
+        print("read_verilog -sv %s.sv" % check, file=sby_file)
 
         if "script-sources" in config:
             print_hfmt(sby_file, config["script-sources"], **hargs)
 
         print_hfmt(sby_file, """
                 : prep -nordff -top rvfi_testbench
+                :
+                : [files]
+                : @checkch@.sv
+                : @basedir@/@cfgname@/rvfi_macros.vh
+                : @basedir@/@cfgname@/rvfi_channel.sv
+                : @basedir@/@cfgname@/rvfi_testbench.sv
+                : @basedir@/@cfgname@/rvfi_insn_check.sv
+                : @basedir@/insns/insn_@insn@.v
+        """, **hargs)
+
+
+    with open("%s/%s.sv" % (cfgname, check), "w") as sv_file:
+        print_hfmt(sv_file, """
+                : `define RISCV_FORMAL
+                : `define RISCV_FORMAL_NRET @nret@
+                : `define RISCV_FORMAL_XLEN @xlen@
+                : `define RISCV_FORMAL_ILEN @ilen@
+                : `define RISCV_FORMAL_CHECKER rvfi_insn_check
+                : `define RISCV_FORMAL_RESET_CYCLES 1
+                : `define RISCV_FORMAL_CHECK_CYCLE @depth@
+                : `define RISCV_FORMAL_INSN_MODEL rvfi_insn_@insn@
+                : `define RISCV_FORMAL_CHANNEL_IDX @channel@
+        """, **hargs)
+
+        if blackbox:
+            print("`define RISCV_FORMAL_BLACKBOX_REGS", file=sv_file)
+
+        if compr:
+            print("`define RISCV_FORMAL_COMPRESSED", file=sv_file)
+
+        if "defines" in config:
+            print_hfmt(sv_file, config["defines"], **hargs)
+
+        print_hfmt(sv_file, """
+                : `include "rvfi_macros.vh"
+                : `include "rvfi_channel.sv"
+                : `include "rvfi_testbench.sv"
+                : `include "rvfi_insn_check.sv"
+                : `include "insn_@insn@.v"
         """, **hargs)
 
 if insn_depth is not None:
@@ -253,6 +272,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
     if chanidx is not None:
         hargs["channel"] = "%d" % chanidx
         check += "_ch%d" % chanidx
+    hargs["checkch"] = check
 
     if test_disabled(check): return
     consistency_checks.add(check)
@@ -269,26 +289,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
                 : @engine@
                 :
                 : [script]
-                : verilog_defines -D RISCV_FORMAL
-                : verilog_defines -D RISCV_FORMAL_NRET=@nret@
-                : verilog_defines -D RISCV_FORMAL_XLEN=@xlen@
-                : verilog_defines -D RISCV_FORMAL_ILEN=@ilen@
-                : verilog_defines -D RISCV_FORMAL_CHECKER=rvfi_@check@_check
-                : verilog_defines -D RISCV_FORMAL_RESET_CYCLES=@start@
-                : verilog_defines -D RISCV_FORMAL_CHECK_CYCLE=@depth@
         """, **hargs)
-
-        if blackbox and hargs["check"] != "liveness":
-            print("verilog_defines -D RISCV_FORMAL_BLACKBOX_ALU", file=sby_file)
-
-        if blackbox and hargs["check"] != "reg":
-            print("verilog_defines -D RISCV_FORMAL_BLACKBOX_REGS", file=sby_file)
-
-        if chanidx is not None:
-            print("verilog_defines -D RISCV_FORMAL_CHANNEL_IDX=%d" % chanidx, file=sby_file)
-
-        if trig is not None:
-            print("verilog_defines -D RISCV_FORMAL_TRIG_CYCLE=%d" % trig, file=sby_file)
 
         if "script-defines" in config:
             print_hfmt(sby_file, config["script-defines"], **hargs)
@@ -297,10 +298,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
             print_hfmt(sby_file, config["script-defines %s" % hargs["check"]], **hargs)
 
         print_hfmt(sby_file, """
-                : read_verilog -sv @basedir@/@cfgname@/rvfi_macros.vh
-                : read_verilog -sv @basedir@/@cfgname@/rvfi_channel.sv
-                : read_verilog -sv @basedir@/@cfgname@/rvfi_testbench.sv
-                : read_verilog -sv @basedir@/@cfgname@/rvfi_@check@_check.sv
+                : read_verilog -sv @checkch@.sv
         """, **hargs)
 
         if "script-sources" in config:
@@ -308,6 +306,49 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
 
         print_hfmt(sby_file, """
                 : prep -nordff -top rvfi_testbench
+                :
+                : [files]
+                : @checkch@.sv
+                : @basedir@/@cfgname@/rvfi_macros.vh
+                : @basedir@/@cfgname@/rvfi_channel.sv
+                : @basedir@/@cfgname@/rvfi_testbench.sv
+                : @basedir@/@cfgname@/rvfi_@check@_check.sv
+        """, **hargs)
+
+    with open("%s/%s.sv" % (cfgname, check), "w") as sv_file:
+        print_hfmt(sv_file, """
+                : `define RISCV_FORMAL
+                : `define RISCV_FORMAL_NRET @nret@
+                : `define RISCV_FORMAL_XLEN @xlen@
+                : `define RISCV_FORMAL_ILEN @ilen@
+                : `define RISCV_FORMAL_CHECKER rvfi_@check@_check
+                : `define RISCV_FORMAL_RESET_CYCLES @start@
+                : `define RISCV_FORMAL_CHECK_CYCLE @depth@
+        """, **hargs)
+
+        if blackbox and hargs["check"] != "liveness":
+            print("`define RISCV_FORMAL_BLACKBOX_ALU", file=sv_file)
+
+        if blackbox and hargs["check"] != "reg":
+            print("`define RISCV_FORMAL_BLACKBOX_REGS", file=sv_file)
+
+        if chanidx is not None:
+            print("`define RISCV_FORMAL_CHANNEL_IDX %d" % chanidx, file=sv_file)
+
+        if trig is not None:
+            print("`define RISCV_FORMAL_TRIG_CYCLE %d" % trig, file=sv_file)
+
+        if "defines" in config:
+            print_hfmt(sv_file, config["defines"], **hargs)
+
+        if ("defines %s" % hargs["check"]) in config:
+            print_hfmt(sv_file, config["defines %s" % hargs["check"]], **hargs)
+
+        print_hfmt(sv_file, """
+                : `include "rvfi_macros.vh"
+                : `include "rvfi_channel.sv"
+                : `include "rvfi_testbench.sv"
+                : `include "rvfi_@check@_check.sv"
         """, **hargs)
 
 for i in range(nret):
