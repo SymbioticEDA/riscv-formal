@@ -16,16 +16,12 @@ module rvfi_wrapper (
 
 	// Rocket Tile Inputs
 
-	(* keep *) wire        io_hartid = 0;
-	(* keep *) wire [31:0] io_reset_vector = 32'h 0001_0000;
-
 	(* keep *) wire        io_interrupts_0_0 = 0;
 	(* keep *) wire        io_interrupts_0_1 = 0;
 	(* keep *) wire        io_interrupts_0_2 = 0;
 	(* keep *) wire        io_interrupts_0_3 = 0;
 
 	(* keep *) wire         io_master_0_a_ready;
-	(* keep *) wire         io_master_0_b_valid = 0;
 	(* keep *) wire         io_master_0_d_valid;
 	(* keep *) wire  [2:0]  io_master_0_d_bits_opcode;
 	(* keep *) wire  [1:0]  io_master_0_d_bits_param;
@@ -55,20 +51,14 @@ module rvfi_wrapper (
 	(* keep *) wire [31:0] io_master_0_a_bits_address;
 	(* keep *) wire [3:0]  io_master_0_a_bits_mask;
 	(* keep *) wire [31:0] io_master_0_a_bits_data;
-	(* keep *) wire        io_master_0_c_valid;
 	(* keep *) wire        io_master_0_d_ready;
-	(* keep *) wire        io_master_0_e_valid;
 
 	(* keep *) wire        io_slave_0_a_ready;
-	(* keep *) wire        io_slave_0_b_valid;
 	(* keep *) wire        io_slave_0_d_valid;
 	(* keep *) wire [2:0]  io_slave_0_d_bits_opcode;
-	(* keep *) wire [1:0]  io_slave_0_d_bits_param;
 	(* keep *) wire [2:0]  io_slave_0_d_bits_size;
 	(* keep *) wire [4:0]  io_slave_0_d_bits_source;
-	(* keep *) wire        io_slave_0_d_bits_sink;
 	(* keep *) wire [31:0] io_slave_0_d_bits_data;
-	(* keep *) wire        io_slave_0_d_bits_error;
 
 `ifdef ROCKET_INIT
 	assign io_master_0_a_ready = 0;
@@ -114,62 +104,54 @@ module rvfi_wrapper (
 	// Rocket Tile
 
 	RocketTile_rocket uut (
-		.clock                     (clock                     ),
-		.reset                     (actual_reset              ),
-
-		.io_interrupts_0_0         (io_interrupts_0_0         ),
-		.io_interrupts_0_1         (io_interrupts_0_1         ),
-		.io_interrupts_0_2         (io_interrupts_0_2         ),
-		.io_interrupts_0_3         (io_interrupts_0_3         ),
-
-		.io_master_0_a_ready       (io_master_0_a_ready       ),
-		.io_master_0_a_valid       (io_master_0_a_valid       ),
-		.io_master_0_a_bits_opcode (io_master_0_a_bits_opcode ),
-		.io_master_0_a_bits_param  (io_master_0_a_bits_param  ),
-		.io_master_0_a_bits_size   (io_master_0_a_bits_size   ),
-		.io_master_0_a_bits_source (io_master_0_a_bits_source ),
-		.io_master_0_a_bits_address(io_master_0_a_bits_address),
-		.io_master_0_a_bits_mask   (io_master_0_a_bits_mask   ),
-		.io_master_0_a_bits_data   (io_master_0_a_bits_data   ),
-		.io_master_0_b_valid       (io_master_0_b_valid       ),
-		.io_master_0_c_valid       (io_master_0_c_valid       ),
-		.io_master_0_d_ready       (io_master_0_d_ready       ),
-		.io_master_0_d_valid       (io_master_0_d_valid       ),
-		.io_master_0_d_bits_opcode (io_master_0_d_bits_opcode ),
-		.io_master_0_d_bits_param  (io_master_0_d_bits_param  ),
-		.io_master_0_d_bits_size   (io_master_0_d_bits_size   ),
-		.io_master_0_d_bits_source (io_master_0_d_bits_source ),
-		.io_master_0_d_bits_sink   (io_master_0_d_bits_sink   ),
-		.io_master_0_d_bits_data   (io_master_0_d_bits_data   ),
-		.io_master_0_d_bits_error  (io_master_0_d_bits_error  ),
-		.io_master_0_e_valid       (io_master_0_e_valid       ),
-
-		.io_slave_0_a_ready        (io_slave_0_a_ready        ),
-		.io_slave_0_a_valid        (io_slave_0_a_valid        ),
-		.io_slave_0_a_bits_opcode  (io_slave_0_a_bits_opcode  ),
-		.io_slave_0_a_bits_param   (io_slave_0_a_bits_param   ),
-		.io_slave_0_a_bits_size    (io_slave_0_a_bits_size    ),
-		.io_slave_0_a_bits_source  (io_slave_0_a_bits_source  ),
-		.io_slave_0_a_bits_address (io_slave_0_a_bits_address ),
-		.io_slave_0_a_bits_mask    (io_slave_0_a_bits_mask    ),
-		.io_slave_0_a_bits_data    (io_slave_0_a_bits_data    ),
-		.io_slave_0_b_valid        (io_slave_0_b_valid        ),
-		.io_slave_0_d_ready        (io_slave_0_d_ready        ),
-		.io_slave_0_d_valid        (io_slave_0_d_valid        ),
-		.io_slave_0_d_bits_opcode  (io_slave_0_d_bits_opcode  ),
-		.io_slave_0_d_bits_param   (io_slave_0_d_bits_param   ),
-		.io_slave_0_d_bits_size    (io_slave_0_d_bits_size    ),
-		.io_slave_0_d_bits_source  (io_slave_0_d_bits_source  ),
-		.io_slave_0_d_bits_sink    (io_slave_0_d_bits_sink    ),
-		.io_slave_0_d_bits_data    (io_slave_0_d_bits_data    ),
-		.io_slave_0_d_bits_error   (io_slave_0_d_bits_error   ),
+		.clock                        (clock                     ),
+		.reset                        (actual_reset              ),
 
 `ifndef ROCKET_HIER_REF
 		`RVFI_CONN,
 `endif
 
-		.io_hartid                 (io_hartid                 ),
-		.io_reset_vector           (io_reset_vector           )
+		.auto_int_in_0                  (io_interrupts_0_0         ),
+		.auto_int_in_1                  (io_interrupts_0_1         ),
+		.auto_int_in_2                  (io_interrupts_0_2         ),
+		.auto_int_in_3                  (io_interrupts_0_3         ),
+
+		.auto_master_out_a_ready        (io_master_0_a_ready       ),
+		.auto_master_out_a_valid        (io_master_0_a_valid       ),
+		.auto_master_out_a_bits_opcode  (io_master_0_a_bits_opcode ),
+		.auto_master_out_a_bits_param   (io_master_0_a_bits_param  ),
+		.auto_master_out_a_bits_size    (io_master_0_a_bits_size   ),
+		.auto_master_out_a_bits_source  (io_master_0_a_bits_source ),
+		.auto_master_out_a_bits_address (io_master_0_a_bits_address),
+		.auto_master_out_a_bits_mask    (io_master_0_a_bits_mask   ),
+		.auto_master_out_a_bits_data    (io_master_0_a_bits_data   ),
+
+		.auto_master_out_d_ready        (io_master_0_d_ready       ),
+		.auto_master_out_d_valid        (io_master_0_d_valid       ),
+		.auto_master_out_d_bits_opcode  (io_master_0_d_bits_opcode ),
+		.auto_master_out_d_bits_param   (io_master_0_d_bits_param  ),
+		.auto_master_out_d_bits_size    (io_master_0_d_bits_size   ),
+		.auto_master_out_d_bits_source  (io_master_0_d_bits_source ),
+		.auto_master_out_d_bits_sink    (io_master_0_d_bits_sink   ),
+		.auto_master_out_d_bits_data    (io_master_0_d_bits_data   ),
+		.auto_master_out_d_bits_error   (io_master_0_d_bits_error  ),
+
+		.auto_slave_in_a_ready          (io_slave_0_a_ready        ),
+		.auto_slave_in_a_valid          (io_slave_0_a_valid        ),
+		.auto_slave_in_a_bits_opcode    (io_slave_0_a_bits_opcode  ),
+		.auto_slave_in_a_bits_param     (io_slave_0_a_bits_param   ),
+		.auto_slave_in_a_bits_size      (io_slave_0_a_bits_size    ),
+		.auto_slave_in_a_bits_source    (io_slave_0_a_bits_source  ),
+		.auto_slave_in_a_bits_address   (io_slave_0_a_bits_address ),
+		.auto_slave_in_a_bits_mask      (io_slave_0_a_bits_mask    ),
+		.auto_slave_in_a_bits_data      (io_slave_0_a_bits_data    ),
+
+		.auto_slave_in_d_ready          (io_slave_0_d_ready        ),
+		.auto_slave_in_d_valid          (io_slave_0_d_valid        ),
+		.auto_slave_in_d_bits_opcode    (io_slave_0_d_bits_opcode  ),
+		.auto_slave_in_d_bits_size      (io_slave_0_d_bits_size    ),
+		.auto_slave_in_d_bits_source    (io_slave_0_d_bits_source  ),
+		.auto_slave_in_d_bits_data      (io_slave_0_d_bits_data    )
 	);
 
 `ifdef ROCKET_HIER_REF

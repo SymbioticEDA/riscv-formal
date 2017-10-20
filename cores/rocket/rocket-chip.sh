@@ -10,7 +10,6 @@ enable_compressed=true
 enable_64bits=false
 
 if [ ! -d rocket-chip ]; then
-	rm -rf rocket-chip
 	git clone https://github.com/freechipsproject/rocket-chip
 	cd rocket-chip
 
@@ -20,12 +19,12 @@ if [ ! -d rocket-chip ]; then
 	if $enable_compressed; then
 		( cd ../../../monitor && python3 generate.py -i rv32ic -p RVFIMonitor -c 2; ) > vsrc/RVFIMonitor.v
 	else
-		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /WithoutCompressed/ s,//,,; };' src/main/scala/system/Configs.scala
+		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /new WithRVFIMonitors/ s/$/\n  new WithoutCompressed ++/; };' src/main/scala/system/Configs.scala
 		( cd ../../../monitor && python3 generate.py -i rv32i -p RVFIMonitor -c 2; ) > vsrc/RVFIMonitor.v
 	fi
 
-	if $enable_64bits; then
-		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /new BaseConfig$/ s:$:().alter((site, here, up) => { case freechips.rocketchip.tile.XLen => 64 }):; };' src/main/scala/system/Configs.scala
+	if ! $enable_64bits; then
+		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { s/WithNBigCores(1)/With1TinyCore/; }' src/main/scala/system/Configs.scala
 	fi
 
 	sed -i '/^module/ s/\([A-Z]\+=\)/parameter &/g' vsrc/plusarg_reader.v
@@ -186,7 +185,7 @@ hierarchy -top RocketTile_rocket
 uniquify
 hierarchy
 
-rename -hide w:_*
+# rename -hide w:_*
 
 write_ilang rocket-syn/rocket-hier.il
 
