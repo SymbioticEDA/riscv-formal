@@ -32,7 +32,7 @@ The code C compilers generate usually (always?) have the LSB of the sum already 
 a bug in an implementation where the LSB is not cleared by the instruction (but, for example, an
 instruction address misaligned trap is triggered instead) is usually not
 discovered by just running compiler-generated code. With riscv-formal I have
-found this exact bug is several implementations.
+found this exact bug in several implementations.
 
 Troubles with bypassing and forwarding
 --------------------------------------
