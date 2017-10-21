@@ -67,7 +67,7 @@ extensions by writing to the `misa` CSR. Disabling the C extension in an
 instruction that isn't aligned to a 32-bit word should cause the processor to
 trigger an instruction address misaligned trap for the next instruction. One
 processor had a bug so that when the next instruction was a load, that load was
-not killed properly and then caused some of strange effects when the load
+not killed properly and then caused some strange effects when the load
 finally completed.
 
 Noteworthy about this case is that disabling the C ISA extension while not
