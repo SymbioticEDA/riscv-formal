@@ -30,6 +30,7 @@ Table of contents
 - [The RVFI Interface Specification](docs/rvfi.md)
 - [Configuration macros used by riscv-formal](docs/config.md)
 - [The riscv-formal Verification Procedure](docs/procedure.md)
+- [Examples of bugs found with riscv-formal](docs/examplebugs.md)
 - [References and related work](docs/references.md)
 
 See also [this presentation slides](http://www.clifford.at/papers/2017/riscv-formal/) for an introduction to riscv-formal.
