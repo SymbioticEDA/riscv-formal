@@ -28,8 +28,8 @@ The JALR instruction adds an immediate to its source register, clears the LSB
 of the sum, and then jumps to the resulting address. (It also stores the
 address of the next instruction in the desitination register.)
 
-The code C compilers generate usually (always?) have the LSB of the sum set, so
-a bug in an implementation where the LSB is not cleared (but, for example, an
+The code C compilers generate usually (always?) have the LSB of the sum already cleared, so
+a bug in an implementation where the LSB is not cleared by the instruction (but, for example, an
 instruction address misaligned trap is triggered instead) is usually not
 discovered by just running compiler-generated code. With riscv-formal I have
 found this exact bug is several implementations.
