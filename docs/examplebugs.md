@@ -47,7 +47,7 @@ Issues with reset
 -----------------
 
 Reset issues can be incredibly hard to find using simulation. One
-implementation had a rest problem in the divider so that one could start a
+implementation had a reset problem in the divider so that one could start a
 division, then reset the processor while the divide is in flight, and then
 divide again as one of the first instructions after reset. If the timing was
 just right then this second division would return immediately, with the result
