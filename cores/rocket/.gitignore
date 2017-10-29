@@ -9,6 +9,7 @@
 /pc_check_bwd0
 /pc_check_bwd1
 /checks
+/checks.cfg
 /testbench
 /testbench.v
 /testbench.vcd

@@ -1,3 +1,5 @@
+`define XLEN_BYTES (`RISCV_FORMAL_XLEN == 32 ? 4 : 8)
+
 module rvfi_wrapper (
 	input         clock,
 	input         reset,
@@ -16,49 +18,49 @@ module rvfi_wrapper (
 
 	// Rocket Tile Inputs
 
-	(* keep *) wire        io_interrupts_0_0 = 0;
-	(* keep *) wire        io_interrupts_0_1 = 0;
-	(* keep *) wire        io_interrupts_0_2 = 0;
-	(* keep *) wire        io_interrupts_0_3 = 0;
+	(* keep *) wire                           io_interrupts_0_0 = 0;
+	(* keep *) wire                           io_interrupts_0_1 = 0;
+	(* keep *) wire                           io_interrupts_0_2 = 0;
+	(* keep *) wire                           io_interrupts_0_3 = 0;
 
-	(* keep *) wire         io_master_0_a_ready;
-	(* keep *) wire         io_master_0_d_valid;
-	(* keep *) wire  [2:0]  io_master_0_d_bits_opcode;
-	(* keep *) wire  [1:0]  io_master_0_d_bits_param;
-	(* keep *) wire  [3:0]  io_master_0_d_bits_size;
-	(* keep *) wire         io_master_0_d_bits_source;
-	(* keep *) wire         io_master_0_d_bits_sink;
-	(* keep *) wire  [31:0] io_master_0_d_bits_data;
-	(* keep *) wire         io_master_0_d_bits_error;
+	(* keep *) wire                           io_master_0_a_ready;
+	(* keep *) wire                           io_master_0_d_valid;
+	(* keep *) wire  [                   2:0] io_master_0_d_bits_opcode;
+	(* keep *) wire  [                   1:0] io_master_0_d_bits_param;
+	(* keep *) wire  [                   3:0] io_master_0_d_bits_size;
+	(* keep *) wire                           io_master_0_d_bits_source;
+	(* keep *) wire                           io_master_0_d_bits_sink;
+	(* keep *) wire  [`RISCV_FORMAL_XLEN-1:0] io_master_0_d_bits_data;
+	(* keep *) wire                           io_master_0_d_bits_error;
 
-	(* keep *) wire         io_slave_0_a_valid = 0;
-	(* keep *) wire  [2:0]  io_slave_0_a_bits_opcode = 0;
-	(* keep *) wire  [2:0]  io_slave_0_a_bits_param = 0;
-	(* keep *) wire  [2:0]  io_slave_0_a_bits_size = 0;
-	(* keep *) wire  [4:0]  io_slave_0_a_bits_source = 0;
-	(* keep *) wire  [31:0] io_slave_0_a_bits_address = 0;
-	(* keep *) wire  [3:0]  io_slave_0_a_bits_mask = 0;
-	(* keep *) wire  [31:0] io_slave_0_a_bits_data = 0;
-	(* keep *) wire         io_slave_0_d_ready = 0;
+	(* keep *) wire                           io_slave_0_a_valid = 0;
+	(* keep *) wire  [                   2:0] io_slave_0_a_bits_opcode = 0;
+	(* keep *) wire  [                   2:0] io_slave_0_a_bits_param = 0;
+	(* keep *) wire  [                   2:0] io_slave_0_a_bits_size = 0;
+	(* keep *) wire  [                   4:0] io_slave_0_a_bits_source = 0;
+	(* keep *) wire  [                  31:0] io_slave_0_a_bits_address = 0;
+	(* keep *) wire  [       `XLEN_BYTES-1:0] io_slave_0_a_bits_mask = 0;
+	(* keep *) wire  [`RISCV_FORMAL_XLEN-1:0] io_slave_0_a_bits_data = 0;
+	(* keep *) wire                           io_slave_0_d_ready = 0;
 
 	// Rocket Tile Outputs
 
-	(* keep *) wire        io_master_0_a_valid;
-	(* keep *) wire [2:0]  io_master_0_a_bits_opcode;
-	(* keep *) wire [2:0]  io_master_0_a_bits_param;
-	(* keep *) wire [3:0]  io_master_0_a_bits_size;
-	(* keep *) wire        io_master_0_a_bits_source;
-	(* keep *) wire [31:0] io_master_0_a_bits_address;
-	(* keep *) wire [3:0]  io_master_0_a_bits_mask;
-	(* keep *) wire [31:0] io_master_0_a_bits_data;
-	(* keep *) wire        io_master_0_d_ready;
+	(* keep *) wire                          io_master_0_a_valid;
+	(* keep *) wire [                   2:0] io_master_0_a_bits_opcode;
+	(* keep *) wire [                   2:0] io_master_0_a_bits_param;
+	(* keep *) wire [                   3:0] io_master_0_a_bits_size;
+	(* keep *) wire                          io_master_0_a_bits_source;
+	(* keep *) wire [                  31:0] io_master_0_a_bits_address;
+	(* keep *) wire [       `XLEN_BYTES-1:0] io_master_0_a_bits_mask;
+	(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] io_master_0_a_bits_data;
+	(* keep *) wire                          io_master_0_d_ready;
 
-	(* keep *) wire        io_slave_0_a_ready;
-	(* keep *) wire        io_slave_0_d_valid;
-	(* keep *) wire [2:0]  io_slave_0_d_bits_opcode;
-	(* keep *) wire [2:0]  io_slave_0_d_bits_size;
-	(* keep *) wire [4:0]  io_slave_0_d_bits_source;
-	(* keep *) wire [31:0] io_slave_0_d_bits_data;
+	(* keep *) wire                          io_slave_0_a_ready;
+	(* keep *) wire                          io_slave_0_d_valid;
+	(* keep *) wire [                   2:0] io_slave_0_d_bits_opcode;
+	(* keep *) wire [                   2:0] io_slave_0_d_bits_size;
+	(* keep *) wire [                   4:0] io_slave_0_d_bits_source;
+	(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] io_slave_0_d_bits_data;
 
 `ifdef ROCKET_INIT
 	assign io_master_0_a_ready = 0;
@@ -228,25 +230,25 @@ module tilelink_ad_dummy (
 	input clock,
 	input reset,
 
-	output        channel_a_ready,
-	input         channel_a_valid,
-	input  [2:0]  channel_a_bits_opcode,
-	input  [2:0]  channel_a_bits_param,
-	input  [3:0]  channel_a_bits_size,
-	input         channel_a_bits_source,
-	input  [31:0] channel_a_bits_address,
-	input  [3:0]  channel_a_bits_mask,
-	input  [31:0] channel_a_bits_data,
+	output                          channel_a_ready,
+	input                           channel_a_valid,
+	input  [                   2:0] channel_a_bits_opcode,
+	input  [                   2:0] channel_a_bits_param,
+	input  [                   3:0] channel_a_bits_size,
+	input                           channel_a_bits_source,
+	input  [                  31:0] channel_a_bits_address,
+	input  [       `XLEN_BYTES-1:0] channel_a_bits_mask,
+	input  [`RISCV_FORMAL_XLEN-1:0] channel_a_bits_data,
 
-	input             channel_d_ready,
-	output            channel_d_valid,
-	output reg [2:0]  channel_d_bits_opcode,
-	output reg [1:0]  channel_d_bits_param,
-	output reg [3:0]  channel_d_bits_size,
-	output reg        channel_d_bits_source,
-	output reg        channel_d_bits_sink,
-	output reg [31:0] channel_d_bits_data,
-	output reg        channel_d_bits_error
+	input                               channel_d_ready,
+	output                              channel_d_valid,
+	output reg [                   2:0] channel_d_bits_opcode,
+	output reg [                   1:0] channel_d_bits_param,
+	output reg [                   3:0] channel_d_bits_size,
+	output reg                          channel_d_bits_source,
+	output reg                          channel_d_bits_sink,
+	output reg [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data,
+	output reg                          channel_d_bits_error
 );
 	reg busy = 0, ready, last;
 	reg [15:0] count, next_count;
@@ -268,24 +270,24 @@ module tilelink_ad_dummy (
 
 	localparam [2:0] opcode_d_hintack = 2;
 
-	reg [2:0]  op_opcode;
-	reg [2:0]  op_param;
-	reg [3:0]  op_size;
-	reg        op_source;
-	reg [31:0] op_address;
-	reg [3:0]  op_mask;
-	reg [31:0] op_data;
+	reg [                   2:0] op_opcode;
+	reg [                   2:0] op_param;
+	reg [                   3:0] op_size;
+	reg                          op_source;
+	reg [`RISCV_FORMAL_XLEN-1:0] op_address;
+	reg [       `XLEN_BYTES-1:0] op_mask;
+	reg [`RISCV_FORMAL_XLEN-1:0] op_data;
 
 	`rvformal_rand_reg delay_a_nd;
 	`rvformal_rand_reg delay_d_nd;
 
-	`rvformal_rand_reg [2:0]  channel_d_bits_opcode_nd;
-	`rvformal_rand_reg [1:0]  channel_d_bits_param_nd;
-	`rvformal_rand_reg [3:0]  channel_d_bits_size_nd;
-	`rvformal_rand_reg        channel_d_bits_source_nd;
-	`rvformal_rand_reg        channel_d_bits_sink_nd;
-	`rvformal_rand_reg [31:0] channel_d_bits_data_nd;
-	`rvformal_rand_reg        channel_d_bits_error_nd;
+	`rvformal_rand_reg [                   2:0] channel_d_bits_opcode_nd;
+	`rvformal_rand_reg [                   1:0] channel_d_bits_param_nd;
+	`rvformal_rand_reg [                   3:0] channel_d_bits_size_nd;
+	`rvformal_rand_reg                          channel_d_bits_source_nd;
+	`rvformal_rand_reg                          channel_d_bits_sink_nd;
+	`rvformal_rand_reg [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data_nd;
+	`rvformal_rand_reg                          channel_d_bits_error_nd;
 
 `ifdef FAST_MEM
 	wire delay_a = 0, delay_d = 0;

@@ -7,7 +7,7 @@ export MAKEFLAGS="-j$(nproc)"
 export RISCV=$PWD/riscv-tools
 
 enable_compressed=true
-enable_64bits=false
+enable_64bits=true
 
 if [ ! -d rocket-chip ]; then
 	git clone https://github.com/freechipsproject/rocket-chip
@@ -24,7 +24,7 @@ if [ ! -d rocket-chip ]; then
 	fi
 
 	if ! $enable_64bits; then
-		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { s/WithNBigCores(1)/With1TinyCore/; }' src/main/scala/system/Configs.scala
+		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /freechips.rocketchip.tile.XLen/ s,^,//,; }' src/main/scala/system/Configs.scala
 	fi
 
 	sed -i '/^module/ s/\([A-Z]\+=\)/parameter &/g' vsrc/plusarg_reader.v
@@ -207,4 +207,33 @@ write_ilang rocket-syn/rocket-hier.il
 EOT
 
 yosys -v2 -l rocket-syn/rocket-syn.log rocket-syn/rocket-syn.ys
+
+cat > checks.cfg <<EOT
+[options]
+isa rv$(if $enable_64bits; then echo  64; else echo  32; fi)i$(if $enable_compressed; then echo c; fi)
+nret 2
+
+insn          35
+reg     25    35
+pc_fwd  25    35
+pc_bwd  25    35
+unique  25 30 35
+causal  25    35
+# hang  25    50
+
+[defines]
+\`define ROCKET_NORESET
+// \`define FAST_MEM
+// \`define NO_SYSTEM
+// \`define NO_LDX0
+
+[script-sources]
+read_verilog -sv @basedir@/tests/coverage/riscv_rv32i_insn.v
+read_verilog -sv @basedir@/cores/@core@/wrapper.sv
+read_ilang @basedir@/cores/@core@/@core@-syn/@ilang_file@
+
+[filter-checks]
++ insn_(lb|lbu|lh|lhu|lw|c_lw|c_lwsp)_ch1
+- insn_.*_ch1
+EOT
 
