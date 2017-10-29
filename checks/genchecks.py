@@ -38,8 +38,9 @@ blackbox = False
 cfgname = "checks"
 basedir = "%s/../.." % os.getcwd()
 corename = os.getcwd().split("/")[-1]
-smt_solver = "yices"
+smt_solver = "boolector"
 use_aiger = False
+dumpsmt2 = False
 sbycmd = "sby"
 config = dict()
 
@@ -163,7 +164,7 @@ if use_aiger:
     hargs["engine"] = "abc bmc3"
     hargs["ilang_file"] = corename + "-gates.il"
 else:
-    hargs["engine"] = "smtbmc --presat --unroll %s" % smt_solver
+    hargs["engine"] = "smtbmc --presat --unroll %s%s" % ("--dumpsmt2 " if dumpsmt2 else "", smt_solver)
     hargs["ilang_file"] = corename + "-hier.il"
 
 def test_disabled(check):
