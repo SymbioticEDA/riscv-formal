@@ -1013,6 +1013,17 @@ isa_propagate("rv32i", "rv32im")
 isa_propagate("rv32ic", "rv32imc")
 isa_propagate("rv32im", "rv32imc")
 
+isa_propagate("rv32i", "rv64i")
+isa_propagate("rv32ic", "rv64ic")
+isa_propagate("rv32im", "rv64im")
+isa_propagate("rv32imc", "rv64imc")
+
+isa_propagate("rv64i", "rv64ic")
+isa_propagate("rv64i", "rv64im")
+
+isa_propagate("rv64ic", "rv64imc")
+isa_propagate("rv64im", "rv64imc")
+
 ## ISA Listings and ISA Models
 
 for isa, insns in isa_database.items():
