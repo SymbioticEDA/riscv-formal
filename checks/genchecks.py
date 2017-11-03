@@ -156,6 +156,7 @@ hargs["core"] = corename
 hargs["nret"] = nret
 hargs["xlen"] = xlen
 hargs["ilen"] = ilen
+hargs["append"] = 0
 
 instruction_checks = set()
 consistency_checks = set()
@@ -194,7 +195,7 @@ def check_insn(insn, chanidx):
         print_hfmt(sby_file, """
                 : [options]
                 : mode bmc
-                : append 5
+                : append @append@
                 : tbtop wrapper.uut
                 : depth @depth_plus@
                 :
@@ -282,7 +283,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
         print_hfmt(sby_file, """
                 : [options]
                 : mode bmc
-                : append 5
+                : append @append@
                 : tbtop wrapper.uut
                 : depth @depth_plus@
                 :
