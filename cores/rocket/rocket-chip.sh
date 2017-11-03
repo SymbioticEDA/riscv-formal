@@ -223,9 +223,10 @@ causal  25    35
 
 [defines]
 \`define ROCKET_NORESET
-// \`define FAST_MEM
+\`define NO_MISA
 // \`define NO_SYSTEM
 // \`define NO_LDX0
+// \`define FAST_MEM
 
 [script-sources]
 read_verilog -sv @basedir@/tests/coverage/riscv_rv32i_insn.v
