@@ -238,3 +238,4 @@ read_ilang @basedir@/cores/@core@/@core@-syn/@ilang_file@
 - insn_.*_ch1
 EOT
 
+python3 ../../checks/genchecks.py

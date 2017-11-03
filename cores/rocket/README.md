@@ -7,20 +7,19 @@ Quickstart guide:
 First install Yosys, SymbiYosys, and the solvers. See
 [here](http://symbiyosys.readthedocs.io/en/latest/quickstart.html#installing)
 for instructions. Then build the version of rocket-chip with RVFI support and
-rsicv-tools:
+rsicv-tools, and generate the formal checks:
 
 ```
 sudo apt-get install autoconf automake autotools-dev curl \
 		device-tree-compiler libmpc-dev libmpfr-dev \
 		libgmp-dev gawk build-essential bison flex \
 		texinfo gperf libtool patchutils bc zlib1g-dev
-bash rocket-chip.sh
+bash generate.sh
 ```
 
-Then generate the formal checks and run them:
+Then run the formal checks:
 
 ```
-python3 ../../checks/genchecks.py
 make -C checks -j$(nproc)
 ```
 
