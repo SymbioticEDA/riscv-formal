@@ -191,10 +191,10 @@ module rvfi_wrapper (
 
 `ifdef NO_MISA
 	always @* begin
-		if (rvfi_valid[0] && rvfi_insn[13:12] && rvfi_insn[6:0] == 1110011) begin
+		if (rvfi_valid[0] && rvfi_insn[13:12] && rvfi_insn[6:0] == 7'b1110011) begin
 			assume (rvfi_insn[31:20] != 12'h301);
 		end
-		if (rvfi_valid[1] && rvfi_insn[45:44] && rvfi_insn[38:32] == 1110011) begin
+		if (rvfi_valid[1] && rvfi_insn[45:44] && rvfi_insn[38:32] == 7'b1110011) begin
 			assume (rvfi_insn[63:52] != 12'h301);
 		end
 	end
