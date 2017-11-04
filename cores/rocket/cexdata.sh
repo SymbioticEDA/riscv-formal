@@ -12,6 +12,7 @@ for x in checks/*/FAIL; do
 	x=${x#checks/}
 	cp checks/$x/logfile.txt cexdata/$x.log
 	cp checks/$x/engine_0/trace.vcd cexdata/$x.vcd
+	python3 disasm.py cexdata/$x.vcd > cexdata/$x.asm
 done
 
 rm -f cexdata.zip

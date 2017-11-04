@@ -94,6 +94,6 @@ else:
             else:
                 print(".word 0x%08x # %d" % (tv_insn, tv_order), file=f)
 
-system("riscv32-unknown-elf-gcc -c disasm.s")
-system("riscv32-unknown-elf-objdump -d -M numeric,no-aliases disasm.o")
+system("riscv-tools/bin/riscv32-unknown-elf-gcc -c disasm.s")
+system("riscv-tools/bin/riscv32-unknown-elf-objdump -d -M numeric,no-aliases disasm.o")
 
