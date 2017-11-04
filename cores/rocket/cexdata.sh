@@ -6,6 +6,7 @@ rm -rf cexdata
 mkdir cexdata
 
 cp rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v cexdata/
+( cd rocket-chip; git diff src/main/scala/system/Configs.scala; ) > cexdata/Configs.scala.diff
 
 for x in checks/*/FAIL; do
 	x=${x%/FAIL}
