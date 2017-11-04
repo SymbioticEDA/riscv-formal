@@ -13,7 +13,8 @@ rsicv-tools, and generate the formal checks:
 sudo apt-get install autoconf automake autotools-dev curl \
 		device-tree-compiler libmpc-dev libmpfr-dev \
 		libgmp-dev gawk build-essential bison flex \
-		texinfo gperf libtool patchutils bc zlib1g-dev
+		texinfo gperf libtool patchutils bc zlib1g-dev \
+		libusb-1.0-0-dev openjdk-8-jdk-headless
 bash generate.sh
 ```
 
