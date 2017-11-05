@@ -1,0 +1,123 @@
+[*]
+[*] GTKWave Analyzer v3.3.58 (w)1999-2014 BSI
+[*] Sat Nov  4 18:00:06 2017
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/spinalvm/hdl/formal/riscv-formal/cores/VexRiscv/reg.gtkw"
+[timestart] 0
+[size] 1784 950
+[pos] -1 -1
+*-6.778252 306 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] rvfi_testbench.
+[treeopen] rvfi_testbench.checker_inst.
+[treeopen] rvfi_testbench.wrapper.
+[sst_width] 336
+[signals_width] 441
+[sst_expanded] 1
+[sst_vpaned_height] 468
+@200
+-
+-PicoRV32
+-
+-
+-RVFI
+@28
+rvfi_testbench.checker_inst.reset
+rvfi_testbench.checker_inst.check
+@200
+-
+@29
+rvfi_testbench.checker_inst.rvfi_valid
+@28
+rvfi_testbench.checker_inst.rvfi_trap
+rvfi_testbench.checker_inst.rvfi_intr
+rvfi_testbench.checker_inst.rvfi_halt
+@200
+-
+@24
+rvfi_testbench.checker_inst.rvfi_order[63:0]
+@800022
+rvfi_testbench.checker_inst.rvfi_insn[31:0]
+@28
+(0)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(1)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(2)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(3)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(4)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(5)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(6)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(7)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(8)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(9)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(10)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(11)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(12)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(13)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(14)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(15)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(16)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(17)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(18)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(19)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(20)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(21)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(22)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(23)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(24)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(25)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(26)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(27)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(28)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(29)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(30)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+(31)rvfi_testbench.checker_inst.rvfi_insn[31:0]
+@1001200
+-group_end
+@22
+rvfi_testbench.checker_inst.rvfi_pc_rdata[31:0]
+rvfi_testbench.checker_inst.rvfi_pc_wdata[31:0]
+@200
+-
+@22
+rvfi_testbench.checker_inst.rvfi_rs1_addr[4:0]
+rvfi_testbench.checker_inst.rvfi_rs2_addr[4:0]
+rvfi_testbench.checker_inst.rvfi_rd_addr[4:0]
+@200
+-
+@22
+rvfi_testbench.checker_inst.rvfi_rs1_rdata[31:0]
+rvfi_testbench.checker_inst.rvfi_rs2_rdata[31:0]
+rvfi_testbench.checker_inst.rvfi_rd_wdata[31:0]
+@200
+-
+@22
+rvfi_testbench.checker_inst.rvfi_mem_addr[31:0]
+rvfi_testbench.checker_inst.rvfi_mem_rmask[3:0]
+rvfi_testbench.checker_inst.rvfi_mem_wmask[3:0]
+rvfi_testbench.checker_inst.rvfi_mem_rdata[31:0]
+rvfi_testbench.checker_inst.rvfi_mem_wdata[31:0]
+@200
+-
+@800200
+-spec
+@1000200
+-spec
+@22
+rvfi_testbench.checker_inst.register_shadow[31:0]
+rvfi_testbench.wrapper.uut.writeBack_REGFILE_WRITE_DATA[31:0]
+@28
+rvfi_testbench.wrapper.uut.writeBack_REGFILE_WRITE_VALID
+@22
+rvfi_testbench.wrapper.uut.RegFilePlugin_regFile_port2_address[4:0]
+rvfi_testbench.wrapper.uut.RegFilePlugin_regFile_port2_data[31:0]
+@28
+rvfi_testbench.wrapper.uut.RegFilePlugin_regFile_port2_enable
+rvfi_testbench.wrapper.uut.decode_RS1_USE
+rvfi_testbench.wrapper.uut.decode_RS2_USE
+rvfi_testbench.wrapper.uut.decode_FomalPlugin_illegalInstruction
+@22
+rvfi_testbench.wrapper.uut.decode_INSTRUCTION[31:0]
+@28
+rvfi_testbench.wrapper.uut.decode_LEGAL_INSTRUCTION
+[pattern_trace] 1
+[pattern_trace] 0
