@@ -30,9 +30,9 @@ module rvfi_wrapper (
 		.reset    (reset   ),
 
 		.iBus_cmd_valid (iBus_cmd_valid),
-		.iBus_cmd_ready (iBus_cmd_ready),
+		.iBus_cmd_ready (1'b1),
 		.iBus_cmd_payload_pc  (iBus_cmd_payload_pc ),
-		.iBus_rsp_ready(iBus_rsp_ready),
+		.iBus_rsp_ready(1'b1),
 		.iBus_rsp_inst (iBus_rsp_inst),
 		.iBus_rsp_error(1'b0),
 
@@ -41,7 +41,7 @@ module rvfi_wrapper (
 		.dBus_cmd_payload_address(dBus_cmd_payload_address),
 		.dBus_cmd_payload_data(dBus_cmd_payload_data),
 		.dBus_cmd_payload_size(dBus_cmd_payload_size),
-		.dBus_cmd_ready(dBus_cmd_ready),
+		.dBus_cmd_ready(1'b1),
 		.dBus_rsp_ready(1'b1),
 		.dBus_rsp_data(dBus_rsp_data),
 		.dBus_rsp_error(1'b0),
