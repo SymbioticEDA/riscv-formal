@@ -50,10 +50,11 @@ module rvfi_wrapper (
 	);
 
 `ifdef VEXRISCV_FAIRNESS
-	reg [2:0] mem_wait = 0;
+	//reg [2:0] mem_wait = 0;
 	always @(posedge clock) begin
-		mem_wait <= {mem_wait, mem_valid && !mem_ready};
-		restrict(~mem_wait || trap);
+		//mem_wait <= {mem_wait, mem_valid && !mem_ready};
+		//restrict(~mem_wait || trap);
+		restrict(~rvfi_trap)
 	end
 `endif
 endmodule
