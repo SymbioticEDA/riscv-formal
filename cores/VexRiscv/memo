@@ -1,1 +1,3 @@
 export test=insn_beq_ch0;rm -r checks/$test; make -C checks -j$(nproc) $test/PASS;python3 disasm.py checks/$test/engine_0/trace.vcd
+export test=liveness_ch0;rm -r checks/$test; make -C checks -j$(nproc) $test/PASS;python3 disasm.py checks/$test/engine_0/trace.vcd
+python3 ../../checks/genchecks.py; make -C checks -j$(nproc)
