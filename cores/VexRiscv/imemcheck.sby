@@ -1,0 +1,21 @@
+[options]
+mode bmc
+append 0
+tbtop testbench.uut
+depth 22
+
+[engines]
+smtbmc --presat --unroll boolector
+
+[script]
+read_verilog -sv imemcheck.sv
+read_verilog /home/spinalvm/hdl/formal/riscv-formal/cores/VexRiscv/VexRiscv.v
+prep -nordff -top testbench
+
+[files]
+imemcheck.sv
+/home/spinalvm/hdl/formal/riscv-formal/cores/picorv32/../../checks/rvfi_macros.vh
+/home/spinalvm/hdl/formal/riscv-formal/cores/picorv32/../../checks/rvfi_channel.sv
+/home/spinalvm/hdl/formal/riscv-formal/cores/picorv32/../../checks/rvfi_testbench.sv
+/home/spinalvm/hdl/formal/riscv-formal/cores/picorv32/../../checks/rvfi_imem_check.sv
+

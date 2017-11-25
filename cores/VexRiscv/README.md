@@ -12,6 +12,9 @@ All standards checks are passing
 - Causality
 - Liveness
 
+Other tests passing :
+- Instruction Memory check
+
 ### Quickstart guide:
 
 First install Yosys, SymbiYosys, and the solvers. See [here](http://symbiyosys.readthedocs.io/en/latest/quickstart.html#installing)
@@ -34,9 +37,15 @@ python3 ../../checks/genchecks.py
 export test=insn_beq_ch0; rm -r checks/$test; make -C checks -j$(nproc) $test/PASS; python3 disasm.py checks/$test/engine_0/trace.vcd
 ```
 
+
+Running the instruction memory check : 
+
+```
+sby -f imemcheck.sby
+```
+
 ### Todo:
 - Integrate others VexRiscv configurations into the framework
-- Add Instruction Memcheck check
 - Add Data Memcheck check
 - Add Checking for equivalence of core with and without RVFI check
 - Add Complete check
