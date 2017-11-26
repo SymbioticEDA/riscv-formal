@@ -12,7 +12,7 @@ All standards checks are passing
 - Causality
 - Liveness
 
-Other tests passing :
+Others tests passing :
 - Instruction Memory check
 - Data Memory check
 
@@ -21,7 +21,7 @@ Other tests passing :
 First install Yosys, SymbiYosys, and the solvers. See [here](http://symbiyosys.readthedocs.io/en/latest/quickstart.html#installing)
 for instructions.
 
-To run all checks:
+To run all standards checks:
 
 ```
 python3 ../../checks/genchecks.py
@@ -39,7 +39,7 @@ export test=insn_beq_ch0; rm -r checks/$test; make -C checks -j$(nproc) $test/PA
 ```
 
 
-Running the memory checks : 
+To run imem/dmem checks checks : 
 
 ```
 sby -f imemcheck.sby
