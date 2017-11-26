@@ -3,7 +3,7 @@ riscv-formal proofs for VexRiscv
 ================================
 
 ### Current state:
-Test a simple VexRiscv configuration (https://github.com/SpinalHDL/VexRiscv/blob/formal/src/main/scala/vexriscv/demo/FormalSimple.scala)
+Test a simple VexRiscv configuration (https://github.com/SpinalHDL/VexRiscv/blob/master/src/main/scala/vexriscv/demo/FormalSimple.scala)
 
 All standards checks are passing
 - Instruction Checks
@@ -14,6 +14,7 @@ All standards checks are passing
 
 Other tests passing :
 - Instruction Memory check
+- Data Memory check
 
 ### Quickstart guide:
 
@@ -38,15 +39,15 @@ export test=insn_beq_ch0; rm -r checks/$test; make -C checks -j$(nproc) $test/PA
 ```
 
 
-Running the instruction memory check : 
+Running the memory checks : 
 
 ```
 sby -f imemcheck.sby
+sby -f dmemcheck.sby
 ```
 
 ### Todo:
 - Integrate others VexRiscv configurations into the framework
-- Add Data Memcheck check
 - Add Checking for equivalence of core with and without RVFI check
 - Add Complete check
 - Add Cover check
