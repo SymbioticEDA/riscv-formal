@@ -7,7 +7,7 @@ export MAKEFLAGS="-j$(nproc)"
 export RISCV=$PWD/riscv-tools
 
 enable_compressed=true
-enable_64bits=false
+enable_64bits=true
 
 if [ ! -d rocket-chip ]; then
 	git clone https://github.com/freechipsproject/rocket-chip
@@ -223,7 +223,7 @@ causal  25    35
 
 [defines]
 \`define ROCKET_NORESET
-\`define NO_MISA
+\`define $(if $enable_64bits; then echo NO_MISA; else echo NO_UNALIGNED_MISA; fi)
 // \`define NO_SYSTEM
 // \`define NO_LDX0
 // \`define FAST_MEM

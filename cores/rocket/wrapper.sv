@@ -200,6 +200,17 @@ module rvfi_wrapper (
 	end
 `endif
 
+`ifdef NO_UNALIGNED_MISA
+	always @* begin
+		if (rvfi_valid[0] && rvfi_insn[13:12] && rvfi_insn[6:0] == 7'b1110011) begin
+			assume (rvfi_insn[31:20] != 12'h301 || rvfi_pc_rdata[0 +: 2] == 0);
+		end
+		if (rvfi_valid[1] && rvfi_insn[45:44] && rvfi_insn[38:32] == 7'b1110011) begin
+			assume (rvfi_insn[63:52] != 12'h301 || rvfi_pc_rdata[`RISCV_FORMAL_XLEN +: 2] == 0);
+		end
+	end
+`endif
+
 `ifdef NO_SYSTEM
 	wire riscv_rv32i_valid_ch0;
 	wire riscv_rv32i_valid_ch1;
