@@ -1,0 +1,20 @@
+[options]
+mode bmc
+append 0
+tbtop testbench.uut
+depth 22
+
+[engines]
+smtbmc --presat --unroll boolector
+
+[script]
+read_verilog -sv imemcheck.sv
+read_verilog ../../VexRiscv.v
+prep -nordff -top testbench
+
+[files]
+imemcheck.sv
+../../checks/rvfi_macros.vh
+../../checks/rvfi_channel.sv
+../../checks/rvfi_testbench.sv
+../../checks/rvfi_imem_check.sv
