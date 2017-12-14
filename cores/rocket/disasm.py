@@ -6,19 +6,22 @@ from sys import argv, exit
 from getopt import getopt
 
 mode_d = False
+mode_64 = False
 
 def usage():
-    print("Usage: %s [-d] <vcd-file>" % argv[0])
+    print("Usage: %s [-d] [--64] <vcd-file>" % argv[0])
     exit(1)
 
 try:
-    opts, args = getopt(argv[1:], "d")
+    opts, args = getopt(argv[1:], "d", ["64"])
 except:
     usage()
 
 for o, a in opts:
     if o == "-d":
         mode_d = True
+    elif o == "--64":
+        mode_64 = True
     else:
         usage()
 
@@ -94,6 +97,10 @@ else:
             else:
                 print(".word 0x%08x # %d" % (tv_insn, tv_order), file=f)
 
-system("riscv-tools/bin/riscv32-unknown-elf-gcc -c disasm.s")
-system("riscv-tools/bin/riscv32-unknown-elf-objdump -d -M numeric,no-aliases disasm.o")
+if mode_64:
+    system("riscv-tools/bin/riscv64-unknown-elf-gcc -c disasm.s")
+    system("riscv-tools/bin/riscv64-unknown-elf-objdump -d -M numeric,no-aliases disasm.o")
+else:
+    system("riscv-tools/bin/riscv32-unknown-elf-gcc -c disasm.s")
+    system("riscv-tools/bin/riscv32-unknown-elf-objdump -d -M numeric,no-aliases disasm.o")
 
