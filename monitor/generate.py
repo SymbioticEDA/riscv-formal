@@ -283,13 +283,14 @@ for chidx in range(channels):
 
 if not nopccheck or not noregscheck:
     for chidx in range(channels):
+        rob_data_width = 3*5 + 5*xlen + 2
         print("  wire rob_i%d_valid;" % chidx)
         print("  wire [63:0] rob_i%d_order;" % chidx)
-        print("  wire [%d:0] rob_i%d_data;" % (3*5 + 5*xlen, chidx))
+        print("  wire [%d:0] rob_i%d_data;" % (rob_data_width-1, chidx))
         print()
         print("  wire rob_o%d_valid;" % chidx)
         print("  wire [63:0] rob_o%d_order;" % chidx)
-        print("  wire [%d:0] rob_o%d_data;" % (3*5 + 5*xlen, chidx))
+        print("  wire [%d:0] rob_o%d_data;" % (rob_data_width-1, chidx))
         print()
         print("  wire ro%d_rvfi_valid = rob_o%d_valid;" % (chidx, chidx))
         print("  assign rob_i%d_valid = ch%d_rvfi_valid;" % (chidx, chidx))
@@ -300,7 +301,7 @@ if not nopccheck or not noregscheck:
 
         cursor = 0
         for n, w in [("rs1_addr", 5), ("rs2_addr", 5), ("rd_addr", 5), ("rs1_rdata", xlen), ("rs2_rdata", xlen),
-                ("rd_wdata", xlen), ("pc_rdata", xlen), ("pc_wdata", xlen), ("intr", 1)]:
+                ("rd_wdata", xlen), ("pc_rdata", xlen), ("pc_wdata", xlen), ("intr", 1), ("trap", 1)]:
             print("  wire [%d:0] ro%d_rvfi_%s = rob_o%d_data[%d:%d];" % (w-1, chidx, n, chidx, cursor+w-1, cursor))
             print("  assign rob_i%d_data[%d:%d] = ch%d_rvfi_%s;" % (chidx, cursor+w-1, cursor, chidx, n))
             print()
@@ -338,11 +339,13 @@ if not nopccheck or not noregscheck:
 
 if not nopccheck:
     print("  reg shadow_pc_valid;")
+    print("  reg shadow_pc_trap;")
     print("  reg [%d:0] shadow_pc;" % (xlen-1))
     print()
 
     for chidx in range(channels):
         print("  reg shadow%d_pc_valid;" % (chidx))
+        print("  reg shadow%d_pc_trap;" % (chidx))
         print("  reg [%d:0] shadow%d_pc_rdata;" % (xlen-1, chidx))
         print()
 
@@ -359,7 +362,7 @@ if not nopccheck:
             print("      $display(\"-------- RVFI Monitor error %%0d in reordered channel %d: %%m at time %%0t --------\", code, $time);" % (chidx))
             print("      $display(\"Error message: %0s\", msg);")
             for p in """rvfi_valid rvfi_order rvfi_rs1_addr rvfi_rs2_addr rvfi_rs1_rdata rvfi_rs2_rdata
-                        rvfi_rd_addr rvfi_rd_wdata rvfi_pc_rdata rvfi_pc_wdata rvfi_intr""".split():
+                        rvfi_rd_addr rvfi_rd_wdata rvfi_pc_rdata rvfi_pc_wdata rvfi_intr rvfi_trap""".split():
                 print("      $display(\"%s = %%x\", ro%d_%s);" % (p, chidx, p))
             for p in """pc_valid pc_rdata""".split():
                 print("      $display(\"shadow_%s = %%x\", shadow%d_%s);" % (p, chidx, p))
@@ -374,11 +377,13 @@ if not nopccheck:
 
         print("  always @* begin")
         print("    shadow%d_pc_valid = shadow_pc_valid;" % (chidx))
+        print("    shadow%d_pc_trap = shadow_pc_trap;" % (chidx))
         print("    shadow%d_pc_rdata = shadow_pc;" % (chidx))
 
         for i in range(chidx):
             print("    if (!reset && ro%d_rvfi_valid) begin" % (i))
-            print("      shadow%d_pc_valid = 1;" % (chidx))
+            print("      shadow%d_pc_valid = !ro%d_rvfi_trap;" % (chidx, chidx))
+            print("      shadow%d_pc_trap = ro%d_rvfi_trap;" % (chidx, chidx))
             print("      shadow%d_pc_rdata = ro%d_rvfi_pc_wdata;" % (chidx, i))
             print("    end")
 
@@ -392,6 +397,7 @@ if not nopccheck:
 
     print("    if (reset) begin")
     print("      shadow_pc_valid <= 0;")
+    print("      shadow_pc_trap <= 0;")
     print("    end")
 
     for chidx in range(channels):
@@ -399,7 +405,11 @@ if not nopccheck:
         print("      if (shadow%d_pc_valid && shadow%d_pc_rdata != ro%d_rvfi_pc_rdata && !ro%d_rvfi_intr) begin" % (chidx, chidx, chidx, chidx))
         print("        ro%d_handle_error_p(%d, \"mismatch with shadow pc\");" % (chidx, 100*(1+chidx)+30))
         print("      end")
-        print("      shadow_pc_valid <= 1;")
+        print("      if (shadow%d_pc_valid && shadow%d_pc_trap && !ro%d_rvfi_intr) begin" % (chidx, chidx, chidx))
+        print("        ro%d_handle_error_p(%d, \"expected intr after trap\");" % (chidx, 100*(1+chidx)+33))
+        print("      end")
+        print("      shadow_pc_valid <= !ro%d_rvfi_trap;" % (chidx))
+        print("      shadow_pc_trap <= ro%d_rvfi_trap;" % (chidx))
         print("      shadow_pc <= ro%d_rvfi_pc_wdata;" % (chidx))
         print("    end")
 
@@ -431,7 +441,7 @@ if not noregscheck:
             print("      $display(\"-------- RVFI Monitor error %%0d in reordered channel %d: %%m at time %%0t --------\", code, $time);" % (chidx))
             print("      $display(\"Error message: %0s\", msg);")
             for p in """rvfi_valid rvfi_order rvfi_rs1_addr rvfi_rs2_addr rvfi_rs1_rdata rvfi_rs2_rdata
-                        rvfi_rd_addr rvfi_rd_wdata rvfi_pc_rdata rvfi_pc_wdata rvfi_intr""".split():
+                        rvfi_rd_addr rvfi_rd_wdata rvfi_pc_rdata rvfi_pc_wdata rvfi_intr rvfi_trap""".split():
                 print("      $display(\"%s = %%x\", ro%d_%s);" % (p, chidx, p))
             for p in """rs1_valid rs1_rdata rs2_valid rs2_rdata""".split():
                 print("      $display(\"shadow_%s = %%x\", shadow%d_%s);" % (p, chidx, p))
@@ -505,10 +515,10 @@ if not nopccheck or not noregscheck:
     for chidx in range(channels):
         print("    input i%d_valid," % (chidx))
         print("    input [63:0] i%d_order," % (chidx))
-        print("    input [%d:0] i%d_data," % (3*5 + 5*xlen, chidx))
+        print("    input [%d:0] i%d_data," % (rob_data_width-1, chidx))
         print("    output reg o%d_valid," % (chidx))
         print("    output reg [63:0] o%d_order," % (chidx))
-        print("    output reg [%d:0] o%d_data," % (3*5 + 5*xlen, chidx))
+        print("    output reg [%d:0] o%d_data," % (rob_data_width-1, chidx))
     print("  output reg [15:0] errcode")
     print(");")
 
@@ -522,7 +532,7 @@ if not nopccheck or not noregscheck:
     else:
         orderbits = ceil(log2(robdepth))
 
-        print("  reg [%d:0] buffer [0:%d];" % (64 + 3*5 + 5*xlen, robdepth-1))
+        print("  reg [%d:0] buffer [0:%d];" % (64+rob_data_width-1, robdepth-1))
         print("  reg [%d:0] valid;" % (robdepth-1))
         print("  reg [63:0] cursor;")
         print("  reg continue_flag;")
@@ -551,7 +561,7 @@ if not nopccheck or not noregscheck:
             print("          errcode <= 61000 + cursor[7:0];")
             print("        o%d_valid <= 1;" % (chidx))
             print("        o%d_order <= buffer[cursor[%d:0]][63:0];" % (chidx, orderbits-1))
-            print("        o%d_data <= buffer[cursor[%d:0]][%d:64];" % (chidx, orderbits-1, 64 + 3*5 + 5*xlen))
+            print("        o%d_data <= buffer[cursor[%d:0]][%d:64];" % (chidx, orderbits-1, 64+rob_data_width-1))
             print("        valid[cursor[%d:0]] <= 0;" % (orderbits-1))
             print("        cursor = cursor + 1;")
             print("      end else begin")
