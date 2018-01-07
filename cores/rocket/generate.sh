@@ -7,7 +7,7 @@ export MAKEFLAGS="-j$(nproc)"
 export RISCV=$PWD/riscv-tools
 
 enable_compressed=true
-enable_64bits=true
+enable_64bits=false
 
 if [ ! -d rocket-chip ]; then
 	git clone https://github.com/freechipsproject/rocket-chip
@@ -118,9 +118,9 @@ rename rvfi_mon_rvfi_valid     rvfi_valid
 delete rvfi_mon
 cd ..
 
-# ---- Create RVFI on RocketTile_rocket ----
+# ---- Create RVFI on RocketTile_tile ----
 
-cd RocketTile_rocket
+cd RocketTile_tile
 
 add -output rvfi_insn       $(if $enable_64bits; then echo  64; else echo  64; fi)
 add -output rvfi_mem_addr   $(if $enable_64bits; then echo 128; else echo  64; fi)
@@ -179,8 +179,8 @@ sim -clock clock -reset reset -rstlen 10 -zinit -w -vcd rocket-syn/init.vcd -n 3
 
 # ---- Generate netlists ----
 
-rename rvfi_wrapper.uut RocketTile_rocket
-hierarchy -top RocketTile_rocket
+rename rvfi_wrapper.uut RocketTile_tile
+hierarchy -top RocketTile_tile
 uniquify
 hierarchy
 
