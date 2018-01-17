@@ -7,7 +7,7 @@ export MAKEFLAGS="-j$(nproc)"
 export RISCV=$PWD/riscv-tools
 
 enable_compressed=true
-enable_64bits=false
+enable_64bits=true
 
 if [ ! -d rocket-chip ]; then
 	git clone https://github.com/freechipsproject/rocket-chip
@@ -226,6 +226,7 @@ causal  25    35
 // \`define NO_SYSTEM
 // \`define NO_LDX0
 // \`define FAST_MEM
+\`define RISCV_FORMAL_VALIDADDR(addr) ((addr >> 34) == 0)
 
 [script-sources]
 read_verilog -sv @basedir@/tests/coverage/riscv_rv32i_insn.v
