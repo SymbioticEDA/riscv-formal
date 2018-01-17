@@ -74,10 +74,10 @@ module rvfi_insn_check (
 				if (!spec_trap) begin
 					assert(spec_rd_addr == rd_addr);
 					assert(spec_rd_wdata == rd_wdata);
-					assert(spec_pc_wdata == pc_wdata);
+					assert(`rvformal_addr_eq(spec_pc_wdata, pc_wdata));
 
 					if (spec_mem_wmask || spec_mem_rmask) begin
-						assert(spec_mem_addr == mem_addr);
+						assert(`rvformal_addr_eq(spec_mem_addr, mem_addr));
 					end
 
 					for (i = 0; i < `RISCV_FORMAL_XLEN/8; i = i+1) begin

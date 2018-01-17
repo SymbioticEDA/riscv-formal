@@ -11,6 +11,13 @@
 `endif
 `endif
 
+`ifndef RISCV_FORMAL_VALIDADDR
+`define RISCV_FORMAL_VALIDADDR(addr) 1
+`endif
+
+`define rvformal_addr_eq(a, b) \
+((`RISCV_FORMAL_VALIDADDR(a) == `RISCV_FORMAL_VALIDADDR(b)) && (!`RISCV_FORMAL_VALIDADDR(a) || (a == b)))
+
 `define RVFI_WIRES                                                                   \
 (* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid;      \
 (* keep *) wire [`RISCV_FORMAL_NRET *                 64   - 1 : 0] rvfi_order;      \

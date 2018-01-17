@@ -17,7 +17,7 @@ module rvfi_dmem_check (
 			dmem_written <= 0;
 		end else begin
 			for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin
-				if (rvfi_valid[channel_idx] && rvfi_mem_addr[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN] == dmem_addr) begin
+				if (rvfi_valid[channel_idx] && rvfi_mem_addr[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN] == dmem_addr && `RISCV_FORMAL_VALIDADDR(dmem_addr)) begin
 					for (i = 0; i < `RISCV_FORMAL_XLEN/8; i = i+1) begin
 						if (enable && rvfi_mem_rmask[channel_idx*`RISCV_FORMAL_XLEN/8 + i] && dmem_written[i])
 							assert(dmem_shadow[i*8 +: 8] == rvfi_mem_rdata[i*8 +: 8]);

@@ -22,7 +22,7 @@ module rvfi_pc_bwd_check (
 				assume(rvfi_valid[`RISCV_FORMAL_CHANNEL_IDX]);
 				assume(insn_order == rvfi_order[64*`RISCV_FORMAL_CHANNEL_IDX +: 64]);
 				if (expect_pc_valid) begin
-					assert(expect_pc == rvfi_pc_wdata[`RISCV_FORMAL_CHANNEL_IDX*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN]);
+					assert(`rvformal_addr_eq(expect_pc, rvfi_pc_wdata[`RISCV_FORMAL_CHANNEL_IDX*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN]));
 				end
 			end else begin
 				for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin

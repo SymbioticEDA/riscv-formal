@@ -85,6 +85,12 @@ When checking for consistency of the stream of retired instructions (such as
 "regcheck") it is possible to black-box the actual ALU operations. This macro
 may be used in the core under test to black-box the ALU.
 
+RISCV_FORMAL_VALIDADDR(addr)
+----------------------------
+
+Set this to an expression of addr that evaluates to 1 when the given address
+is a valid physical address for the processor under test.
+
 
 Macros defined by rvfi_macros.vh
 ================================
