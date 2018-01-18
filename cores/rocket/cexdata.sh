@@ -5,8 +5,16 @@ set -ex
 rm -rf cexdata
 mkdir cexdata
 
-cp rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v cexdata/
-( cd rocket-chip; git diff src/main/scala/system/Configs.scala; ) > cexdata/Configs.scala.diff
+{
+	echo "rocket-chip version:"
+	git -C rocket-chip log -n1 --format=fuller
+	echo
+	echo "riscv-formal version:"
+	git log -n1 --format=fuller
+} > cexdata/version.txt
+
+cp rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v cexdata/DefaultConfigWithRVFIMonitors.v
+git -C rocket-chip diff src/main/scala/system/Configs.scala > cexdata/Configs.scala.diff
 
 for x in checks/*/FAIL; do
 	x=${x%/FAIL}
