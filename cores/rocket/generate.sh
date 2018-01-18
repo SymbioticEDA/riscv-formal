@@ -16,6 +16,17 @@ if [ ! -d rocket-chip ]; then
 	git checkout RVFI
 	git submodule update --init
 
+	patch src/main/scala/system/Configs.scala << "EOT"
+84,86c84,86
+<   new BaseConfig())//.alter((site, here, up) => {
+< //    case freechips.rocketchip.tile.XLen => 64
+< //  })
+---
+>   new BaseConfig()).alter((site, here, up) => {
+>     case freechips.rocketchip.tile.XLen => 32
+>   })
+EOT
+
 	if $enable_compressed; then
 		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)ic -p RVFIMonitor -c 2; ) > vsrc/RVFIMonitor.v
 	else
@@ -23,7 +34,9 @@ if [ ! -d rocket-chip ]; then
 		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)i -p RVFIMonitor -c 2; ) > vsrc/RVFIMonitor.v
 	fi
 
-	if ! $enable_64bits; then
+	if $enable_64bits; then
+		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /freechips.rocketchip.tile.XLen/ s,32,64,; }' src/main/scala/system/Configs.scala
+	else
 		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /freechips.rocketchip.tile.XLen/ s,64,32,; }' src/main/scala/system/Configs.scala
 	fi
 
