@@ -15,8 +15,8 @@
 `define RISCV_FORMAL_VALIDADDR(addr) 1
 `endif
 
-`define rvformal_addr_eq(a, b) \
-((`RISCV_FORMAL_VALIDADDR(a) == `RISCV_FORMAL_VALIDADDR(b)) && (!`RISCV_FORMAL_VALIDADDR(a) || (a == b)))
+`define rvformal_addr_valid(a) (`RISCV_FORMAL_VALIDADDR(a))
+`define rvformal_addr_eq(a, b) ((`rvformal_addr_valid(a) == `rvformal_addr_valid(b)) && (!`rvformal_addr_valid(a) || (a == b)))
 
 `define RVFI_WIRES                                                                   \
 (* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid;      \

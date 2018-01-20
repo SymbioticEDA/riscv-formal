@@ -67,6 +67,12 @@ module rvfi_insn_check (
 			if (!reset && check) begin
 				assume(spec_valid);
 			end
+			if (valid && !`rvformal_addr_valid(pc_rdata)) begin
+				assert(trap);
+				assert(spec_rd_addr == 0);
+				assert(spec_rd_wdata == 0);
+				assert(spec_mem_wmask == 0);
+			end else
 			if (spec_valid) begin
 				assert(spec_rs1_addr == rs1_addr);
 				assert(spec_rs2_addr == rs2_addr);

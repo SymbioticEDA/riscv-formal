@@ -23,10 +23,10 @@ module rvfi_imem_check (
 					pc = rvfi_pc_rdata[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
 					insn = rvfi_insn[channel_idx*`RISCV_FORMAL_ILEN +: `RISCV_FORMAL_ILEN];
 
-					if (`RISCV_FORMAL_VALIDADDR(pc) && pc == imem_addr)
+					if (`rvformal_addr_valid(pc) && pc == imem_addr)
 						assert(insn[15:0] == imem_data);
 
-					if (insn[1:0] == 2'b11 && `RISCV_FORMAL_VALIDADDR(pc+2) && pc+2 == imem_addr)
+					if (insn[1:0] == 2'b11 && `rvformal_addr_valid(pc+2) && pc+2 == imem_addr)
 						assert(insn[31:16] == imem_data);
 				end
 			end
