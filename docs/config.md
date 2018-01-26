@@ -91,6 +91,13 @@ RISCV_FORMAL_VALIDADDR(addr)
 Set this to an expression of addr that evaluates to 1 when the given address
 is a valid physical address for the processor under test.
 
+RISCV_FORMAL_PMA_MAP
+--------------------
+
+Set this to the name of a module that takes an address as input and outputs
+the PMA info for that address. The exact interface of such a module is not
+entirely defined yet.
+
 
 Macros defined by rvfi_macros.vh
 ================================
