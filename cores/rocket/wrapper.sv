@@ -250,6 +250,7 @@ endmodule
 
 module rocket_pma_map (
 	input [`RISCV_FORMAL_XLEN-1:0] address,
+	input [1:0] log2len,
 	output reg A, R, W, X, C
 );
 // Generated Address Map
@@ -262,13 +263,13 @@ module rocket_pma_map (
 //  80000000 - 80004000 ARWX  dtim@80000000
 	always @* begin
 		{A, R, W, X, C} = 5'b 00000;
-		if (64'h 00000000 <= address && address < 64'h 00001000) {A, R, W, X, C} = 5'b 11110;
-		if (64'h 00003000 <= address && address < 64'h 00004000) {A, R, W, X, C} = 5'b 11110;
-		if (64'h 00010000 <= address && address < 64'h 00020000) {A, R, W, X, C} = 5'b 01010;
-		if (64'h 02000000 <= address && address < 64'h 02010000) {A, R, W, X, C} = 5'b 11100;
-		if (64'h 0c000000 <= address && address < 64'h 10000000) {A, R, W, X, C} = 5'b 11100;
-		if (64'h 60000000 <= address && address < 64'h 80000000) {A, R, W, X, C} = 5'b 01110;
-		if (64'h 80000000 <= address && address < 64'h 80004000) {A, R, W, X, C} = 5'b 11110;
+		if (64'h 00000000 <= address && address + (1 << log2len) <= 64'h 00001000) {A, R, W, X, C} = 5'b 11110;
+		if (64'h 00003000 <= address && address + (1 << log2len) <= 64'h 00004000) {A, R, W, X, C} = 5'b 11110;
+		if (64'h 00010000 <= address && address + (1 << log2len) <= 64'h 00020000) {A, R, W, X, C} = 5'b 01010;
+		if (64'h 02000000 <= address && address + (1 << log2len) <= 64'h 02010000) {A, R, W, X, C} = 5'b 11100;
+		if (64'h 0c000000 <= address && address + (1 << log2len) <= 64'h 10000000) {A, R, W, X, C} = 5'b 11100;
+		if (64'h 60000000 <= address && address + (1 << log2len) <= 64'h 80000000) {A, R, W, X, C} = 5'b 01110;
+		if (64'h 80000000 <= address && address + (1 << log2len) <= 64'h 80004000) {A, R, W, X, C} = 5'b 11110;
 	end
 endmodule
 

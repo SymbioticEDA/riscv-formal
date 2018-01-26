@@ -63,14 +63,21 @@ module rvfi_insn_check (
 
 		wire insn_pma_x, mem_pma_r, mem_pma_w;
 
+		wire [1:0] mem_log2len =
+			((spec_mem_rmask | spec_mem_wmask) & 8'b 1111_0000) ? 3 :
+			((spec_mem_rmask | spec_mem_wmask) & 8'b 0000_1100) ? 2 :
+			((spec_mem_rmask | spec_mem_wmask) & 8'b 0000_0010) ? 1 : 0;
+
 `ifdef RISCV_FORMAL_PMA_MAP
 		`RISCV_FORMAL_PMA_MAP insn_pma (
 			.address(pc_rdata),
+			.log2len(insn[1:0] == 2'b11 ? 2'd2 : 2'd1),
 			.X(insn_pma_x)
 		);
 
 		`RISCV_FORMAL_PMA_MAP mem_pma (
 			.address(spec_mem_addr),
+			.log2len(mem_log2len),
 			.R(mem_pma_r),
 			.W(mem_pma_w)
 		);
