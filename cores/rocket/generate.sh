@@ -240,6 +240,7 @@ causal  25    35
 // \`define NO_LDX0
 // \`define FAST_MEM
 \`define RISCV_FORMAL_VALIDADDR(addr) ((addr >> 34) == 0)
+\`define RISCV_FORMAL_PMA_MAP rocket_pma_map
 
 [script-sources]
 read_verilog -sv @basedir@/tests/coverage/riscv_rv32i_insn.v

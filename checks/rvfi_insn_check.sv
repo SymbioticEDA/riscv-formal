@@ -61,17 +61,39 @@ module rvfi_insn_check (
 			.spec_mem_wdata(spec_mem_wdata)
 		);
 
+		wire insn_pma_x, mem_pma_r, mem_pma_w;
+
+`ifdef RISCV_FORMAL_PMA_MAP
+		`RISCV_FORMAL_PMA_MAP insn_pma (
+			.address(pc_rdata),
+			.X(insn_pma_x)
+		);
+
+		`RISCV_FORMAL_PMA_MAP mem_pma (
+			.address(spec_mem_addr),
+			.R(mem_pma_r),
+			.W(mem_pma_w)
+		);
+`else
+		assign insn_pma_x = 1;
+		assign mem_pma_r = 1;
+		assign mem_pma_w = 1;
+`endif
+
+		wire mem_access_fault = spec_valid && (spec_rs1_addr == rs1_addr) && (spec_rs2_addr == rs2_addr) &&
+				((spec_mem_rmask && !mem_pma_r) || (spec_mem_wmask && !mem_pma_w));
+
 		integer i;
 
 		always @* begin
 			if (!reset && check) begin
 				assume(spec_valid);
 			end
-			if (valid && !`rvformal_addr_valid(pc_rdata)) begin
+			if (valid && (!`rvformal_addr_valid(pc_rdata) || !insn_pma_x || mem_access_fault)) begin
 				assert(trap);
-				assert(spec_rd_addr == 0);
-				assert(spec_rd_wdata == 0);
-				assert(spec_mem_wmask == 0);
+				assert(rd_addr == 0);
+				assert(rd_wdata == 0);
+				assert(mem_wmask == 0);
 			end else
 			if (spec_valid) begin
 				assert(spec_rs1_addr == rs1_addr);
