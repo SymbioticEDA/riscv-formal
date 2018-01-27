@@ -253,23 +253,39 @@ module rocket_pma_map (
 	input [1:0] log2len,
 	output reg A, R, W, X, C
 );
-// Generated Address Map
-//         0 -     1000 ARWX  debug-controller@0
-//      3000 -     4000 ARWX  error-device@3000
-//     10000 -    20000  R XC rom@10000
-//   2000000 -  2010000 ARW   clint@2000000
-//   c000000 - 10000000 ARW   interrupt-controller@c000000
-//  60000000 - 80000000  RWX  mmio@60000000
-//  80000000 - 80004000 ARWX  dtim@80000000
+	reg [4:0] modes_first, modes_last;
+	wire [`RISCV_FORMAL_XLEN-1:0] address_first = address;
+	wire [`RISCV_FORMAL_XLEN-1:0] address_last = address + (1 << log2len) - 1;
+
 	always @* begin
-		{A, R, W, X, C} = 5'b 00000;
-		if (64'h 00000000 <= address && address + (1 << log2len) <= 64'h 00001000) {A, R, W, X, C} = 5'b 11110;
-		if (64'h 00003000 <= address && address + (1 << log2len) <= 64'h 00004000) {A, R, W, X, C} = 5'b 11110;
-		if (64'h 00010000 <= address && address + (1 << log2len) <= 64'h 00020000) {A, R, W, X, C} = 5'b 01010;
-		if (64'h 02000000 <= address && address + (1 << log2len) <= 64'h 02010000) {A, R, W, X, C} = 5'b 11100;
-		if (64'h 0c000000 <= address && address + (1 << log2len) <= 64'h 10000000) {A, R, W, X, C} = 5'b 11100;
-		if (64'h 60000000 <= address && address + (1 << log2len) <= 64'h 80000000) {A, R, W, X, C} = 5'b 01110;
-		if (64'h 80000000 <= address && address + (1 << log2len) <= 64'h 80004000) {A, R, W, X, C} = 5'b 11110;
+		// Generated Address Map
+		//         0 -     1000 ARWX  debug-controller@0
+		//      3000 -     4000 ARWX  error-device@3000
+		//     10000 -    20000  R XC rom@10000
+		//   2000000 -  2010000 ARW   clint@2000000
+		//   c000000 - 10000000 ARW   interrupt-controller@c000000
+		//  60000000 - 80000000  RWX  mmio@60000000
+		//  80000000 - 80004000 ARWX  dtim@80000000
+
+		modes_first = 5'b 00000;
+		if (64'h 00000000 <= address_first && address_first < 64'h 00001000) modes_first = 5'b 11110;
+		if (64'h 00003000 <= address_first && address_first < 64'h 00004000) modes_first = 5'b 11110;
+		if (64'h 00010000 <= address_first && address_first < 64'h 00020000) modes_first = 5'b 01010;
+		if (64'h 02000000 <= address_first && address_first < 64'h 02010000) modes_first = 5'b 11100;
+		if (64'h 0c000000 <= address_first && address_first < 64'h 10000000) modes_first = 5'b 11100;
+		if (64'h 60000000 <= address_first && address_first < 64'h 80000000) modes_first = 5'b 01110;
+		if (64'h 80000000 <= address_first && address_first < 64'h 80004000) modes_first = 5'b 11110;
+
+		modes_last = 5'b 00000;
+		if (64'h 00000000 <= address_last && address_last < 64'h 00001000) modes_last = 5'b 11110;
+		if (64'h 00003000 <= address_last && address_last < 64'h 00004000) modes_last = 5'b 11110;
+		if (64'h 00010000 <= address_last && address_last < 64'h 00020000) modes_last = 5'b 01010;
+		if (64'h 02000000 <= address_last && address_last < 64'h 02010000) modes_last = 5'b 11100;
+		if (64'h 0c000000 <= address_last && address_last < 64'h 10000000) modes_last = 5'b 11100;
+		if (64'h 60000000 <= address_last && address_last < 64'h 80000000) modes_last = 5'b 01110;
+		if (64'h 80000000 <= address_last && address_last < 64'h 80004000) modes_last = 5'b 11110;
+
+		{A, R, W, X, C} = modes_first & modes_last;
 	end
 endmodule
 
