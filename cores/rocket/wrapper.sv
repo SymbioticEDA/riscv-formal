@@ -158,25 +158,25 @@ module rvfi_wrapper (
 	);
 
 `ifdef ROCKET_HIER_REF
-	assign rvfi_insn = rocket.core.rvfi_mon.rvfi_insn;
-	assign rvfi_mem_addr = rocket.core.rvfi_mon.rvfi_mem_addr;
-	assign rvfi_mem_rdata = rocket.core.rvfi_mon.rvfi_mem_rdata;
-	assign rvfi_mem_rmask = rocket.core.rvfi_mon.rvfi_mem_rmask;
-	assign rvfi_mem_wdata = rocket.core.rvfi_mon.rvfi_mem_wdata;
-	assign rvfi_mem_wmask = rocket.core.rvfi_mon.rvfi_mem_wmask;
-	assign rvfi_order = rocket.core.rvfi_mon.rvfi_order;
-	assign rvfi_pc_rdata = rocket.core.rvfi_mon.rvfi_pc_rdata;
-	assign rvfi_pc_wdata = rocket.core.rvfi_mon.rvfi_pc_wdata;
-	assign rvfi_rd_addr = rocket.core.rvfi_mon.rvfi_rd_addr;
-	assign rvfi_rd_wdata = rocket.core.rvfi_mon.rvfi_rd_wdata;
-	assign rvfi_rs1_addr = rocket.core.rvfi_mon.rvfi_rs1_addr;
-	assign rvfi_rs1_rdata = rocket.core.rvfi_mon.rvfi_rs1_rdata;
-	assign rvfi_rs2_addr = rocket.core.rvfi_mon.rvfi_rs2_addr;
-	assign rvfi_rs2_rdata = rocket.core.rvfi_mon.rvfi_rs2_rdata;
-	assign rvfi_trap = rocket.core.rvfi_mon.rvfi_trap;
-	assign rvfi_halt = rocket.core.rvfi_mon.rvfi_halt;
-	assign rvfi_intr = rocket.core.rvfi_mon.rvfi_intr;
-	assign rvfi_valid = rocket.core.rvfi_mon.rvfi_valid;
+	assign rvfi_insn = uut.core.rvfi_mon.rvfi_insn;
+	assign rvfi_mem_addr = uut.core.rvfi_mon.rvfi_mem_addr;
+	assign rvfi_mem_rdata = uut.core.rvfi_mon.rvfi_mem_rdata;
+	assign rvfi_mem_rmask = uut.core.rvfi_mon.rvfi_mem_rmask;
+	assign rvfi_mem_wdata = uut.core.rvfi_mon.rvfi_mem_wdata;
+	assign rvfi_mem_wmask = uut.core.rvfi_mon.rvfi_mem_wmask;
+	assign rvfi_order = uut.core.rvfi_mon.rvfi_order;
+	assign rvfi_pc_rdata = uut.core.rvfi_mon.rvfi_pc_rdata;
+	assign rvfi_pc_wdata = uut.core.rvfi_mon.rvfi_pc_wdata;
+	assign rvfi_rd_addr = uut.core.rvfi_mon.rvfi_rd_addr;
+	assign rvfi_rd_wdata = uut.core.rvfi_mon.rvfi_rd_wdata;
+	assign rvfi_rs1_addr = uut.core.rvfi_mon.rvfi_rs1_addr;
+	assign rvfi_rs1_rdata = uut.core.rvfi_mon.rvfi_rs1_rdata;
+	assign rvfi_rs2_addr = uut.core.rvfi_mon.rvfi_rs2_addr;
+	assign rvfi_rs2_rdata = uut.core.rvfi_mon.rvfi_rs2_rdata;
+	assign rvfi_trap = uut.core.rvfi_mon.rvfi_trap;
+	assign rvfi_halt = uut.core.rvfi_mon.rvfi_halt;
+	assign rvfi_intr = uut.core.rvfi_mon.rvfi_intr;
+	assign rvfi_valid = uut.core.rvfi_mon.rvfi_valid;
 `endif
 
 `ifdef NO_LDX0
@@ -420,6 +420,7 @@ module tilelink_ad_dummy (
 		end
 	end
 endmodule
+`endif
 
 `ifdef ROCKET_HIER_REF
 module RVFIMonitor (
@@ -430,5 +431,4 @@ module RVFIMonitor (
 );
 	assign errcode = 0;
 endmodule
-`endif
 `endif

@@ -7,7 +7,7 @@ export MAKEFLAGS="-j$(nproc)"
 export RISCV=$PWD/riscv-tools
 
 enable_compressed=true
-enable_64bits=true
+enable_64bits=false
 
 if [ ! -d rocket-chip ]; then
 	git clone https://github.com/freechipsproject/rocket-chip

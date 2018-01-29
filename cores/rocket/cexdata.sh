@@ -20,7 +20,7 @@ for x in checks/*/FAIL; do
 	x=${x%/FAIL}
 	x=${x#checks/}
 	cp checks/$x/logfile.txt cexdata/$x.log
-	cp checks/$x/engine_0/trace.vcd cexdata/$x.vcd
+	cp checks/$x/engine_*/trace.vcd cexdata/$x.vcd
 	if grep -q "^isa rv64" checks.cfg; then
 		python3 disasm.py --64 cexdata/$x.vcd > cexdata/$x.asm
 	fi
