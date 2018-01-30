@@ -16,6 +16,8 @@ module rvfi_wrapper (
 	end
 `endif
 
+	(* keep *) wire  [`RISCV_FORMAL_XLEN-1:0] reset_vector = 32'h10040;
+
 	// Rocket Tile Inputs
 
 	(* keep *) wire                           io_master_0_a_ready;
@@ -106,6 +108,8 @@ module rvfi_wrapper (
 	RocketTile_tile uut (
 		.clock (clock       ),
 		.reset (actual_reset),
+		.constants_hartid(1'b0),
+		.constants_reset_vector(reset_vector),
 
 `ifndef ROCKET_HIER_REF
 		`RVFI_CONN,
