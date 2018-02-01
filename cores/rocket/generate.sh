@@ -233,6 +233,9 @@ unique  25 30 35
 causal  25    35
 # hang  25    50
 
+solver yices
+# dumpsmt2
+
 [defines]
 \`define ROCKET_NORESET
 \`define $(if $enable_64bits; then echo NO_MISA; else echo NO_UNALIGNED_MISA; fi)

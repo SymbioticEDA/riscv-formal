@@ -38,8 +38,7 @@ blackbox = False
 cfgname = "checks"
 basedir = "%s/../.." % os.getcwd()
 corename = os.getcwd().split("/")[-1]
-smt_solver = "boolector"
-use_aiger = False
+solver = "boolector"
 dumpsmt2 = False
 sbycmd = "sby"
 config = dict()
@@ -123,7 +122,16 @@ if "options" in config:
             hang_depth = int(line[2])
 
         elif line[0] == "blackbox":
+            assert len(line) == 1
             blackbox = True
+
+        elif line[0] == "solver":
+            assert len(line) == 2
+            solver = line[1]
+
+        elif line[0] == "dumpsmt2":
+            assert len(line) == 1
+            dumpsmt2 = True
 
         else:
             print(line)
@@ -161,11 +169,11 @@ hargs["append"] = 0
 instruction_checks = set()
 consistency_checks = set()
 
-if use_aiger:
+if solver == "bmc3":
     hargs["engine"] = "abc bmc3"
     hargs["ilang_file"] = corename + "-gates.il"
 else:
-    hargs["engine"] = "smtbmc --presat --unroll %s%s" % ("--dumpsmt2 " if dumpsmt2 else "", smt_solver)
+    hargs["engine"] = "smtbmc %s%s" % ("--dumpsmt2 " if dumpsmt2 else "", solver)
     hargs["ilang_file"] = corename + "-hier.il"
 
 def test_disabled(check):
