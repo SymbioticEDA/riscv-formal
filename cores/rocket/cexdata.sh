@@ -30,6 +30,18 @@ for x in checks/*/FAIL; do
 	fi
 done
 
+for x in checks/*.sby; do
+	x=${x%.sby}
+	x=${x#checks/}
+	if [ -f checks/$x/PASS ]; then
+		printf "%-20s %s\n" $x PASS
+	elif [ -f checks/$x/FAIL ]; then
+		printf "%-20s %s\n" $x FAIL
+	else
+		printf "%-20s %s\n" $x UNKNOWN
+	fi
+done | sort > cexdata/status.txt
+
 rm -f cexdata.zip
 zip -r cexdata.zip cexdata/
 
