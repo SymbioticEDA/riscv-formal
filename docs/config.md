@@ -64,13 +64,6 @@ A core may report a misaligned memort access as "illegal instruction" by raising
 the `rvfi_trap` line when retiring the instruction via RVFI. For those cores the
 macro `RISCV_FORMAL_TRAP_ALIGNED_MEM` must be defined.
 
-RISCV_FORMAL_TRAP_ALIGNED_INSN
-------------------------------
-
-A core may report a misaligned instruction as "illegal instruction" by raising
-the `rvfi_trap` line when retiring the instruction via RVFI. For those cores the
-macro `RISCV_FORMAL_TRAP_ALIGNED_INSN` must be defined.
-
 RISCV_FORMAL_BLACKBOX_REGS
 --------------------------
 

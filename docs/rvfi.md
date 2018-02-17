@@ -26,7 +26,7 @@ The `rvfi_order` field must be set to the instruction index. No indices must be 
 
 `rvfi_trap` must be set for an instruction that cannot be decoded as a legal instruction, such as 0x00000000.
 
-In addition, `rvfi_trap` may be set for a misaligned memory read or write. In this case the configuration switch `RISCV_FORMAL_TRAP_ALIGNED_MEM` must be set to enable the same behavior in the riscv-formal insn models. `rvfi_trap` may also be set for a jump instruction that jumps to a misaligned instruction. In this case the configuration switch `RISCV_FORMAL_TRAP_ALIGNED_INSN` must be set to enable the same behavior in the riscv-formal insn models.
+In addition, `rvfi_trap` may be set for a misaligned memory read or write. In this case the configuration switch `RISCV_FORMAL_TRAP_ALIGNED_MEM` must be set to enable the same behavior in the riscv-formal insn models. `rvfi_trap` may also be set for a jump instruction that jumps to a misaligned instruction.
 
 The signal `rvfi_halt` must be set when the instruction is the last instruction that the core retires before halting execution. It should not be set for an instruction that triggers a trap condition if the CPU reacts to the trap by executing a trap handler. This signal enables verification of liveness properties.
 
