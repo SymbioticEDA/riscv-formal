@@ -57,13 +57,6 @@ to retire memory load/store operations for smaller units (half-words, bytes)
 word aligned with the appropiate `rmask/wmask` values to select the correct
 bytes. In this case the `RISCV_FORMAL_ALIGNED_MEM` macro must be defined.
 
-RISCV_FORMAL_TRAP_ALIGNED_MEM
------------------------------
-
-A core may report a misaligned memort access as "illegal instruction" by raising
-the `rvfi_trap` line when retiring the instruction via RVFI. For those cores the
-macro `RISCV_FORMAL_TRAP_ALIGNED_MEM` must be defined.
-
 RISCV_FORMAL_BLACKBOX_REGS
 --------------------------
 

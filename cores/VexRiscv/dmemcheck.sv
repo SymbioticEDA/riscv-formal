@@ -3,7 +3,6 @@
 `define RISCV_FORMAL_XLEN 32
 `define RISCV_FORMAL_ILEN 32
 `define RISCV_FORMAL_ALIGNED_MEM
-`define RISCV_FORMAL_TRAP_ALIGNED_MEM
 `include "rvfi_macros.vh"
 `include "rvfi_channel.sv"
 `include "rvfi_dmem_check.sv"
