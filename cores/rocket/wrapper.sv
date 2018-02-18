@@ -290,6 +290,10 @@ module rocket_pma_map (
 		if (64'h 80000000 <= address_last && address_last < 64'h 80004000) modes_last = 5'b 11110;
 
 		{A, R, W, X, C} = modes_first & modes_last;
+
+		if (log2len == 1 && address[0:0]) {A, R, W, C} = 0;
+		if (log2len == 2 && address[1:0]) {A, R, W, C} = 0;
+		if (log2len == 3 && address[2:0]) {A, R, W, C} = 0;
 	end
 endmodule
 

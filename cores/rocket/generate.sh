@@ -244,7 +244,6 @@ solver yices
 // \`define FAST_MEM
 \`define RISCV_FORMAL_VALIDADDR(addr) ((addr >> 34) == 0)
 \`define RISCV_FORMAL_PMA_MAP rocket_pma_map
-\`define RISCV_FORMAL_ALIGNED_MEM
 
 [script-sources]
 read_verilog -sv @basedir@/tests/coverage/riscv_rv32i_insn.v
