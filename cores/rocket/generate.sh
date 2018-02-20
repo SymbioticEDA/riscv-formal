@@ -234,7 +234,7 @@ causal  25    35
 # hang  25    50
 
 solver yices
-# dumpsmt2
+dumpsmt2
 
 [defines]
 \`define ROCKET_NORESET
@@ -256,3 +256,6 @@ read_ilang @basedir@/cores/@core@/@core@-syn/@ilang_file@
 EOT
 
 python3 ../../checks/genchecks.py
+
+sed -i '/^smtbmc/ s/yices/boolector/' checks/insn_{c_lwsp,c_lw,lw,lh,lhu,lb,lbu}_ch1.sby
+sed -i '/^smtbmc/ s/yices/boolector/' checks/pc_fwd_ch0.sby checks/reg_ch1.sby
