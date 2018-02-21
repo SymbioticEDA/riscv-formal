@@ -233,8 +233,8 @@ unique  25 30 35
 causal  25    35
 # hang  25    50
 
-solver yices
-dumpsmt2
+solver boolector
+# dumpsmt2
 
 [defines]
 \`define ROCKET_NORESET
@@ -257,5 +257,9 @@ EOT
 
 python3 ../../checks/genchecks.py
 
-sed -i '/^smtbmc/ s/yices/boolector/' checks/insn_{c_lwsp,c_lw,lw,lh,lhu,lb,lbu}_ch1.sby
-sed -i '/^smtbmc/ s/yices/boolector/' checks/pc_fwd_ch0.sby checks/reg_ch1.sby
+# see https://nbviewer.jupyter.org/url/svn.clifford.at/fmbench/2018B/report.ipynb
+sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_b{ge,lt,geu,ltu}_ch0.sby
+sed -i '/^smtbmc/ s/boolector/yices/' checks/{pc_bwd_ch0,unique_ch1,causal_ch0}.sby
+sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_j*.sby
+sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_c_{xor,mv,or,sw}_*.sby
+sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_{xor,sw,sh,addi}_*.sby
