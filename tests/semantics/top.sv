@@ -26,6 +26,11 @@ module top (
 	wire [31:0] spec_mem_wdata;
 
 	always @* begin
+		assume (!reset);
+		assume (pc[1:0] == 0);
+	end
+
+	always @* begin
 		rvfi_rs1_rdata = 0;
 		case (spec_rs1_addr)
 			 1: rvfi_rs1_rdata =  x1;
@@ -98,39 +103,74 @@ module top (
 	end
 
 	always @* begin
-		if (spec_valid && !spec_trap) begin
-			assert ( nx1 == (spec_rd_addr ==  1 ? spec_rd_wdata :  x1));
-			assert ( nx2 == (spec_rd_addr ==  2 ? spec_rd_wdata :  x2));
-			assert ( nx3 == (spec_rd_addr ==  3 ? spec_rd_wdata :  x3));
-			assert ( nx4 == (spec_rd_addr ==  4 ? spec_rd_wdata :  x4));
-			assert ( nx5 == (spec_rd_addr ==  5 ? spec_rd_wdata :  x5));
-			assert ( nx6 == (spec_rd_addr ==  6 ? spec_rd_wdata :  x6));
-			assert ( nx7 == (spec_rd_addr ==  7 ? spec_rd_wdata :  x7));
-			assert ( nx8 == (spec_rd_addr ==  8 ? spec_rd_wdata :  x8));
-			assert ( nx9 == (spec_rd_addr ==  9 ? spec_rd_wdata :  x9));
-			assert (nx10 == (spec_rd_addr == 10 ? spec_rd_wdata : x10));
-			assert (nx11 == (spec_rd_addr == 11 ? spec_rd_wdata : x11));
-			assert (nx12 == (spec_rd_addr == 12 ? spec_rd_wdata : x12));
-			assert (nx13 == (spec_rd_addr == 13 ? spec_rd_wdata : x13));
-			assert (nx14 == (spec_rd_addr == 14 ? spec_rd_wdata : x14));
-			assert (nx15 == (spec_rd_addr == 15 ? spec_rd_wdata : x15));
-			assert (nx16 == (spec_rd_addr == 16 ? spec_rd_wdata : x16));
-			assert (nx17 == (spec_rd_addr == 17 ? spec_rd_wdata : x17));
-			assert (nx18 == (spec_rd_addr == 18 ? spec_rd_wdata : x18));
-			assert (nx19 == (spec_rd_addr == 19 ? spec_rd_wdata : x19));
-			assert (nx20 == (spec_rd_addr == 20 ? spec_rd_wdata : x20));
-			assert (nx21 == (spec_rd_addr == 21 ? spec_rd_wdata : x21));
-			assert (nx22 == (spec_rd_addr == 22 ? spec_rd_wdata : x22));
-			assert (nx23 == (spec_rd_addr == 23 ? spec_rd_wdata : x23));
-			assert (nx24 == (spec_rd_addr == 24 ? spec_rd_wdata : x24));
-			assert (nx25 == (spec_rd_addr == 25 ? spec_rd_wdata : x25));
-			assert (nx26 == (spec_rd_addr == 26 ? spec_rd_wdata : x26));
-			assert (nx27 == (spec_rd_addr == 27 ? spec_rd_wdata : x27));
-			assert (nx28 == (spec_rd_addr == 28 ? spec_rd_wdata : x28));
-			assert (nx29 == (spec_rd_addr == 29 ? spec_rd_wdata : x29));
-			assert (nx30 == (spec_rd_addr == 30 ? spec_rd_wdata : x30));
-			assert (nx31 == (spec_rd_addr == 31 ? spec_rd_wdata : x31));
-			assert (npc == spec_pc_wdata);
+		if (spec_valid) begin
+			if (spec_trap) begin
+				assert ( nx1 ==  x1);
+				assert ( nx2 ==  x2);
+				assert ( nx3 ==  x3);
+				assert ( nx4 ==  x4);
+				assert ( nx5 ==  x5);
+				assert ( nx6 ==  x6);
+				assert ( nx7 ==  x7);
+				assert ( nx8 ==  x8);
+				assert ( nx9 ==  x9);
+				assert (nx10 == x10);
+				assert (nx11 == x11);
+				assert (nx12 == x12);
+				assert (nx13 == x13);
+				assert (nx14 == x14);
+				assert (nx15 == x15);
+				assert (nx16 == x16);
+				assert (nx17 == x17);
+				assert (nx18 == x18);
+				assert (nx19 == x19);
+				assert (nx20 == x20);
+				assert (nx21 == x21);
+				assert (nx22 == x22);
+				assert (nx23 == x23);
+				assert (nx24 == x24);
+				assert (nx25 == x25);
+				assert (nx26 == x26);
+				assert (nx27 == x27);
+				assert (nx28 == x28);
+				assert (nx29 == x29);
+				assert (nx30 == x30);
+				assert (nx31 == x31);
+				assert (npc == 32'h0);
+			end else begin
+				assert ( nx1 == (spec_rd_addr ==  1 ? spec_rd_wdata :  x1));
+				assert ( nx2 == (spec_rd_addr ==  2 ? spec_rd_wdata :  x2));
+				assert ( nx3 == (spec_rd_addr ==  3 ? spec_rd_wdata :  x3));
+				assert ( nx4 == (spec_rd_addr ==  4 ? spec_rd_wdata :  x4));
+				assert ( nx5 == (spec_rd_addr ==  5 ? spec_rd_wdata :  x5));
+				assert ( nx6 == (spec_rd_addr ==  6 ? spec_rd_wdata :  x6));
+				assert ( nx7 == (spec_rd_addr ==  7 ? spec_rd_wdata :  x7));
+				assert ( nx8 == (spec_rd_addr ==  8 ? spec_rd_wdata :  x8));
+				assert ( nx9 == (spec_rd_addr ==  9 ? spec_rd_wdata :  x9));
+				assert (nx10 == (spec_rd_addr == 10 ? spec_rd_wdata : x10));
+				assert (nx11 == (spec_rd_addr == 11 ? spec_rd_wdata : x11));
+				assert (nx12 == (spec_rd_addr == 12 ? spec_rd_wdata : x12));
+				assert (nx13 == (spec_rd_addr == 13 ? spec_rd_wdata : x13));
+				assert (nx14 == (spec_rd_addr == 14 ? spec_rd_wdata : x14));
+				assert (nx15 == (spec_rd_addr == 15 ? spec_rd_wdata : x15));
+				assert (nx16 == (spec_rd_addr == 16 ? spec_rd_wdata : x16));
+				assert (nx17 == (spec_rd_addr == 17 ? spec_rd_wdata : x17));
+				assert (nx18 == (spec_rd_addr == 18 ? spec_rd_wdata : x18));
+				assert (nx19 == (spec_rd_addr == 19 ? spec_rd_wdata : x19));
+				assert (nx20 == (spec_rd_addr == 20 ? spec_rd_wdata : x20));
+				assert (nx21 == (spec_rd_addr == 21 ? spec_rd_wdata : x21));
+				assert (nx22 == (spec_rd_addr == 22 ? spec_rd_wdata : x22));
+				assert (nx23 == (spec_rd_addr == 23 ? spec_rd_wdata : x23));
+				assert (nx24 == (spec_rd_addr == 24 ? spec_rd_wdata : x24));
+				assert (nx25 == (spec_rd_addr == 25 ? spec_rd_wdata : x25));
+				assert (nx26 == (spec_rd_addr == 26 ? spec_rd_wdata : x26));
+				assert (nx27 == (spec_rd_addr == 27 ? spec_rd_wdata : x27));
+				assert (nx28 == (spec_rd_addr == 28 ? spec_rd_wdata : x28));
+				assert (nx29 == (spec_rd_addr == 29 ? spec_rd_wdata : x29));
+				assert (nx30 == (spec_rd_addr == 30 ? spec_rd_wdata : x30));
+				assert (nx31 == (spec_rd_addr == 31 ? spec_rd_wdata : x31));
+				assert (npc == spec_pc_wdata);
+			end
 		end
 	end
 
