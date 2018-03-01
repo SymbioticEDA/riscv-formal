@@ -1,0 +1,17 @@
+[options]
+mode cover
+depth 100
+
+[engines]
+smtbmc yices
+
+[script]
+read_verilog freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v
+read_verilog -sv muldivlen.sv
+prep -nordff -top muldivlen
+chformal -assume -early
+opt_clean
+
+[files]
+rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v
+muldivlen.sv
