@@ -18,6 +18,7 @@ cp rocket-chip/src/main/scala/system/Configs.scala cexdata/Configs.scala
 git -C rocket-chip diff src/main/scala/system/Configs.scala > cexdata/Configs.scala.diff
 
 for x in checks/*/FAIL; do
+	test -f $x || continue
 	x=${x%/FAIL}
 	x=${x#checks/}
 	cp checks/$x/logfile.txt cexdata/$x.log
