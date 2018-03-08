@@ -1024,6 +1024,13 @@ isa_propagate("rv64i", "rv64im")
 isa_propagate("rv64ic", "rv64imc")
 isa_propagate("rv64im", "rv64imc")
 
+## ISA Fixup
+
+for isa, insns in isa_database.items():
+    if isa.startswith("rv64"):
+        insns.discard("c_jal")
+
+
 ## ISA Listings and ISA Models
 
 for isa, insns in isa_database.items():

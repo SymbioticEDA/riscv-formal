@@ -18,7 +18,6 @@ c_andi
 c_beqz
 c_bnez
 c_j
-c_jal
 c_jalr
 c_jr
 c_li
