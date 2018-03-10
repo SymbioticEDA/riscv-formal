@@ -222,7 +222,7 @@ def check_insn(insn, chanidx):
             print_hfmt(sby_file, config["script-sources"], **hargs)
 
         print_hfmt(sby_file, """
-                : prep -nordff -top rvfi_testbench
+                : prep -flatten -nordff -top rvfi_testbench
                 :
                 : [files]
                 : @checkch@.sv
@@ -315,7 +315,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
             print_hfmt(sby_file, config["script-sources"], **hargs)
 
         print_hfmt(sby_file, """
-                : prep -nordff -top rvfi_testbench
+                : prep -flatten -nordff -top rvfi_testbench
                 :
                 : [files]
                 : @checkch@.sv
