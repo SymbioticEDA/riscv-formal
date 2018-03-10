@@ -1,17 +1,23 @@
 module top (
-	input clock, reset,
-	input [31:0] insn, pc, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15,
+	input [31:0] insn, pc, rdata, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15,
 	input [31:0] x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, x31
 );
 	wire [31:0] npc, nx1, nx2, nx3, nx4, nx5, nx6, nx7, nx8, nx9, nx10, nx11, nx12, nx13, nx14, nx15;
 	wire [31:0] nx16, nx17, nx18, nx19, nx20, nx21, nx22, nx23, nx24, nx25, nx26, nx27, nx28, nx29, nx30, nx31;
+
+	wire        ren;
+	wire [31:0] raddr;
+
+	wire        wen;
+	wire [31:0] waddr;
+	wire [31:0] wdata;
 
 	wire        rvfi_valid = 1;
 	wire [31:0] rvfi_insn = insn;
 	wire [31:0] rvfi_pc_rdata = pc;
 	reg  [31:0] rvfi_rs1_rdata;
 	reg  [31:0] rvfi_rs2_rdata;
-	wire [31:0] rvfi_mem_rdata = 0;
+	wire [31:0] rvfi_mem_rdata = rdata;
 
 	wire        spec_valid;
 	wire        spec_trap;
@@ -26,7 +32,6 @@ module top (
 	wire [31:0] spec_mem_wdata;
 
 	always @* begin
-		assume (!reset);
 		assume (pc[1:0] == 0);
 	end
 
@@ -137,6 +142,8 @@ module top (
 				assert (nx30 == x30);
 				assert (nx31 == x31);
 				assert (npc == 32'h0);
+				assert (ren == 1'b0);
+				assert (wen == 1'b0);
 			end else begin
 				assert ( nx1 == (spec_rd_addr ==  1 ? spec_rd_wdata :  x1));
 				assert ( nx2 == (spec_rd_addr ==  2 ? spec_rd_wdata :  x2));
@@ -170,6 +177,18 @@ module top (
 				assert (nx30 == (spec_rd_addr == 30 ? spec_rd_wdata : x30));
 				assert (nx31 == (spec_rd_addr == 31 ? spec_rd_wdata : x31));
 				assert (npc == spec_pc_wdata);
+				if (!spec_mem_rmask && !spec_mem_wmask) begin
+					assert (ren == 1'b0);
+					assert (wen == 1'b0);
+				end
+				if (spec_mem_rmask) begin
+					assert (ren);
+					assert (raddr == spec_mem_addr);
+				end
+				if (spec_mem_wmask) begin
+					assert (wen);
+					// FIXME
+				end
 			end
 		end
 	end
@@ -194,79 +213,31 @@ module top (
 		.spec_mem_wdata (spec_mem_wdata),
 	);
 
-	Clash_topEntity ref (
-		. \#$d(%,%)_0 (clock),
-		. \#$d(%,%)_1 (reset),
+	rvspec rvspec_inst (
+		// rvspec is purely combinatorial
+		.clk              ( 1'b0),
+		.arst             ( 1'b0),
 
-		.eta_0        ( insn),
+		.in_instr         ( insn),
+		.in_pc            (   pc),
+		.out_nextPC       (  npc),
 
-		.eta_1_0_0    (   x1),
-		.eta_1_0_1    (   x2),
-		.eta_1_0_2    (   x3),
-		.eta_1_0_3    (   x4),
-		.eta_1_0_4    (   x5),
-		.eta_1_0_5    (   x6),
-		.eta_1_0_6    (   x7),
-		.eta_1_0_7    (   x8),
-		.eta_1_0_8    (   x9),
-		.eta_1_0_9    (  x10),
-		.eta_1_0_10   (  x11),
-		.eta_1_0_11   (  x12),
-		.eta_1_0_12   (  x13),
-		.eta_1_0_13   (  x14),
-		.eta_1_0_14   (  x15),
-		.eta_1_0_15   (  x16),
-		.eta_1_0_16   (  x17),
-		.eta_1_0_17   (  x18),
-		.eta_1_0_18   (  x19),
-		.eta_1_0_19   (  x20),
-		.eta_1_0_20   (  x21),
-		.eta_1_0_21   (  x22),
-		.eta_1_0_22   (  x23),
-		.eta_1_0_23   (  x24),
-		.eta_1_0_24   (  x25),
-		.eta_1_0_25   (  x26),
-		.eta_1_0_26   (  x27),
-		.eta_1_0_27   (  x28),
-		.eta_1_0_28   (  x29),
-		.eta_1_0_29   (  x30),
-		.eta_1_0_30   (  x31),
+		.out_loadAddress  (  ren), // <<- mixed up with out_loadValid in rvspec
+		.out_loadValid    (raddr), // <<- mixed up with out_loadAddress in rvspec
+		.in_loadData      (rdata),
 
-		.eta_1_1      (   pc),
-		.eta_1_2      (32'h0), // next_pc, ignored
+		.out_storeValid   (  wen),
+		.out_storeAddress (waddr),
+		.result_6         (wdata), // <<- out_storeData ?
 
-		.y_0_0        (  nx1),
-		.y_0_1        (  nx2),
-		.y_0_2        (  nx3),
-		.y_0_3        (  nx4),
-		.y_0_4        (  nx5),
-		.y_0_5        (  nx6),
-		.y_0_6        (  nx7),
-		.y_0_7        (  nx8),
-		.y_0_8        (  nx9),
-		.y_0_9        ( nx10),
-		.y_0_10       ( nx11),
-		.y_0_11       ( nx12),
-		.y_0_12       ( nx13),
-		.y_0_13       ( nx14),
-		.y_0_14       ( nx15),
-		.y_0_15       ( nx16),
-		.y_0_16       ( nx17),
-		.y_0_17       ( nx18),
-		.y_0_18       ( nx19),
-		.y_0_19       ( nx20),
-		.y_0_20       ( nx21),
-		.y_0_21       ( nx22),
-		.y_0_22       ( nx23),
-		.y_0_23       ( nx24),
-		.y_0_24       ( nx25),
-		.y_0_25       ( nx26),
-		.y_0_26       ( nx27),
-		.y_0_27       ( nx28),
-		.y_0_28       ( nx29),
-		.y_0_29       ( nx30),
-		.y_0_30       ( nx31),
-		.y_1          (  npc),
-		.y_2          (     )
+		.in_registers ({
+			x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17,
+			x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, x31
+		}),
+
+		.out_registers ({
+			nx1, nx2, nx3, nx4, nx5, nx6, nx7, nx8, nx9, nx10, nx11, nx12, nx13, nx14, nx15, nx16, nx17,
+			nx18, nx19, nx20, nx21, nx22, nx23, nx24, nx25, nx26, nx27, nx28, nx29, nx30, nx31
+		})
 	);
 endmodule

@@ -3,7 +3,7 @@
 import sys, glob, os
 
 insn = sys.argv[1]
-clash_files = glob.glob("verilog/Clash/*.v")
+clash_files = glob.glob("riscv-semantics/src/verilog/Clash/rvspec/*.v")
 
 with open("insn_%s.sby" % insn, "w") as f:
     print("[options]", file=f)

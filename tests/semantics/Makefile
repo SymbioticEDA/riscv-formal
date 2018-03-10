@@ -1,8 +1,7 @@
-
 define template
 all:: insn_$(1)/PASS
 
-insn_$(1)/PASS: insn_$(1).sby verilog
+insn_$(1)/PASS: insn_$(1).sby riscv-semantics/.stamp
 	sby -f insn_$(1).sby
 
 insn_$(1).sby: makejob.py
@@ -14,7 +13,10 @@ endef
 
 $(foreach job,$(shell cat ../../insns/isa_rv32i.txt),$(eval $(call template,$(job))))
 
-verilog:
-	wget -O verilog.tar.gz https://github.com/mit-plv/riscv-semantics/raw/master/src/verilog.tar.gz
-	tar xvzf verilog.tar.gz
+riscv-semantics/.stamp:
+	set -ex; git clone --recursive https://github.com/mit-plv/riscv-semantics; \
+	cd riscv-semantics; ./install.sh; ./install-clash.sh; ./make-circuit.sh
+	touch riscv-semantics/.stamp
 
+distclean: clean
+	rm -rf riscv-semantics
