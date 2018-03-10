@@ -7,7 +7,7 @@ export MAKEFLAGS="-j$(nproc)"
 export RISCV=$PWD/riscv-tools
 
 enable_compressed=true
-enable_64bits=false
+enable_64bits=true
 
 if [ ! -d rocket-chip ]; then
 	git clone https://github.com/freechipsproject/rocket-chip
@@ -258,8 +258,8 @@ EOT
 python3 ../../checks/genchecks.py
 
 # see https://nbviewer.jupyter.org/url/svn.clifford.at/fmbench/2018B/report.ipynb
-sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_b{ge,lt,geu,ltu}_ch0.sby
-sed -i '/^smtbmc/ s/boolector/yices/' checks/{pc_bwd_ch0,unique_ch1,causal_ch0}.sby
-sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_j*.sby
-sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_c_{xor,mv,or,sw}_*.sby
-sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_{xor,sw,sh,addi}_*.sby
+#sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_b{ge,lt,geu,ltu}_ch0.sby
+#sed -i '/^smtbmc/ s/boolector/yices/' checks/{pc_bwd_ch0,unique_ch1,causal_ch0}.sby
+#sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_j*.sby
+#sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_c_{xor,mv,or,sw}_*.sby
+#sed -i '/^smtbmc/ s/boolector/yices/' checks/insn_{xor,sw,sh,addi}_*.sby
