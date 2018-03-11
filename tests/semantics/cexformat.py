@@ -24,7 +24,7 @@ data = dict()
 
 for netinfo in parse_vcd(args[0]).values():
     for net in netinfo['nets']:
-        if net["hier"] == "top" or net["name"] == "rvfi_valid":
+        if net["hier"] == "top":
             data[net["name"]] = int(netinfo['tv'][0][1], 2)
         if net["hier"] == "top.rvspec_inst" and (net["name"].startswith("in_") or net["name"].startswith("out_")):
             data[net["name"]] = int(netinfo['tv'][0][1], 2)

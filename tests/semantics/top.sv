@@ -2,36 +2,36 @@ module top (
 	input [31:0] insn, pc, rdata, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15,
 	input [31:0] x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, x31
 );
-	wire [31:0] npc, nx1, nx2, nx3, nx4, nx5, nx6, nx7, nx8, nx9, nx10, nx11, nx12, nx13, nx14, nx15;
-	wire [31:0] nx16, nx17, nx18, nx19, nx20, nx21, nx22, nx23, nx24, nx25, nx26, nx27, nx28, nx29, nx30, nx31;
+	(* keep *) wire [31:0] npc, nx1, nx2, nx3, nx4, nx5, nx6, nx7, nx8, nx9, nx10, nx11, nx12, nx13, nx14, nx15;
+	(* keep *) wire [31:0] nx16, nx17, nx18, nx19, nx20, nx21, nx22, nx23, nx24, nx25, nx26, nx27, nx28, nx29, nx30, nx31;
 
-	wire        ren;
-	wire [31:0] raddr;
+	(* keep *) wire        ren;
+	(* keep *) wire [31:0] raddr;
 
-	wire        wen;
-	wire [31:0] waddr;
-	wire [31:0] wdata;
+	(* keep *) wire        wen;
+	(* keep *) wire [31:0] waddr;
+	(* keep *) wire [31:0] wdata;
 
-	wire        excep;
+	(* keep *) wire        excep;
 
-	wire        rvfi_valid = 1;
-	wire [31:0] rvfi_insn = insn;
-	wire [31:0] rvfi_pc_rdata = pc;
-	reg  [31:0] rvfi_rs1_rdata;
-	reg  [31:0] rvfi_rs2_rdata;
-	wire [31:0] rvfi_mem_rdata = rdata;
+	(* keep *) wire        rvfi_valid = 1;
+	(* keep *) wire [31:0] rvfi_insn = insn;
+	(* keep *) wire [31:0] rvfi_pc_rdata = pc;
+	(* keep *) reg  [31:0] rvfi_rs1_rdata;
+	(* keep *) reg  [31:0] rvfi_rs2_rdata;
+	(* keep *) wire [31:0] rvfi_mem_rdata = rdata;
 
-	wire        spec_valid;
-	wire        spec_trap;
-	wire [ 4:0] spec_rs1_addr;
-	wire [ 4:0] spec_rs2_addr;
-	wire [ 4:0] spec_rd_addr;
-	wire [31:0] spec_rd_wdata;
-	wire [31:0] spec_pc_wdata;
-	wire [31:0] spec_mem_addr;
-	wire [ 3:0] spec_mem_rmask;
-	wire [ 3:0] spec_mem_wmask;
-	wire [31:0] spec_mem_wdata;
+	(* keep *) wire        spec_valid;
+	(* keep *) wire        spec_trap;
+	(* keep *) wire [ 4:0] spec_rs1_addr;
+	(* keep *) wire [ 4:0] spec_rs2_addr;
+	(* keep *) wire [ 4:0] spec_rd_addr;
+	(* keep *) wire [31:0] spec_rd_wdata;
+	(* keep *) wire [31:0] spec_pc_wdata;
+	(* keep *) wire [31:0] spec_mem_addr;
+	(* keep *) wire [ 3:0] spec_mem_rmask;
+	(* keep *) wire [ 3:0] spec_mem_wmask;
+	(* keep *) wire [31:0] spec_mem_wdata;
 
 	always @* begin
 		assume (pc[1:0] == 0);

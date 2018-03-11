@@ -23,8 +23,9 @@ with open("insn_%s.sby" % insn, "w") as f:
     for fn in clash_files:
         print("read_verilog %s" % os.path.basename(fn), file=f)
     print("prep -nordff -top top", file=f)
-    print("flatten Clash_topEntity", file=f)
+    print("flatten rvspec", file=f)
     print("hierarchy", file=f)
+    print("opt -fast", file=f)
 
     print("[file defines.vh]", file=f)
     print("`define RISCV_FORMAL", file=f)
