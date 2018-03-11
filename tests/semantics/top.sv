@@ -12,6 +12,8 @@ module top (
 	wire [31:0] waddr;
 	wire [31:0] wdata;
 
+	wire        excep;
+
 	wire        rvfi_valid = 1;
 	wire [31:0] rvfi_insn = insn;
 	wire [31:0] rvfi_pc_rdata = pc;
@@ -144,6 +146,7 @@ module top (
 				assert (npc == 32'h0);
 				assert (ren == 1'b0);
 				assert (wen == 1'b0);
+				assert (excep);
 			end else begin
 				assert ( nx1 == (spec_rd_addr ==  1 ? spec_rd_wdata :  x1));
 				assert ( nx2 == (spec_rd_addr ==  2 ? spec_rd_wdata :  x2));
@@ -177,6 +180,7 @@ module top (
 				assert (nx30 == (spec_rd_addr == 30 ? spec_rd_wdata : x30));
 				assert (nx31 == (spec_rd_addr == 31 ? spec_rd_wdata : x31));
 				assert (npc == spec_pc_wdata);
+				assert (!excep);
 				if (!spec_mem_rmask && !spec_mem_wmask) begin
 					assert (ren == 1'b0);
 					assert (wen == 1'b0);
@@ -221,14 +225,15 @@ module top (
 		.in_instr         ( insn),
 		.in_pc            (   pc),
 		.out_nextPC       (  npc),
+		.out_exception    (excep),
 
-		.out_loadAddress  (  ren), // <<- mixed up with out_loadValid in rvspec
-		.out_loadValid    (raddr), // <<- mixed up with out_loadAddress in rvspec
+		.out_loadValid    (  ren),
+		.out_loadAddress  (raddr),
 		.in_loadData      (rdata),
 
 		.out_storeValid   (  wen),
 		.out_storeAddress (waddr),
-		.result_6         (wdata), // <<- out_storeData ?
+		.out_storeData    (wdata),
 
 		.in_registers ({
 			x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17,

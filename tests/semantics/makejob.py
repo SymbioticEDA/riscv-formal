@@ -31,7 +31,7 @@ with open("insn_%s.sby" % insn, "w") as f:
     print("`define RISCV_FORMAL_XLEN 32", file=f)
     print("`define RISCV_FORMAL_ILEN 32", file=f)
     print("`define RISCV_FORMAL_INSN_MODEL rvfi_insn_%s" % insn, file=f)
-    print("`define RISCV_FORMAL_ALIGNED_MEM", file=f)
+    # print("`define RISCV_FORMAL_ALIGNED_MEM", file=f)
     # print("`define RISCV_FORMAL_COMPRESSED", file=f)
     print("", file=f)
 
