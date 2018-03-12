@@ -187,7 +187,10 @@ module top (
 				end
 				if (spec_mem_wmask) begin
 					assert (waddr == spec_mem_addr);
-					assert (wdata == spec_mem_wdata);
+					if (spec_mem_wmask[0]) assert (wdata[ 7: 0] == spec_mem_wdata[ 7: 0]);
+					if (spec_mem_wmask[1]) assert (wdata[15: 8] == spec_mem_wdata[15: 8]);
+					if (spec_mem_wmask[2]) assert (wdata[23:16] == spec_mem_wdata[23:16]);
+					if (spec_mem_wmask[3]) assert (wdata[31:24] == spec_mem_wdata[31:24]);
 				end
 				assert (!excep);
 			end
