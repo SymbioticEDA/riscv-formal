@@ -101,13 +101,13 @@ prvalue("out_exception", 1)
 
 print()
 
-prvalue("out_storeValid", 1)
+prvalue("out_storeEnable", 4)
 prvalue("out_storeAddress", 32)
 prvalue("out_storeData", 32)
 
 print()
 
-prvalue("out_loadValid", 1)
+prvalue("out_loadEn", 4)
 prvalue("out_loadAddress", 32)
 prvalue("in_loadData", 32)
 

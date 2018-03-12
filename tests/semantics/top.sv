@@ -5,10 +5,10 @@ module top (
 	(* keep *) wire [31:0] npc, nx1, nx2, nx3, nx4, nx5, nx6, nx7, nx8, nx9, nx10, nx11, nx12, nx13, nx14, nx15;
 	(* keep *) wire [31:0] nx16, nx17, nx18, nx19, nx20, nx21, nx22, nx23, nx24, nx25, nx26, nx27, nx28, nx29, nx30, nx31;
 
-	(* keep *) wire        ren;
+	(* keep *) wire [ 3:0] ren;
 	(* keep *) wire [31:0] raddr;
 
-	(* keep *) wire        wen;
+	(* keep *) wire [ 3:0] wen;
 	(* keep *) wire [31:0] waddr;
 	(* keep *) wire [31:0] wdata;
 
@@ -180,19 +180,16 @@ module top (
 				assert (nx30 == (spec_rd_addr == 30 ? spec_rd_wdata : x30));
 				assert (nx31 == (spec_rd_addr == 31 ? spec_rd_wdata : x31));
 				assert (npc == spec_pc_wdata);
-				assert (!excep);
-				if (!spec_mem_rmask && !spec_mem_wmask) begin
-					assert (ren == 1'b0);
-					assert (wen == 1'b0);
-				end
+				assert (ren == spec_mem_rmask);
+				assert (wen == spec_mem_wmask);
 				if (spec_mem_rmask) begin
-					assert (ren);
 					assert (raddr == spec_mem_addr);
 				end
 				if (spec_mem_wmask) begin
-					assert (wen);
-					// FIXME
+					assert (waddr == spec_mem_addr);
+					assert (wdata == spec_mem_wdata);
 				end
+				assert (!excep);
 			end
 		end
 	end
@@ -227,11 +224,11 @@ module top (
 		.out_nextPC       (  npc),
 		.out_exception    (excep),
 
-		.out_loadValid    (  ren),
+		.out_loadEn       (  ren),
 		.out_loadAddress  (raddr),
 		.in_loadData      (rdata),
 
-		.out_storeValid   (  wen),
+		.out_storeEnable  (  wen),
 		.out_storeAddress (waddr),
 		.out_storeData    (wdata),
 
