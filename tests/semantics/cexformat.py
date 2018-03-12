@@ -124,7 +124,7 @@ else:
     print("let register_rs1 = Nothing")
 
 if data["spec_rs2_addr"]:
-    print("let register_rs2 = Just (%d, fromIntegral 0x%08X)" % (data["spec_rs1_addr"], data["rvfi_rs1_rdata"]))
+    print("let register_rs2 = Just (%d, fromIntegral 0x%08X)" % (data["spec_rs2_addr"], data["rvfi_rs2_rdata"]))
 else:
     print("let register_rs2 = Nothing")
 
