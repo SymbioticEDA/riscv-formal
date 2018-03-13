@@ -131,12 +131,7 @@ else:
 print()
 
 if data["spec_mem_wmask"]:
-    wdata = data["spec_mem_wdata"]
-    if (data["spec_mem_wmask"] & 1) == 0: wdata = (wdata & 0xffffff00) | (data["rdata"] & 0x000000ff)
-    if (data["spec_mem_wmask"] & 2) == 0: wdata = (wdata & 0xffff00ff) | (data["rdata"] & 0x0000ff00)
-    if (data["spec_mem_wmask"] & 4) == 0: wdata = (wdata & 0xff00ffff) | (data["rdata"] & 0x00ff0000)
-    if (data["spec_mem_wmask"] & 8) == 0: wdata = (wdata & 0x00ffffff) | (data["rdata"] & 0xff000000)
-    print("let expected_out_store = Just (fromIntegral 0x%08X, fromIntegral 0x%08X)" % (data["spec_mem_addr"], wdata))
+    print("let expected_out_store = Just (fromIntegral 0x%08X, fromIntegral 0x%08X)" % (data["spec_mem_addr"], data["spec_mem_wdata"]))
 else:
     print("let expected_out_store = Nothing")
 
@@ -145,7 +140,7 @@ if data["spec_rd_addr"]:
 else:
     print("let expected_rd = Nothing")
 
-if data["spec_mem_rmask"] or (data["spec_mem_wmask"] not in [0, 15]):
+if data["spec_mem_rmask"]:
     print("let expected_out_loadAddress = Just (fromIntegral 0x%08X)" % data["spec_mem_addr"])
 else:
     print("let expected_out_loadAddress = Nothing")
