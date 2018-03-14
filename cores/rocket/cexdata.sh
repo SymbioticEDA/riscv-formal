@@ -35,9 +35,9 @@ for x in checks/*.sby; do
 	x=${x%.sby}
 	x=${x#checks/}
 	if [ -f checks/$x/PASS ]; then
-		printf "%-20s %s %10s\n" $x pass $(grep -h "Elapsed process time" checks/$x/logfile.txt | cut -f9 -d' ')
+		printf "%-20s %s %10s\n" $x pass $(sed '/Elapsed process time/ { s/.*\]: //; s/ .*//; p; }; d;' checks/$x/logfile.txt)
 	elif [ -f checks/$x/FAIL ]; then
-		printf "%-20s %s %10s\n" $x FAIL $(grep -h "Elapsed process time" checks/$x/logfile.txt | cut -f9 -d' ')
+		printf "%-20s %s %10s\n" $x FAIL $(sed '/Elapsed process time/ { s/.*\]: //; s/ .*//; p; }; d;' checks/$x/logfile.txt)
 	else
 		printf "%-20s %s\n" $x unknown
 	fi
