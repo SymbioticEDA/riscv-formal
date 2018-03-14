@@ -227,7 +227,7 @@ module top (
 		.out_nextPC       (  npc),
 		.out_exception    (excep),
 
-		.out_loadEn       (  ren),
+		.out_loadEnable   (  ren),
 		.out_loadAddress  (raddr),
 		.in_loadData      (rdata),
 
@@ -236,13 +236,13 @@ module top (
 		.out_storeData    (wdata),
 
 		.in_registers ({
-			x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17,
-			x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29, x30, x31
+			x31, x30, x29, x28, x27, x26, x25, x24, x23, x22, x21, x20, x19, x18, x17,
+			x16, x15, x14, x13, x12, x11, x10, x9, x8, x7, x6, x5, x4, x3, x2, x1
 		}),
 
 		.out_registers ({
-			nx1, nx2, nx3, nx4, nx5, nx6, nx7, nx8, nx9, nx10, nx11, nx12, nx13, nx14, nx15, nx16, nx17,
-			nx18, nx19, nx20, nx21, nx22, nx23, nx24, nx25, nx26, nx27, nx28, nx29, nx30, nx31
+			nx31, nx30, nx29, nx28, nx27, nx26, nx25, nx24, nx23, nx22, nx21, nx20, nx19, nx18, nx17,
+			nx16, nx15, nx14, nx13, nx12, nx11, nx10, nx9, nx8, nx7, nx6, nx5, nx4, nx3, nx2, nx1
 		})
 	);
 endmodule
