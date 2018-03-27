@@ -16,7 +16,7 @@ module rvfi_wrapper (
 	end
 `endif
 
-	(* keep *) wire  [`RISCV_FORMAL_XLEN-1:0] reset_vector = 32'h10040;
+	(* keep *) wire  [                  31:0] reset_vector = 32'h10040;
 
 	// Rocket Tile Inputs
 
