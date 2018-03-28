@@ -199,6 +199,7 @@ hierarchy
 
 # rename -hide w:_*
 
+setparam -set INIT 16384'bx RocketTile.frontend.icache.data_arrays_*/ram
 write_ilang rocket-syn/rocket-hier.il
 
 # flatten
@@ -238,9 +239,6 @@ solver boolector
 
 [defines]
 \`define ROCKET_NORESET
-\`define $(if $enable_64bits; then echo NO_MISA; else echo NO_UNALIGNED_MISA; fi)
-// \`define NO_SYSTEM
-// \`define NO_LDX0
 // \`define FAST_MEM
 \`define RISCV_FORMAL_VALIDADDR(addr) ((addr >> 34) == 0)
 \`define RISCV_FORMAL_PMA_MAP rocket_pma_map

@@ -62,21 +62,9 @@ module rvfi_wrapper (
 	(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] io_slave_0_d_bits_data;
 	(* keep *) wire                          io_slave_0_d_bits_error;
 
-`ifdef ROCKET_INIT
-	assign io_master_0_a_ready = 0;
-	assign io_master_0_d_valid = 0;
-	assign io_master_0_d_bits_opcode = 0;
-	assign io_master_0_d_bits_param = 0;
-	assign io_master_0_d_bits_size = 0;
-	assign io_master_0_d_bits_source = 0;
-	assign io_master_0_d_bits_sink = 0;
-	assign io_master_0_d_bits_data = 0;
-	assign io_master_0_d_bits_error = 0;
-`else
 	// TileLink A-D Dummy Slave
 
-`ifndef NO_TL_AD_DUMMY
-	tilelink_ad_dummy TL_AD_DUMMY (
+	tilelink_ad_dummy tilelink_slave (
 		.clock                  (clock                     ),
 		.reset                  (actual_reset              ),
 
@@ -100,8 +88,6 @@ module rvfi_wrapper (
 		.channel_d_bits_size    (io_master_0_d_bits_size   ),
 		.channel_d_bits_source  (io_master_0_d_bits_source )
 	);
-`endif
-`endif
 
 	// Rocket Tile
 
@@ -183,71 +169,6 @@ module rvfi_wrapper (
 	assign rvfi_valid = uut.core.rvfi_mon.rvfi_valid;
 `endif
 
-`ifdef NO_LDX0
-	always @* begin
-		if (rvfi_valid[0] && rvfi_insn[6:0] == 7'b0000011) begin
-			assume (rvfi_insn[11:7] != 0);
-		end
-		if (rvfi_valid[1] && rvfi_insn[38:32] == 7'b0000011) begin
-			assume (rvfi_insn[43:39] != 0);
-		end
-	end
-`endif
-
-`ifdef NO_MISA
-	always @* begin
-		if (rvfi_valid[0] && rvfi_insn[13:12] && rvfi_insn[6:0] == 7'b1110011) begin
-			assume (rvfi_insn[31:20] != 12'h301);
-		end
-		if (rvfi_valid[1] && rvfi_insn[45:44] && rvfi_insn[38:32] == 7'b1110011) begin
-			assume (rvfi_insn[63:52] != 12'h301);
-		end
-	end
-`endif
-
-`ifdef NO_UNALIGNED_MISA
-	always @* begin
-		if (rvfi_valid[0] && rvfi_insn[13:12] && rvfi_insn[6:0] == 7'b1110011) begin
-			assume (rvfi_insn[31:20] != 12'h301 || rvfi_pc_rdata[0 +: 2] == 0);
-		end
-		if (rvfi_valid[1] && rvfi_insn[45:44] && rvfi_insn[38:32] == 7'b1110011) begin
-			assume (rvfi_insn[63:52] != 12'h301 || rvfi_pc_rdata[`RISCV_FORMAL_XLEN +: 2] == 0);
-		end
-	end
-`endif
-
-`ifdef NO_SYSTEM
-	wire riscv_rv32i_valid_ch0;
-	wire riscv_rv32i_valid_ch1;
-
-	riscv_rv32i_insn riscv_rv32i_insn_ch0 (
-		.insn(rvfi_insn[31:0]),
-		.valid(riscv_rv32i_valid_ch0)
-	);
-
-	riscv_rv32i_insn riscv_rv32i_insn_ch1 (
-		.insn(rvfi_insn[63:32]),
-		.valid(riscv_rv32i_valid_ch1)
-	);
-
-	always @* begin
-		if (rvfi_valid[0]) begin
-			assume (!rvfi_trap[0]);
-			assume (!rvfi_halt[0]);
-			assume (!rvfi_intr[0]);
-			assume (rvfi_insn[6:0] != 7'b1110011); // no SYSTEM instructions
-			assume (riscv_rv32i_valid_ch0); // no illegal instructions
-		end
-		if (rvfi_valid[1]) begin
-			assume (!rvfi_trap[1]);
-			assume (!rvfi_halt[1]);
-			assume (!rvfi_intr[1]);
-			assume (rvfi_insn[38:32] != 7'b1110011); // no SYSTEM instructions
-			assume (riscv_rv32i_valid_ch1); // no illegal instructions
-		end
-	end
-`endif
-
 	(* keep *) rvfi_channel #(.CHANNEL_IDX(0)) rvfi_channel_0 (`RVFI_CONN);
 	(* keep *) rvfi_channel #(.CHANNEL_IDX(1)) rvfi_channel_1 (`RVFI_CONN);
 endmodule
@@ -297,7 +218,6 @@ module rocket_pma_map (
 	end
 endmodule
 
-`ifndef ROCKET_INIT
 module tilelink_ad_dummy (
 	input clock,
 	input reset,
@@ -350,6 +270,18 @@ module tilelink_ad_dummy (
 	reg [       `XLEN_BYTES-1:0] op_mask;
 	reg [`RISCV_FORMAL_XLEN-1:0] op_data;
 
+`ifdef ROCKET_INIT
+	wire delay_a_nd = 0;
+	wire delay_d_nd = 0;
+
+	wire [                   2:0] channel_d_bits_opcode_nd = 0;
+	wire [                   1:0] channel_d_bits_param_nd  = 0;
+	wire [                   3:0] channel_d_bits_size_nd   = 0;
+	wire                          channel_d_bits_source_nd = 0;
+	wire                          channel_d_bits_sink_nd   = 0;
+	wire [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data_nd   = op_address > 32'h 0001_0100 ? 64'h_f05ff06f_f05ff06f : 64'h_00000013_00000013;
+	wire                          channel_d_bits_error_nd  = 0;
+`else
 	`rvformal_rand_reg delay_a_nd;
 	`rvformal_rand_reg delay_d_nd;
 
@@ -360,6 +292,7 @@ module tilelink_ad_dummy (
 	`rvformal_rand_reg                          channel_d_bits_sink_nd;
 	`rvformal_rand_reg [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data_nd;
 	`rvformal_rand_reg                          channel_d_bits_error_nd;
+`endif
 
 `ifdef FAST_MEM
 	wire delay_a = 0, delay_d = 0;
@@ -390,7 +323,7 @@ module tilelink_ad_dummy (
 				channel_d_bits_size = op_size;
 				channel_d_bits_source = op_source;
 				channel_d_bits_error = 0;
-				next_count = count + 4;
+				next_count = count + (`RISCV_FORMAL_XLEN / 8);
 				last = next_count >= (1 << op_size);
 				ready = 1;
 			end
@@ -428,7 +361,6 @@ module tilelink_ad_dummy (
 		end
 	end
 endmodule
-`endif
 
 `ifdef ROCKET_HIER_REF
 module RVFIMonitor (

@@ -31,9 +31,17 @@ module testbench (
 	reg p0o3m0 = 0, p0o3m1 = 0, p1o3m0 = 0, p1o3m1 = 0;
 	reg p0o4m0 = 0, p0o4m1 = 0, p1o4m0 = 0, p1o4m1 = 0;
 
-	wire [3:0] icount = p0o0 + p1o0 + p0o1 + p1o1 + p0o2 + p1o2 +
-			p0o3m0 + p0o3m1 + p1o3m0 + p1o3m1 +
-			p0o4m0 + p0o4m1 + p1o4m0 + p1o4m1;
+	wire [3:0] icount_p0 = p0o0 + p1o0 + p0o1;
+	wire [3:0] icount_p1 = p1o1 + p0o2 + p1o2;
+	wire [3:0] mcount_p0 = p0o3m0 + p0o3m1 + p0o4m0 + p0o4m1;
+	wire [3:0] mcount_p1 = p1o3m0 + p1o3m1 + p1o4m0 + p1o4m1;
+	wire [3:0] tcount = |icount_p0 + |icount_p1 + |mcount_p0 + |mcount_p1;
+
+	wire o0 = p0o0 || p1o0;
+	wire o1 = p0o1 || p1o1;
+	wire o2 = p0o2 || p1o2;
+	wire o3 = p0o3m0 || p0o3m1 || p1o3m0 || p1o3m1;
+	wire o4 = p0o4m0 || p0o4m1 || p1o4m0 || p1o4m1;
 
 	wire is_p0_ch0 = (rvfi_pc_rdata_ch0 & 32'hffff0000) == 32'h00010000;
 	wire is_p1_ch0 = (rvfi_pc_rdata_ch0 & 32'hffff0000) == 32'h00020000;
@@ -79,19 +87,26 @@ module testbench (
 	end
 
 	always @* begin
-		cover (icount == 1);
-		cover (icount == 2);
-		cover (icount == 3);
-		cover (icount == 4);
-		cover (icount == 5);
-		cover (icount == 6);
-		cover (icount == 7);
-		cover (icount == 8);
-		cover (icount == 9);
-		cover (icount == 10);
-		cover (icount == 11);
-		cover (icount == 12);
-		cover (icount == 13);
-		cover (icount == 14);
+		cover (icount_p0 == 1);
+		cover (icount_p0 == 2);
+		cover (icount_p0 == 3);
+
+		cover (icount_p1 == 1);
+		cover (icount_p1 == 2);
+		cover (icount_p1 == 3);
+
+		cover (mcount_p0 == 1);
+		cover (mcount_p0 == 2);
+		cover (mcount_p0 == 3);
+		cover (mcount_p0 == 4);
+
+		cover (mcount_p1 == 1);
+		cover (mcount_p1 == 2);
+		cover (mcount_p1 == 3);
+		cover (mcount_p1 == 4);
+
+		cover (tcount == 2);
+		cover (tcount == 3);
+		cover (tcount == 4);
 	end
 endmodule
