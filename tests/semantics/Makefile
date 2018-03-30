@@ -15,7 +15,6 @@ $(foreach job,$(shell cat ../../insns/isa_rv32i.txt),$(eval $(call template,$(jo
 
 riscv-semantics/.stamp:
 	set -ex; git clone --recursive https://github.com/mit-plv/riscv-semantics; \
-	git -C riscv-semantics/clash checkout master; \
 	cd riscv-semantics; ./install.sh; ./install-clash.sh; ./make-circuit.sh
 	touch riscv-semantics/.stamp
 
