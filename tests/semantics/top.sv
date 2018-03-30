@@ -218,10 +218,6 @@ module top (
 	);
 
 	rvspec rvspec_inst (
-		// rvspec is purely combinatorial
-		.clk              ( 1'b0),
-		.arst             ( 1'b0),
-
 		.in_instr         ( insn),
 		.in_pc            (   pc),
 		.out_nextPC       (  npc),

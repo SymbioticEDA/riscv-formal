@@ -4,7 +4,7 @@ all:: insn_$(1)/PASS
 insn_$(1)/PASS: insn_$(1).sby riscv-semantics/.stamp
 	sby -f insn_$(1).sby
 
-insn_$(1).sby: makejob.py
+insn_$(1).sby: makejob.py riscv-semantics/.stamp
 	python3 makejob.py $(1)
 
 clean::
