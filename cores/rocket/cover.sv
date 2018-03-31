@@ -83,6 +83,32 @@ module testbench (
 					if (is_p1_ch0 && is_m1_ch0) p1o4m1 <= 1;
 				end
 			end
+			if (rvfi_valid_ch1) begin
+				if (rvfi_insn_ch1 == opcode0) begin
+					if (is_p0_ch1) p0o0 <= 1;
+					if (is_p1_ch1) p1o0 <= 1;
+				end
+				if (rvfi_insn_ch1 == opcode1) begin
+					if (is_p0_ch1) p0o1 <= 1;
+					if (is_p1_ch1) p1o1 <= 1;
+				end
+				if (rvfi_insn_ch1 == opcode2) begin
+					if (is_p0_ch1) p0o2 <= 1;
+					if (is_p1_ch1) p1o2 <= 1;
+				end
+				if (rvfi_insn_ch1 == opcode3) begin
+					if (is_p0_ch1 && is_m0_ch1) p0o3m0 <= 1;
+					if (is_p0_ch1 && is_m1_ch1) p0o3m1 <= 1;
+					if (is_p1_ch1 && is_m0_ch1) p1o3m0 <= 1;
+					if (is_p1_ch1 && is_m1_ch1) p1o3m1 <= 1;
+				end
+				if (rvfi_insn_ch1 == opcode4) begin
+					if (is_p0_ch1 && is_m0_ch1) p0o4m0 <= 1;
+					if (is_p0_ch1 && is_m1_ch1) p0o4m1 <= 1;
+					if (is_p1_ch1 && is_m0_ch1) p1o4m0 <= 1;
+					if (is_p1_ch1 && is_m1_ch1) p1o4m1 <= 1;
+				end
+			end
 		end
 	end
 

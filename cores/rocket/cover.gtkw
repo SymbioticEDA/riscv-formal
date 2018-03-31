@@ -1,21 +1,21 @@
 [*]
 [*] GTKWave Analyzer v3.3.89 (w)1999-2018 BSI
-[*] Tue Mar 27 15:42:11 2018
+[*] Wed Mar 28 21:36:23 2018
 [*]
-[dumpfile] "/home/clifford/Work/riscv-formal/cores/rocket/trace0.vcd"
-[dumpfile_mtime] "Tue Mar 27 15:32:48 2018"
-[dumpfile_size] 5689271
+[dumpfile] "/home/clifford/Work/riscv-formal/cores/rocket/cover/engine_0/trace8.vcd"
+[dumpfile_mtime] "Wed Mar 28 21:28:42 2018"
+[dumpfile_size] 3363780
 [savefile] "/home/clifford/Work/riscv-formal/cores/rocket/cover.gtkw"
 [timestart] 0
-[size] 1000 600
-[pos] 795 -375
-*-7.307628 255 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[size] 1400 947
+[pos] 471 0
+*-6.307628 100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] testbench.
 [treeopen] testbench.uut.
 [sst_width] 225
-[signals_width] 254
+[signals_width] 362
 [sst_expanded] 1
-[sst_vpaned_height] 160
+[sst_vpaned_height] 277
 @28
 testbench.clk
 @200
@@ -36,19 +36,36 @@ testbench.rvfi_pc_rdata_ch1[63:0]
 testbench.rvfi_mem_addr_ch1[63:0]
 @200
 -
+@29
+testbench.p0o0
 @28
-testbench.uut.TL_AD_DUMMY.channel_a_valid
-testbench.uut.TL_AD_DUMMY.channel_a_ready
-testbench.uut.TL_AD_DUMMY.channel_a_bits_opcode[2:0]
-@22
-testbench.uut.TL_AD_DUMMY.channel_a_bits_address[31:0]
-testbench.uut.TL_AD_DUMMY.channel_a_bits_size[3:0]
+testbench.p0o1
+testbench.p0o2
+testbench.p0o3m0
+testbench.p0o3m1
+testbench.p0o4m0
+testbench.p0o4m1
+testbench.p1o0
+testbench.p1o1
+testbench.p1o2
+testbench.p1o3m0
+testbench.p1o3m1
+testbench.p1o4m0
+testbench.p1o4m1
 @200
 -
 @28
-testbench.uut.TL_AD_DUMMY.channel_d_valid
-testbench.uut.TL_AD_DUMMY.channel_d_ready
-@23
-testbench.uut.TL_AD_DUMMY.channel_d_bits_data[63:0]
+testbench.uut.tilelink_slave.channel_a_valid
+testbench.uut.tilelink_slave.channel_a_ready
+@22
+testbench.uut.tilelink_slave.channel_a_bits_size[3:0]
+testbench.uut.tilelink_slave.channel_a_bits_address[31:0]
+@200
+-
+@28
+testbench.uut.tilelink_slave.channel_d_valid
+testbench.uut.tilelink_slave.channel_d_ready
+@22
+testbench.uut.tilelink_slave.channel_d_bits_data[63:0]
 [pattern_trace] 1
 [pattern_trace] 0
