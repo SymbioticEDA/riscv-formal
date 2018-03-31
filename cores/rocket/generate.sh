@@ -226,13 +226,13 @@ cat > checks.cfg <<EOT
 isa rv$(if $enable_64bits; then echo  64; else echo  32; fi)i$(if $enable_compressed; then echo c; fi)
 nret 2
 
-insn          35
-reg     25    35
-pc_fwd  25    35
-pc_bwd  25    35
-unique  25 30 35
-causal  25    35
-# hang  25    50
+insn          20
+reg     10    20
+pc_fwd  10    20
+pc_bwd  10    20
+unique  10 15 20
+causal  10    20
+hang    10    35
 
 solver boolector
 # dumpsmt2
