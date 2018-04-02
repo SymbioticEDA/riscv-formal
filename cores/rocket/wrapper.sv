@@ -271,19 +271,31 @@ module tilelink_ad_dummy (
 	reg [`RISCV_FORMAL_XLEN-1:0] op_data;
 
 `ifdef ROCKET_INIT
-	wire delay_a_nd = 0;
-	wire delay_d_nd = 0;
+	integer cycle = 0;
+	always @(posedge clock) cycle <= cycle+1;
+
+  `ifdef ROCKET_INITHACK
+	wire delay_a = 0, delay_d = 0;
+  `else
+	wire delay_a = 1, delay_d = 1;
+  `endif
 
 	wire [                   2:0] channel_d_bits_opcode_nd = 0;
 	wire [                   1:0] channel_d_bits_param_nd  = 0;
 	wire [                   3:0] channel_d_bits_size_nd   = 0;
 	wire                          channel_d_bits_source_nd = 0;
 	wire                          channel_d_bits_sink_nd   = 0;
-	wire [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data_nd   = op_address > 32'h 0001_0100 ? 64'h_f05ff06f_f05ff06f : 64'h_00000013_00000013;
+	wire [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data_nd   = op_address > 32'h 0001_0100 && cycle > 250 ? 64'h_f05ff06f_f05ff06f : 64'h_00000013_00000013;
 	wire                          channel_d_bits_error_nd  = 0;
 `else
 	`rvformal_rand_reg delay_a_nd;
 	`rvformal_rand_reg delay_d_nd;
+
+  `ifdef FAST_MEM
+	wire delay_a = 0, delay_d = 0;
+  `else
+	wire delay_a = delay_a_nd, delay_d = delay_d_nd;
+  `endif
 
 	`rvformal_rand_reg [                   2:0] channel_d_bits_opcode_nd;
 	`rvformal_rand_reg [                   1:0] channel_d_bits_param_nd;
@@ -292,12 +304,6 @@ module tilelink_ad_dummy (
 	`rvformal_rand_reg                          channel_d_bits_sink_nd;
 	`rvformal_rand_reg [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data_nd;
 	`rvformal_rand_reg                          channel_d_bits_error_nd;
-`endif
-
-`ifdef FAST_MEM
-	wire delay_a = 0, delay_d = 0;
-`else
-	wire delay_a = delay_a_nd, delay_d = delay_d_nd;
 `endif
 
 	assign channel_a_ready = (!busy || (last && channel_d_ready && channel_d_valid)) && !reset && !delay_a;

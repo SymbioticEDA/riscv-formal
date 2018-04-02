@@ -7,6 +7,7 @@ export MAKEFLAGS="-j$(nproc)"
 export RISCV=$PWD/riscv-tools
 
 enable_compressed=true
+enable_inithack=true
 enable_64bits=true
 
 if [ ! -d rocket-chip ]; then
@@ -82,7 +83,7 @@ verilog_defines -D RISCV_FORMAL_ILEN=32
 
 read_verilog -sv ../../checks/rvfi_macros.vh
 read_verilog -sv ../../checks/rvfi_channel.sv
-read_verilog -sv -D ROCKET_INIT wrapper.sv
+read_verilog -sv -D ROCKET_INIT $(if $enable_inithack; then echo "-D ROCKET_INITHACK"; fi) wrapper.sv
 
 # ---- Create RVFI on RocketWithRVFI ----
 
@@ -199,7 +200,7 @@ hierarchy
 
 # rename -hide w:_*
 
-setparam -set INIT 16384'bx RocketTile.frontend.icache.data_arrays_*/ram
+$(if !$enable_inithack; then echo "# "; fi)setparam -set INIT 16384'bx RocketTile.frontend.icache.data_arrays_*/ram
 write_ilang rocket-syn/rocket-hier.il
 
 # flatten
@@ -226,13 +227,13 @@ cat > checks.cfg <<EOT
 isa rv$(if $enable_64bits; then echo  64; else echo  32; fi)i$(if $enable_compressed; then echo c; fi)
 nret 2
 
-insn          20
-reg     10    20
-pc_fwd  10    20
-pc_bwd  10    20
-unique  10 15 20
-causal  10    20
-hang    10    35
+insn    $(if $enable_inithack; then echo "      20"; else echo "      35"; fi)
+reg     $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
+pc_fwd  $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
+pc_bwd  $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
+unique  $(if $enable_inithack; then echo "10 15 20"; else echo "25 30 35"; fi)
+causal  $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
+hang    $(if $enable_inithack; then echo "10    35"; else echo "25    50"; fi)
 
 solver boolector
 # dumpsmt2
