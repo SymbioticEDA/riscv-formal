@@ -58,6 +58,7 @@ with open("makefile", "w") as makefile:
             print("  post_state.pc = npc;", file=f)
             print("  rvfi_insn_%s_state_t model = { };" % insn, file=f)
             print("  bool valid = (insn.bits() & MASK_%s) == MATCH_%s;" % (insn.upper(), insn.upper()), file=f)
+            print("  if (((insn.bits() & 3) != 3) && ((insn.bits() >> 16) != 0)) valid = false;", file=f)
             print("  model.rvfi_valid.value_0_0 = 1;", file=f)
             print("  model.rvfi_insn.value_31_0 = insn.bits();", file=f)
             print("  model.rvfi_pc_rdata.value_xlen = pre_state.pc;", file=f)
