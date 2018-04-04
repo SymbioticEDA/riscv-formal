@@ -22,6 +22,13 @@ trigger an illegal instruction trap) and hint instructions (that should be
 treated as NOPs). Some implementations get some of those opcodes wrong, and
 riscv-formal has found bugs like this.
 
+There were even instances of implementations that fixed issues like that, and
+then later reversed the fixes because someone looking over the code misread the
+standard and thought they would fix a bug but instead they re-introduced one. A
+good example why one should not only verify their implementation once, but
+continuously keep verifying it as long as changes are made to the design, even
+in cases where those changes are considered "only trivial minor changes".
+
 ### JALR clears LSB after addition
 
 The JALR instruction adds an immediate to its source register, clears the LSB
