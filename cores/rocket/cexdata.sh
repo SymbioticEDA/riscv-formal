@@ -16,6 +16,7 @@ mkdir cexdata
 cp rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v cexdata/rocketchip.v
 cp rocket-chip/src/main/scala/system/Configs.scala cexdata/Configs.scala
 git -C rocket-chip diff src/main/scala/system/Configs.scala > cexdata/Configs.scala.diff
+cp rocket-syn/init.vcd cexdata/init.vcd
 
 for x in checks/*/FAIL; do
 	test -f $x || continue

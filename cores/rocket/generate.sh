@@ -7,7 +7,7 @@ export MAKEFLAGS="-j$(nproc)"
 export RISCV=$PWD/riscv-tools
 
 enable_compressed=true
-enable_inithack=true
+enable_inithack=false
 enable_64bits=true
 
 if [ ! -d rocket-chip ]; then
@@ -236,7 +236,7 @@ causal  $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
 hang    $(if $enable_inithack; then echo "10    35"; else echo "25    50"; fi)
 
 solver boolector
-# dumpsmt2
+dumpsmt2
 
 [defines]
 \`define ROCKET_NORESET
