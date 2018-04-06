@@ -107,7 +107,7 @@ prvalue("out_storeData", 32)
 
 print()
 
-prvalue("out_loadEn", 4)
+prvalue("out_loadEnable", 4)
 prvalue("out_loadAddress", 32)
 prvalue("in_loadData", 32)
 
