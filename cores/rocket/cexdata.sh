@@ -5,13 +5,9 @@ set -ex
 rm -rf cexdata
 mkdir cexdata
 
-{
-	echo "rocket-chip version:"
-	git -C rocket-chip log -n1 --format=fuller
-	echo
-	echo "riscv-formal version:"
-	git log -n1 --format=fuller
-} > cexdata/version.txt
+while read dir; do echo "$dir	$(git -C $dir log -n1 --oneline)"; \
+	done < <( echo .; find rocket-chip -name '.git' -printf '%h\n'; ) | \
+	expand -t30 > cexdata/version.txt
 
 cp rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v cexdata/rocketchip.v
 cp rocket-chip/src/main/scala/system/Configs.scala cexdata/Configs.scala
