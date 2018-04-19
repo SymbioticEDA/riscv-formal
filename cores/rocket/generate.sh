@@ -29,10 +29,10 @@ if [ ! -d rocket-chip ]; then
 EOT
 
 	if $enable_compressed; then
-		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)ic -p RVFIMonitor -c 2; ) > vsrc/RVFIMonitor.v
+		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)ic -p RVFIMonitor -c 2; ) > src/main/resources/vsrc/RVFIMonitor.v
 	else
 		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /new WithRVFIMonitors/ s/$/\n  new WithoutCompressed ++/; };' src/main/scala/system/Configs.scala
-		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)i -p RVFIMonitor -c 2; ) > vsrc/RVFIMonitor.v
+		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)i -p RVFIMonitor -c 2; ) > src/main/resources/vsrc/RVFIMonitor.v
 	fi
 
 	if $enable_64bits; then
