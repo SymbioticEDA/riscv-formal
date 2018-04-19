@@ -7,7 +7,7 @@ export MAKEFLAGS="-j$(nproc)"
 export RISCV=$PWD/riscv-tools
 
 enable_compressed=true
-enable_inithack=false
+enable_inithack=true
 enable_64bits=true
 
 if [ ! -d rocket-chip ]; then
