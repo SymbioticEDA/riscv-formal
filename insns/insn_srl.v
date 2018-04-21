@@ -31,7 +31,8 @@ module rvfi_insn_srl (
   wire [6:0] insn_opcode = rvfi_insn[ 6: 0];
 
   // SRL instruction
-  wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata >> rvfi_rs2_rdata[4:0];
+  wire [5:0] shamt = `RISCV_FORMAL_XLEN == 64 ? rvfi_rs2_rdata[5:0] : rvfi_rs2_rdata[4:0];
+  wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata >> shamt;
   assign spec_valid = rvfi_valid && !insn_padding && insn_funct7 == 7'b 0000000 && insn_funct3 == 3'b 101 && insn_opcode == 7'b 0110011;
   assign spec_rs1_addr = insn_rs1;
   assign spec_rs2_addr = insn_rs2;

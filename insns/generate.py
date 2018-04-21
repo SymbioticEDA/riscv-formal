@@ -505,13 +505,15 @@ def insn_shimm(insn, funct6, funct3, expr):
 
         footer(f)
 
-def insn_alu(insn, funct7, funct3, expr, alt_add=None, alt_sub=None):
+def insn_alu(insn, funct7, funct3, expr, alt_add=None, alt_sub=None, shamt=False):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_r(f)
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
+        if shamt:
+            print("  wire [5:0] shamt = `RISCV_FORMAL_XLEN == 64 ? rvfi_rs2_rdata[5:0] : rvfi_rs2_rdata[4:0];", file=f)
         if alt_add is not None or alt_sub is not None:
             print("`ifdef RISCV_FORMAL_ALTOPS", file=f)
             if alt_add is not None:
@@ -942,12 +944,12 @@ insn_shimm("srai", "010000", "101", "$signed(rvfi_rs1_rdata) >>> insn_shamt")
 
 insn_alu("add",  "0000000", "000", "rvfi_rs1_rdata + rvfi_rs2_rdata")
 insn_alu("sub",  "0100000", "000", "rvfi_rs1_rdata - rvfi_rs2_rdata")
-insn_alu("sll",  "0000000", "001", "rvfi_rs1_rdata << rvfi_rs2_rdata[4:0]")
+insn_alu("sll",  "0000000", "001", "rvfi_rs1_rdata << shamt", shamt=True)
 insn_alu("slt",  "0000000", "010", "$signed(rvfi_rs1_rdata) < $signed(rvfi_rs2_rdata)")
 insn_alu("sltu", "0000000", "011", "rvfi_rs1_rdata < rvfi_rs2_rdata")
 insn_alu("xor",  "0000000", "100", "rvfi_rs1_rdata ^ rvfi_rs2_rdata")
-insn_alu("srl",  "0000000", "101", "rvfi_rs1_rdata >> rvfi_rs2_rdata[4:0]")
-insn_alu("sra",  "0100000", "101", "$signed(rvfi_rs1_rdata) >>> rvfi_rs2_rdata[4:0]")
+insn_alu("srl",  "0000000", "101", "rvfi_rs1_rdata >> shamt", shamt=True)
+insn_alu("sra",  "0100000", "101", "$signed(rvfi_rs1_rdata) >>> shamt", shamt=True)
 insn_alu("or",   "0000000", "110", "rvfi_rs1_rdata | rvfi_rs2_rdata")
 insn_alu("and",  "0000000", "111", "rvfi_rs1_rdata & rvfi_rs2_rdata")
 
