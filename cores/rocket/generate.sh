@@ -241,7 +241,7 @@ dumpsmt2
 [defines]
 \`define ROCKET_NORESET
 // \`define FAST_MEM
-\`define RISCV_FORMAL_VALIDADDR(addr) ((addr >> 34) == 0)
+\`define RISCV_FORMAL_VALIDADDR(addr) ({31{addr[32]}} == addr[63:33])
 \`define RISCV_FORMAL_PMA_MAP rocket_pma_map
 
 [script-sources]
