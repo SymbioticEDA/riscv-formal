@@ -37,13 +37,16 @@ jal
 jalr
 lb
 lbu
+ld
 lh
 lhu
 lui
 lw
+lwu
 or
 ori
 sb
+sd
 sh
 sll
 slli

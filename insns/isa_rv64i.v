@@ -500,6 +500,38 @@ module rvfi_isa_rv64i (
     .spec_mem_wdata(spec_insn_lbu_mem_wdata)
   );
 
+  wire                                spec_insn_ld_valid;
+  wire                                spec_insn_ld_trap;
+  wire [                       4 : 0] spec_insn_ld_rs1_addr;
+  wire [                       4 : 0] spec_insn_ld_rs2_addr;
+  wire [                       4 : 0] spec_insn_ld_rd_addr;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_ld_rd_wdata;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_ld_pc_wdata;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_ld_mem_addr;
+  wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_insn_ld_mem_rmask;
+  wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_insn_ld_mem_wmask;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_ld_mem_wdata;
+
+  rvfi_insn_ld insn_ld (
+    .rvfi_valid(rvfi_valid),
+    .rvfi_insn(rvfi_insn),
+    .rvfi_pc_rdata(rvfi_pc_rdata),
+    .rvfi_rs1_rdata(rvfi_rs1_rdata),
+    .rvfi_rs2_rdata(rvfi_rs2_rdata),
+    .rvfi_mem_rdata(rvfi_mem_rdata),
+    .spec_valid(spec_insn_ld_valid),
+    .spec_trap(spec_insn_ld_trap),
+    .spec_rs1_addr(spec_insn_ld_rs1_addr),
+    .spec_rs2_addr(spec_insn_ld_rs2_addr),
+    .spec_rd_addr(spec_insn_ld_rd_addr),
+    .spec_rd_wdata(spec_insn_ld_rd_wdata),
+    .spec_pc_wdata(spec_insn_ld_pc_wdata),
+    .spec_mem_addr(spec_insn_ld_mem_addr),
+    .spec_mem_rmask(spec_insn_ld_mem_rmask),
+    .spec_mem_wmask(spec_insn_ld_mem_wmask),
+    .spec_mem_wdata(spec_insn_ld_mem_wdata)
+  );
+
   wire                                spec_insn_lh_valid;
   wire                                spec_insn_lh_trap;
   wire [                       4 : 0] spec_insn_lh_rs1_addr;
@@ -628,6 +660,38 @@ module rvfi_isa_rv64i (
     .spec_mem_wdata(spec_insn_lw_mem_wdata)
   );
 
+  wire                                spec_insn_lwu_valid;
+  wire                                spec_insn_lwu_trap;
+  wire [                       4 : 0] spec_insn_lwu_rs1_addr;
+  wire [                       4 : 0] spec_insn_lwu_rs2_addr;
+  wire [                       4 : 0] spec_insn_lwu_rd_addr;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_lwu_rd_wdata;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_lwu_pc_wdata;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_lwu_mem_addr;
+  wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_insn_lwu_mem_rmask;
+  wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_insn_lwu_mem_wmask;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_lwu_mem_wdata;
+
+  rvfi_insn_lwu insn_lwu (
+    .rvfi_valid(rvfi_valid),
+    .rvfi_insn(rvfi_insn),
+    .rvfi_pc_rdata(rvfi_pc_rdata),
+    .rvfi_rs1_rdata(rvfi_rs1_rdata),
+    .rvfi_rs2_rdata(rvfi_rs2_rdata),
+    .rvfi_mem_rdata(rvfi_mem_rdata),
+    .spec_valid(spec_insn_lwu_valid),
+    .spec_trap(spec_insn_lwu_trap),
+    .spec_rs1_addr(spec_insn_lwu_rs1_addr),
+    .spec_rs2_addr(spec_insn_lwu_rs2_addr),
+    .spec_rd_addr(spec_insn_lwu_rd_addr),
+    .spec_rd_wdata(spec_insn_lwu_rd_wdata),
+    .spec_pc_wdata(spec_insn_lwu_pc_wdata),
+    .spec_mem_addr(spec_insn_lwu_mem_addr),
+    .spec_mem_rmask(spec_insn_lwu_mem_rmask),
+    .spec_mem_wmask(spec_insn_lwu_mem_wmask),
+    .spec_mem_wdata(spec_insn_lwu_mem_wdata)
+  );
+
   wire                                spec_insn_or_valid;
   wire                                spec_insn_or_trap;
   wire [                       4 : 0] spec_insn_or_rs1_addr;
@@ -722,6 +786,38 @@ module rvfi_isa_rv64i (
     .spec_mem_rmask(spec_insn_sb_mem_rmask),
     .spec_mem_wmask(spec_insn_sb_mem_wmask),
     .spec_mem_wdata(spec_insn_sb_mem_wdata)
+  );
+
+  wire                                spec_insn_sd_valid;
+  wire                                spec_insn_sd_trap;
+  wire [                       4 : 0] spec_insn_sd_rs1_addr;
+  wire [                       4 : 0] spec_insn_sd_rs2_addr;
+  wire [                       4 : 0] spec_insn_sd_rd_addr;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_sd_rd_wdata;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_sd_pc_wdata;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_sd_mem_addr;
+  wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_insn_sd_mem_rmask;
+  wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] spec_insn_sd_mem_wmask;
+  wire [`RISCV_FORMAL_XLEN   - 1 : 0] spec_insn_sd_mem_wdata;
+
+  rvfi_insn_sd insn_sd (
+    .rvfi_valid(rvfi_valid),
+    .rvfi_insn(rvfi_insn),
+    .rvfi_pc_rdata(rvfi_pc_rdata),
+    .rvfi_rs1_rdata(rvfi_rs1_rdata),
+    .rvfi_rs2_rdata(rvfi_rs2_rdata),
+    .rvfi_mem_rdata(rvfi_mem_rdata),
+    .spec_valid(spec_insn_sd_valid),
+    .spec_trap(spec_insn_sd_trap),
+    .spec_rs1_addr(spec_insn_sd_rs1_addr),
+    .spec_rs2_addr(spec_insn_sd_rs2_addr),
+    .spec_rd_addr(spec_insn_sd_rd_addr),
+    .spec_rd_wdata(spec_insn_sd_rd_wdata),
+    .spec_pc_wdata(spec_insn_sd_pc_wdata),
+    .spec_mem_addr(spec_insn_sd_mem_addr),
+    .spec_mem_rmask(spec_insn_sd_mem_rmask),
+    .spec_mem_wmask(spec_insn_sd_mem_wmask),
+    .spec_mem_wdata(spec_insn_sd_mem_wdata)
   );
 
   wire                                spec_insn_sh_valid;
@@ -1220,13 +1316,16 @@ module rvfi_isa_rv64i (
 		spec_insn_jalr_valid ? spec_insn_jalr_valid :
 		spec_insn_lb_valid ? spec_insn_lb_valid :
 		spec_insn_lbu_valid ? spec_insn_lbu_valid :
+		spec_insn_ld_valid ? spec_insn_ld_valid :
 		spec_insn_lh_valid ? spec_insn_lh_valid :
 		spec_insn_lhu_valid ? spec_insn_lhu_valid :
 		spec_insn_lui_valid ? spec_insn_lui_valid :
 		spec_insn_lw_valid ? spec_insn_lw_valid :
+		spec_insn_lwu_valid ? spec_insn_lwu_valid :
 		spec_insn_or_valid ? spec_insn_or_valid :
 		spec_insn_ori_valid ? spec_insn_ori_valid :
 		spec_insn_sb_valid ? spec_insn_sb_valid :
+		spec_insn_sd_valid ? spec_insn_sd_valid :
 		spec_insn_sh_valid ? spec_insn_sh_valid :
 		spec_insn_sll_valid ? spec_insn_sll_valid :
 		spec_insn_slli_valid ? spec_insn_slli_valid :
@@ -1258,13 +1357,16 @@ module rvfi_isa_rv64i (
 		spec_insn_jalr_valid ? spec_insn_jalr_trap :
 		spec_insn_lb_valid ? spec_insn_lb_trap :
 		spec_insn_lbu_valid ? spec_insn_lbu_trap :
+		spec_insn_ld_valid ? spec_insn_ld_trap :
 		spec_insn_lh_valid ? spec_insn_lh_trap :
 		spec_insn_lhu_valid ? spec_insn_lhu_trap :
 		spec_insn_lui_valid ? spec_insn_lui_trap :
 		spec_insn_lw_valid ? spec_insn_lw_trap :
+		spec_insn_lwu_valid ? spec_insn_lwu_trap :
 		spec_insn_or_valid ? spec_insn_or_trap :
 		spec_insn_ori_valid ? spec_insn_ori_trap :
 		spec_insn_sb_valid ? spec_insn_sb_trap :
+		spec_insn_sd_valid ? spec_insn_sd_trap :
 		spec_insn_sh_valid ? spec_insn_sh_trap :
 		spec_insn_sll_valid ? spec_insn_sll_trap :
 		spec_insn_slli_valid ? spec_insn_slli_trap :
@@ -1296,13 +1398,16 @@ module rvfi_isa_rv64i (
 		spec_insn_jalr_valid ? spec_insn_jalr_rs1_addr :
 		spec_insn_lb_valid ? spec_insn_lb_rs1_addr :
 		spec_insn_lbu_valid ? spec_insn_lbu_rs1_addr :
+		spec_insn_ld_valid ? spec_insn_ld_rs1_addr :
 		spec_insn_lh_valid ? spec_insn_lh_rs1_addr :
 		spec_insn_lhu_valid ? spec_insn_lhu_rs1_addr :
 		spec_insn_lui_valid ? spec_insn_lui_rs1_addr :
 		spec_insn_lw_valid ? spec_insn_lw_rs1_addr :
+		spec_insn_lwu_valid ? spec_insn_lwu_rs1_addr :
 		spec_insn_or_valid ? spec_insn_or_rs1_addr :
 		spec_insn_ori_valid ? spec_insn_ori_rs1_addr :
 		spec_insn_sb_valid ? spec_insn_sb_rs1_addr :
+		spec_insn_sd_valid ? spec_insn_sd_rs1_addr :
 		spec_insn_sh_valid ? spec_insn_sh_rs1_addr :
 		spec_insn_sll_valid ? spec_insn_sll_rs1_addr :
 		spec_insn_slli_valid ? spec_insn_slli_rs1_addr :
@@ -1334,13 +1439,16 @@ module rvfi_isa_rv64i (
 		spec_insn_jalr_valid ? spec_insn_jalr_rs2_addr :
 		spec_insn_lb_valid ? spec_insn_lb_rs2_addr :
 		spec_insn_lbu_valid ? spec_insn_lbu_rs2_addr :
+		spec_insn_ld_valid ? spec_insn_ld_rs2_addr :
 		spec_insn_lh_valid ? spec_insn_lh_rs2_addr :
 		spec_insn_lhu_valid ? spec_insn_lhu_rs2_addr :
 		spec_insn_lui_valid ? spec_insn_lui_rs2_addr :
 		spec_insn_lw_valid ? spec_insn_lw_rs2_addr :
+		spec_insn_lwu_valid ? spec_insn_lwu_rs2_addr :
 		spec_insn_or_valid ? spec_insn_or_rs2_addr :
 		spec_insn_ori_valid ? spec_insn_ori_rs2_addr :
 		spec_insn_sb_valid ? spec_insn_sb_rs2_addr :
+		spec_insn_sd_valid ? spec_insn_sd_rs2_addr :
 		spec_insn_sh_valid ? spec_insn_sh_rs2_addr :
 		spec_insn_sll_valid ? spec_insn_sll_rs2_addr :
 		spec_insn_slli_valid ? spec_insn_slli_rs2_addr :
@@ -1372,13 +1480,16 @@ module rvfi_isa_rv64i (
 		spec_insn_jalr_valid ? spec_insn_jalr_rd_addr :
 		spec_insn_lb_valid ? spec_insn_lb_rd_addr :
 		spec_insn_lbu_valid ? spec_insn_lbu_rd_addr :
+		spec_insn_ld_valid ? spec_insn_ld_rd_addr :
 		spec_insn_lh_valid ? spec_insn_lh_rd_addr :
 		spec_insn_lhu_valid ? spec_insn_lhu_rd_addr :
 		spec_insn_lui_valid ? spec_insn_lui_rd_addr :
 		spec_insn_lw_valid ? spec_insn_lw_rd_addr :
+		spec_insn_lwu_valid ? spec_insn_lwu_rd_addr :
 		spec_insn_or_valid ? spec_insn_or_rd_addr :
 		spec_insn_ori_valid ? spec_insn_ori_rd_addr :
 		spec_insn_sb_valid ? spec_insn_sb_rd_addr :
+		spec_insn_sd_valid ? spec_insn_sd_rd_addr :
 		spec_insn_sh_valid ? spec_insn_sh_rd_addr :
 		spec_insn_sll_valid ? spec_insn_sll_rd_addr :
 		spec_insn_slli_valid ? spec_insn_slli_rd_addr :
@@ -1410,13 +1521,16 @@ module rvfi_isa_rv64i (
 		spec_insn_jalr_valid ? spec_insn_jalr_rd_wdata :
 		spec_insn_lb_valid ? spec_insn_lb_rd_wdata :
 		spec_insn_lbu_valid ? spec_insn_lbu_rd_wdata :
+		spec_insn_ld_valid ? spec_insn_ld_rd_wdata :
 		spec_insn_lh_valid ? spec_insn_lh_rd_wdata :
 		spec_insn_lhu_valid ? spec_insn_lhu_rd_wdata :
 		spec_insn_lui_valid ? spec_insn_lui_rd_wdata :
 		spec_insn_lw_valid ? spec_insn_lw_rd_wdata :
+		spec_insn_lwu_valid ? spec_insn_lwu_rd_wdata :
 		spec_insn_or_valid ? spec_insn_or_rd_wdata :
 		spec_insn_ori_valid ? spec_insn_ori_rd_wdata :
 		spec_insn_sb_valid ? spec_insn_sb_rd_wdata :
+		spec_insn_sd_valid ? spec_insn_sd_rd_wdata :
 		spec_insn_sh_valid ? spec_insn_sh_rd_wdata :
 		spec_insn_sll_valid ? spec_insn_sll_rd_wdata :
 		spec_insn_slli_valid ? spec_insn_slli_rd_wdata :
@@ -1448,13 +1562,16 @@ module rvfi_isa_rv64i (
 		spec_insn_jalr_valid ? spec_insn_jalr_pc_wdata :
 		spec_insn_lb_valid ? spec_insn_lb_pc_wdata :
 		spec_insn_lbu_valid ? spec_insn_lbu_pc_wdata :
+		spec_insn_ld_valid ? spec_insn_ld_pc_wdata :
 		spec_insn_lh_valid ? spec_insn_lh_pc_wdata :
 		spec_insn_lhu_valid ? spec_insn_lhu_pc_wdata :
 		spec_insn_lui_valid ? spec_insn_lui_pc_wdata :
 		spec_insn_lw_valid ? spec_insn_lw_pc_wdata :
+		spec_insn_lwu_valid ? spec_insn_lwu_pc_wdata :
 		spec_insn_or_valid ? spec_insn_or_pc_wdata :
 		spec_insn_ori_valid ? spec_insn_ori_pc_wdata :
 		spec_insn_sb_valid ? spec_insn_sb_pc_wdata :
+		spec_insn_sd_valid ? spec_insn_sd_pc_wdata :
 		spec_insn_sh_valid ? spec_insn_sh_pc_wdata :
 		spec_insn_sll_valid ? spec_insn_sll_pc_wdata :
 		spec_insn_slli_valid ? spec_insn_slli_pc_wdata :
@@ -1486,13 +1603,16 @@ module rvfi_isa_rv64i (
 		spec_insn_jalr_valid ? spec_insn_jalr_mem_addr :
 		spec_insn_lb_valid ? spec_insn_lb_mem_addr :
 		spec_insn_lbu_valid ? spec_insn_lbu_mem_addr :
+		spec_insn_ld_valid ? spec_insn_ld_mem_addr :
 		spec_insn_lh_valid ? spec_insn_lh_mem_addr :
 		spec_insn_lhu_valid ? spec_insn_lhu_mem_addr :
 		spec_insn_lui_valid ? spec_insn_lui_mem_addr :
 		spec_insn_lw_valid ? spec_insn_lw_mem_addr :
+		spec_insn_lwu_valid ? spec_insn_lwu_mem_addr :
 		spec_insn_or_valid ? spec_insn_or_mem_addr :
 		spec_insn_ori_valid ? spec_insn_ori_mem_addr :
 		spec_insn_sb_valid ? spec_insn_sb_mem_addr :
+		spec_insn_sd_valid ? spec_insn_sd_mem_addr :
 		spec_insn_sh_valid ? spec_insn_sh_mem_addr :
 		spec_insn_sll_valid ? spec_insn_sll_mem_addr :
 		spec_insn_slli_valid ? spec_insn_slli_mem_addr :
@@ -1524,13 +1644,16 @@ module rvfi_isa_rv64i (
 		spec_insn_jalr_valid ? spec_insn_jalr_mem_rmask :
 		spec_insn_lb_valid ? spec_insn_lb_mem_rmask :
 		spec_insn_lbu_valid ? spec_insn_lbu_mem_rmask :
+		spec_insn_ld_valid ? spec_insn_ld_mem_rmask :
 		spec_insn_lh_valid ? spec_insn_lh_mem_rmask :
 		spec_insn_lhu_valid ? spec_insn_lhu_mem_rmask :
 		spec_insn_lui_valid ? spec_insn_lui_mem_rmask :
 		spec_insn_lw_valid ? spec_insn_lw_mem_rmask :
+		spec_insn_lwu_valid ? spec_insn_lwu_mem_rmask :
 		spec_insn_or_valid ? spec_insn_or_mem_rmask :
 		spec_insn_ori_valid ? spec_insn_ori_mem_rmask :
 		spec_insn_sb_valid ? spec_insn_sb_mem_rmask :
+		spec_insn_sd_valid ? spec_insn_sd_mem_rmask :
 		spec_insn_sh_valid ? spec_insn_sh_mem_rmask :
 		spec_insn_sll_valid ? spec_insn_sll_mem_rmask :
 		spec_insn_slli_valid ? spec_insn_slli_mem_rmask :
@@ -1562,13 +1685,16 @@ module rvfi_isa_rv64i (
 		spec_insn_jalr_valid ? spec_insn_jalr_mem_wmask :
 		spec_insn_lb_valid ? spec_insn_lb_mem_wmask :
 		spec_insn_lbu_valid ? spec_insn_lbu_mem_wmask :
+		spec_insn_ld_valid ? spec_insn_ld_mem_wmask :
 		spec_insn_lh_valid ? spec_insn_lh_mem_wmask :
 		spec_insn_lhu_valid ? spec_insn_lhu_mem_wmask :
 		spec_insn_lui_valid ? spec_insn_lui_mem_wmask :
 		spec_insn_lw_valid ? spec_insn_lw_mem_wmask :
+		spec_insn_lwu_valid ? spec_insn_lwu_mem_wmask :
 		spec_insn_or_valid ? spec_insn_or_mem_wmask :
 		spec_insn_ori_valid ? spec_insn_ori_mem_wmask :
 		spec_insn_sb_valid ? spec_insn_sb_mem_wmask :
+		spec_insn_sd_valid ? spec_insn_sd_mem_wmask :
 		spec_insn_sh_valid ? spec_insn_sh_mem_wmask :
 		spec_insn_sll_valid ? spec_insn_sll_mem_wmask :
 		spec_insn_slli_valid ? spec_insn_slli_mem_wmask :
@@ -1600,13 +1726,16 @@ module rvfi_isa_rv64i (
 		spec_insn_jalr_valid ? spec_insn_jalr_mem_wdata :
 		spec_insn_lb_valid ? spec_insn_lb_mem_wdata :
 		spec_insn_lbu_valid ? spec_insn_lbu_mem_wdata :
+		spec_insn_ld_valid ? spec_insn_ld_mem_wdata :
 		spec_insn_lh_valid ? spec_insn_lh_mem_wdata :
 		spec_insn_lhu_valid ? spec_insn_lhu_mem_wdata :
 		spec_insn_lui_valid ? spec_insn_lui_mem_wdata :
 		spec_insn_lw_valid ? spec_insn_lw_mem_wdata :
+		spec_insn_lwu_valid ? spec_insn_lwu_mem_wdata :
 		spec_insn_or_valid ? spec_insn_or_mem_wdata :
 		spec_insn_ori_valid ? spec_insn_ori_mem_wdata :
 		spec_insn_sb_valid ? spec_insn_sb_mem_wdata :
+		spec_insn_sd_valid ? spec_insn_sd_mem_wdata :
 		spec_insn_sh_valid ? spec_insn_sh_mem_wdata :
 		spec_insn_sll_valid ? spec_insn_sll_mem_wdata :
 		spec_insn_slli_valid ? spec_insn_slli_mem_wdata :

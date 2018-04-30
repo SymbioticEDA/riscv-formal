@@ -39,10 +39,12 @@ jal
 jalr
 lb
 lbu
+ld
 lh
 lhu
 lui
 lw
+lwu
 mul
 mulh
 mulhsu
@@ -52,6 +54,7 @@ ori
 rem
 remu
 sb
+sd
 sh
 sll
 slli

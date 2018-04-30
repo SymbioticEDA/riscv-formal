@@ -953,6 +953,12 @@ insn_alu("sra",  "0100000", "101", "$signed(rvfi_rs1_rdata) >>> shamt", shamt=Tr
 insn_alu("or",   "0000000", "110", "rvfi_rs1_rdata | rvfi_rs2_rdata")
 insn_alu("and",  "0000000", "111", "rvfi_rs1_rdata & rvfi_rs2_rdata")
 
+current_isa = ["rv64i"]
+
+insn_l("lwu", "110", 4, False)
+insn_l("ld",  "011", 8, True)
+insn_s("sd",  "011", 8)
+
 ## Multiply/Divide ISA (M)
 
 current_isa = ["rv32im"]
