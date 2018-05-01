@@ -473,34 +473,56 @@ def insn_s(insn, funct3, numbytes):
 
         footer(f)
 
-def insn_imm(insn, funct3, expr):
+def insn_imm(insn, funct3, expr, wmode=False):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_i(f)
 
+        if wmode:
+            result_range = "31:0"
+            opcode = "0011011"
+        else:
+            result_range = "`RISCV_FORMAL_XLEN-1:0"
+            opcode = "0010011"
+
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
-        print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
-        assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct3 == 3'b %s && insn_opcode == 7'b 0010011" % funct3)
+        print("  wire [%s] result = %s;" % (result_range, expr), file=f)
+        assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct3 == 3'b %s && insn_opcode == 7'b %s" % (funct3, opcode))
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rd_addr", "insn_rd")
-        assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        if wmode:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? {{`RISCV_FORMAL_XLEN-32{result[31]}}, result} : 0")
+        else:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 4")
 
         footer(f)
 
-def insn_shimm(insn, funct6, funct3, expr):
+def insn_shimm(insn, funct6, funct3, expr, wmode=False):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_i_shift(f)
 
+        if wmode:
+            xtra_shamt_check = "!insn_shamt[5]"
+            result_range = "31:0"
+            opcode = "0011011"
+        else:
+            xtra_shamt_check = "(!insn_shamt[5] || `RISCV_FORMAL_XLEN == 64)"
+            result_range = "`RISCV_FORMAL_XLEN-1:0"
+            opcode = "0010011"
+
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
-        print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
-        assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct6 == 6'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b 0010011 && (!insn_shamt[5] || `RISCV_FORMAL_XLEN == 64)" % (funct6, funct3))
+        print("  wire [%s] result = %s;" % (result_range, expr), file=f)
+        assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct6 == 6'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b %s && %s" % (funct6, funct3, opcode, xtra_shamt_check))
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rd_addr", "insn_rd")
-        assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        if wmode:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? {{`RISCV_FORMAL_XLEN-32{result[31]}}, result} : 0")
+        else:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 4")
 
         footer(f)
@@ -510,6 +532,13 @@ def insn_alu(insn, funct7, funct3, expr, alt_add=None, alt_sub=None, shamt=False
         header(f, insn)
         format_r(f)
 
+        if wmode:
+            result_range = "31:0"
+            opcode = "0111011"
+        else:
+            result_range = "`RISCV_FORMAL_XLEN-1:0"
+            opcode = "0110011"
+
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         if shamt:
@@ -517,10 +546,6 @@ def insn_alu(insn, funct7, funct3, expr, alt_add=None, alt_sub=None, shamt=False
                 print("  wire [4:0] shamt = rvfi_rs2_rdata[4:0];", file=f)
             else:
                 print("  wire [5:0] shamt = `RISCV_FORMAL_XLEN == 64 ? rvfi_rs2_rdata[5:0] : rvfi_rs2_rdata[4:0];", file=f)
-        if wmode:
-            result_range = "31:0"
-        else:
-            result_range = "`RISCV_FORMAL_XLEN-1:0"
         if alt_add is not None or alt_sub is not None:
             print("`ifdef RISCV_FORMAL_ALTOPS", file=f)
             if alt_add is not None:
@@ -534,10 +559,6 @@ def insn_alu(insn, funct7, funct3, expr, alt_add=None, alt_sub=None, shamt=False
             print("`endif", file=f)
         else:
             print("  wire [%s] result = %s;" % (result_range, expr), file=f)
-        if wmode:
-            opcode = "0111011"
-        else:
-            opcode = "0110011"
         assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct7 == 7'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b %s" % (funct7, funct3, opcode))
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rs2_addr", "insn_rs2")
@@ -973,7 +994,11 @@ insn_l("lwu", "110", 4, False)
 insn_l("ld",  "011", 8, True)
 insn_s("sd",  "011", 8)
 
-# TBD: ADDIW, SLLIW, SRLIW, SRAIW
+insn_imm("addiw",  "000", "rvfi_rs1_rdata[31:0] + insn_imm[31:0]", wmode=True)
+
+insn_shimm("slliw", "000000", "001", "rvfi_rs1_rdata[31:0] << insn_shamt", wmode=True)
+insn_shimm("srliw", "000000", "101", "rvfi_rs1_rdata[31:0] >> insn_shamt", wmode=True)
+insn_shimm("sraiw", "010000", "101", "$signed(rvfi_rs1_rdata[31:0]) >>> insn_shamt", wmode=True)
 
 insn_alu("addw", "0000000", "000", "rvfi_rs1_rdata[31:0] + rvfi_rs2_rdata[31:0]", wmode=True)
 insn_alu("subw", "0100000", "000", "rvfi_rs1_rdata[31:0] - rvfi_rs2_rdata[31:0]", wmode=True)

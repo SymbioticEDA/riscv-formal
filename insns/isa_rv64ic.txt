@@ -1,5 +1,6 @@
 add
 addi
+addiw
 addw
 and
 andi
@@ -51,6 +52,7 @@ sd
 sh
 sll
 slli
+slliw
 sllw
 slt
 slti
@@ -58,9 +60,11 @@ sltiu
 sltu
 sra
 srai
+sraiw
 sraw
 srl
 srli
+srliw
 srlw
 sub
 subw
