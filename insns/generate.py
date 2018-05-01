@@ -505,7 +505,7 @@ def insn_shimm(insn, funct6, funct3, expr):
 
         footer(f)
 
-def insn_alu(insn, funct7, funct3, expr, alt_add=None, alt_sub=None, shamt=False):
+def insn_alu(insn, funct7, funct3, expr, alt_add=None, alt_sub=None, shamt=False, wmode=False):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_r(f)
@@ -513,25 +513,39 @@ def insn_alu(insn, funct7, funct3, expr, alt_add=None, alt_sub=None, shamt=False
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
         if shamt:
-            print("  wire [5:0] shamt = `RISCV_FORMAL_XLEN == 64 ? rvfi_rs2_rdata[5:0] : rvfi_rs2_rdata[4:0];", file=f)
+            if wmode:
+                print("  wire [4:0] shamt = rvfi_rs2_rdata[4:0];", file=f)
+            else:
+                print("  wire [5:0] shamt = `RISCV_FORMAL_XLEN == 64 ? rvfi_rs2_rdata[5:0] : rvfi_rs2_rdata[4:0];", file=f)
+        if wmode:
+            result_range = "31:0"
+        else:
+            result_range = "`RISCV_FORMAL_XLEN-1:0"
         if alt_add is not None or alt_sub is not None:
             print("`ifdef RISCV_FORMAL_ALTOPS", file=f)
             if alt_add is not None:
-                print("  wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'h%016x;" % alt_add, file=f)
-                print("  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata + rvfi_rs2_rdata) ^ altops_bitmask;", file=f)
+                print("  wire [%s] altops_bitmask = 64'h%016x;" % (result_range, alt_add), file=f)
+                print("  wire [%s] result = (rvfi_rs1_rdata + rvfi_rs2_rdata) ^ altops_bitmask;" % result_range, file=f)
             else:
-                print("  wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'h%016x;" % alt_sub, file=f)
-                print("  wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ altops_bitmask;", file=f)
+                print("  wire [%s] altops_bitmask = 64'h%016x;" % (result_range, alt_sub), file=f)
+                print("  wire [%s] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ altops_bitmask;" % result_range, file=f)
             print("`else", file=f)
-            print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
+            print("  wire [%s] result = %s;" % (result_range, expr), file=f)
             print("`endif", file=f)
         else:
-            print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
-        assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct7 == 7'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b 0110011" % (funct7, funct3))
+            print("  wire [%s] result = %s;" % (result_range, expr), file=f)
+        if wmode:
+            opcode = "0111011"
+        else:
+            opcode = "0110011"
+        assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct7 == 7'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b %s" % (funct7, funct3, opcode))
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rs2_addr", "insn_rs2")
         assign(f, "spec_rd_addr", "insn_rd")
-        assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        if wmode:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? {{`RISCV_FORMAL_XLEN-32{result[31]}}, result} : 0")
+        else:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 4")
 
         footer(f)
@@ -958,6 +972,14 @@ current_isa = ["rv64i"]
 insn_l("lwu", "110", 4, False)
 insn_l("ld",  "011", 8, True)
 insn_s("sd",  "011", 8)
+
+# TBD: ADDIW, SLLIW, SRLIW, SRAIW
+
+insn_alu("addw", "0000000", "000", "rvfi_rs1_rdata[31:0] + rvfi_rs2_rdata[31:0]", wmode=True)
+insn_alu("subw", "0100000", "000", "rvfi_rs1_rdata[31:0] - rvfi_rs2_rdata[31:0]", wmode=True)
+insn_alu("sllw", "0000000", "001", "rvfi_rs1_rdata[31:0] << shamt", shamt=True, wmode=True)
+insn_alu("srlw", "0000000", "101", "rvfi_rs1_rdata[31:0] >> shamt", shamt=True, wmode=True)
+insn_alu("sraw", "0100000", "101", "$signed(rvfi_rs1_rdata[31:0]) >>> shamt", shamt=True, wmode=True)
 
 ## Multiply/Divide ISA (M)
 

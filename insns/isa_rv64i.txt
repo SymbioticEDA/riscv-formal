@@ -1,5 +1,6 @@
 add
 addi
+addw
 and
 andi
 auipc
@@ -26,15 +27,19 @@ sd
 sh
 sll
 slli
+sllw
 slt
 slti
 sltiu
 sltu
 sra
 srai
+sraw
 srl
 srli
+srlw
 sub
+subw
 sw
 xor
 xori
