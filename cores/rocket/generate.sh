@@ -250,7 +250,7 @@ read_verilog -sv @basedir@/cores/@core@/wrapper.sv
 read_ilang @basedir@/cores/@core@/@core@-syn/@ilang_file@
 
 [filter-checks]
-+ insn_(lb|lbu|lh|lhu|lw|lwu|ld|c_lw|c_lwsp)_ch1
++ insn_(lb|lbu|lh|lhu|lw|lwu|ld|c_lw|c_lwsp|c_ld|c_ldsp)_ch1
 - insn_.*_ch1
 EOT
 
