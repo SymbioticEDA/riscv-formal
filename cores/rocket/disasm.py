@@ -35,12 +35,12 @@ if mode_d:
 
     for netinfo in parse_vcd(args[0]).values():
         for net in netinfo['nets']:
-            # print(net["hier"], net["name"])
-            if net["hier"] == "rvfi_testbench.wrapper" and net["name"] == "io_master_0_d_valid":
+            print(net["hier"], net["name"])
+            if net["hier"] in ["rvfi_testbench.wrapper", "testbench.uut"] and net["name"] == "io_master_0_d_valid":
                 tilelink_d_valid = netinfo['tv']
-            if net["hier"] == "rvfi_testbench.wrapper" and net["name"] == "io_master_0_d_ready":
+            if net["hier"] in ["rvfi_testbench.wrapper", "testbench.uut"] and net["name"] == "io_master_0_d_ready":
                 tilelink_d_ready = netinfo['tv']
-            if net["hier"] == "rvfi_testbench.wrapper" and net["name"] == "io_master_0_d_bits_data":
+            if net["hier"] in ["rvfi_testbench.wrapper", "testbench.uut"] and net["name"] == "io_master_0_d_bits_data":
                 tilelink_d_data = netinfo['tv']
 
     assert len(tilelink_d_valid) == len(tilelink_d_ready)
@@ -61,17 +61,17 @@ else:
     for netinfo in parse_vcd(args[0]).values():
         for net in netinfo['nets']:
             # print(net["hier"], net["name"])
-            if net["hier"] == "rvfi_testbench.wrapper.rvfi_channel_0" and net["name"] == "valid":
+            if net["hier"] in ["rvfi_testbench.wrapper.rvfi_channel_0", "testbench.uut.rvfi_channel_0"] and net["name"] == "valid":
                 rvfi_valid_0 = netinfo['tv']
-            if net["hier"] == "rvfi_testbench.wrapper.rvfi_channel_0" and net["name"] == "order":
+            if net["hier"] in ["rvfi_testbench.wrapper.rvfi_channel_0", "testbench.uut.rvfi_channel_0"] and net["name"] == "order":
                 rvfi_order_0 = netinfo['tv']
-            if net["hier"] == "rvfi_testbench.wrapper.rvfi_channel_0" and net["name"] == "insn":
+            if net["hier"] in ["rvfi_testbench.wrapper.rvfi_channel_0", "testbench.uut.rvfi_channel_0"] and net["name"] == "insn":
                 rvfi_insn_0 = netinfo['tv']
-            if net["hier"] == "rvfi_testbench.wrapper.rvfi_channel_1" and net["name"] == "valid":
+            if net["hier"] in ["rvfi_testbench.wrapper.rvfi_channel_1", "testbench.uut.rvfi_channel_1"] and net["name"] == "valid":
                 rvfi_valid_1 = netinfo['tv']
-            if net["hier"] == "rvfi_testbench.wrapper.rvfi_channel_1" and net["name"] == "order":
+            if net["hier"] in ["rvfi_testbench.wrapper.rvfi_channel_1", "testbench.uut.rvfi_channel_1"] and net["name"] == "order":
                 rvfi_order_1 = netinfo['tv']
-            if net["hier"] == "rvfi_testbench.wrapper.rvfi_channel_1" and net["name"] == "insn":
+            if net["hier"] in ["rvfi_testbench.wrapper.rvfi_channel_1", "testbench.uut.rvfi_channel_1"] and net["name"] == "insn":
                 rvfi_insn_1 = netinfo['tv']
 
     assert len(rvfi_valid_0) == len(rvfi_order_0)
