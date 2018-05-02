@@ -664,18 +664,25 @@ def insn_c_s(insn, funct3, numbytes):
 
         footer(f)
 
-def insn_c_addi(insn="c_addi"):
+def insn_c_addi(insn="c_addi", wmode=False):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_ci(f)
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
-        print("  wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata + insn_imm;", file=f)
-        assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct3 == 3'b 000 && insn_opcode == 2'b 01")
+        if wmode:
+            print("  wire [31:0] result = rvfi_rs1_rdata[31:0] + insn_imm[31:0];", file=f)
+            assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct3 == 3'b 001 && insn_opcode == 2'b 01 && insn_rs1_rd != 5'd 0")
+        else:
+            print("  wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata + insn_imm;", file=f)
+            assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct3 == 3'b 000 && insn_opcode == 2'b 01")
         assign(f, "spec_rs1_addr", "insn_rs1_rd")
         assign(f, "spec_rd_addr", "insn_rs1_rd")
-        assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        if wmode:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? {{`RISCV_FORMAL_XLEN-32{result[31]}}, result} : 0")
+        else:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
 
         footer(f)
@@ -774,19 +781,25 @@ def insn_c_andi(insn="c_andi"):
 
         footer(f)
 
-def insn_c_alu(insn, funct6, funct2, expr):
+def insn_c_alu(insn, funct6, funct2, expr, wmode=False):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
         format_cs_alu(f)
 
         print("", file=f)
         print("  // %s instruction" % insn.upper(), file=f)
-        print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
+        if wmode:
+            print("  wire [31:0] result = %s;" % expr, file=f)
+        else:
+            print("  wire [`RISCV_FORMAL_XLEN-1:0] result = %s;" % expr, file=f)
         assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct6 == 6'b %s && insn_funct2 == 2'b %s && insn_opcode == 2'b 01" % (funct6, funct2))
         assign(f, "spec_rs1_addr", "insn_rs1_rd")
         assign(f, "spec_rs2_addr", "insn_rs2")
         assign(f, "spec_rd_addr", "insn_rs1_rd")
-        assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
+        if wmode:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? {{`RISCV_FORMAL_XLEN-32{result[31]}}, result} : 0")
+        else:
+            assign(f, "spec_rd_wdata", "spec_rd_addr ? result : 0")
         assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 2")
 
         footer(f)
@@ -1052,6 +1065,12 @@ insn_c_mvadd("c_mv", "1000", False)
 insn_c_jalr("c_jalr", "1001", True)
 insn_c_mvadd("c_add", "1001", True)
 insn_c_ssp("c_swsp", "110", 4)
+
+current_isa = ["rv64ic"]
+
+insn_c_addi("c_addiw", wmode=True)
+insn_c_alu("c_subw", "100111", "00", "rvfi_rs1_rdata[31:0] - rvfi_rs2_rdata[31:0]", wmode=True)
+insn_c_alu("c_addw", "100111", "01", "rvfi_rs1_rdata[31:0] + rvfi_rs2_rdata[31:0]", wmode=True)
 
 ## ISA Propagate
 
