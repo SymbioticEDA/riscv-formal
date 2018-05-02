@@ -14,17 +14,17 @@ cp rocket-chip/src/main/scala/system/Configs.scala cexdata/Configs.scala
 git -C rocket-chip diff src/main/scala/system/Configs.scala > cexdata/Configs.scala.diff
 cp rocket-syn/init.vcd cexdata/init.vcd
 
-for x in checks/*/FAIL; do
+for x in checks/*/FAIL coverage/FAIL; do
 	test -f $x || continue
 	x=${x%/FAIL}
-	x=${x#checks/}
-	cp checks/$x/logfile.txt cexdata/$x.log
-	cp checks/$x/engine_*/trace.vcd cexdata/$x.vcd
+	y=${x#checks/}
+	cp $x/logfile.txt cexdata/$y.log
+	cp $x/engine_*/trace.vcd cexdata/$y.vcd
 	if grep -q "^isa rv64" checks.cfg; then
-		python3 disasm.py --64 cexdata/$x.vcd > cexdata/$x.asm
+		python3 disasm.py --64 cexdata/$y.vcd > cexdata/$y.asm
 	fi
 	if grep -q "^isa rv32" checks.cfg; then
-		python3 disasm.py cexdata/$x.vcd > cexdata/$x.asm
+		python3 disasm.py cexdata/$y.vcd > cexdata/$y.asm
 	fi
 done
 
