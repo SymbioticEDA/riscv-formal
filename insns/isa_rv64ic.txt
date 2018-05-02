@@ -24,12 +24,16 @@ c_bnez
 c_j
 c_jalr
 c_jr
+c_ld
+c_ldsp
 c_li
 c_lui
 c_lw
 c_lwsp
 c_mv
 c_or
+c_sd
+c_sdsp
 c_slli
 c_srai
 c_srli

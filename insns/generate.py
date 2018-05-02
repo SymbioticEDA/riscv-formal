@@ -224,6 +224,8 @@ def format_ci_lsp(f, numbytes):
     print("  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 16;", file=f)
     if numbytes == 4:
         print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[3:2], rvfi_insn[12], rvfi_insn[6:4], 2'b00};", file=f)
+    elif numbytes == 8:
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[4:2], rvfi_insn[12], rvfi_insn[6:5], 3'b000};", file=f)
     else:
         assert False
     print("  wire [2:0] insn_funct3 = rvfi_insn[15:13];", file=f)
@@ -236,6 +238,8 @@ def format_cl(f, numbytes):
     print("  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 16;", file=f)
     if numbytes == 4:
         print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[5], rvfi_insn[12:10], rvfi_insn[6], 2'b00};", file=f)
+    elif numbytes == 8:
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[6:5], rvfi_insn[12:10], 3'b000};", file=f)
     else:
         assert False
     print("  wire [2:0] insn_funct3 = rvfi_insn[15:13];", file=f)
@@ -249,6 +253,8 @@ def format_css(f, numbytes):
     print("  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 16;", file=f)
     if numbytes == 4:
         print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[8:7], rvfi_insn[12:9], 2'b00};", file=f)
+    elif numbytes == 8:
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[9:7], rvfi_insn[12:10], 3'b000};", file=f)
     else:
         assert False
     print("  wire [2:0] insn_funct3 = rvfi_insn[15:13];", file=f)
@@ -261,6 +267,8 @@ def format_cs(f, numbytes):
     print("  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 16;", file=f)
     if numbytes == 4:
         print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[5], rvfi_insn[12:10], rvfi_insn[6], 2'b00};", file=f)
+    elif numbytes == 8:
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] insn_imm = {rvfi_insn[6:5], rvfi_insn[12:10], 3'b000};", file=f)
     else:
         assert False
     print("  wire [2:0] insn_funct3 = rvfi_insn[15:13];", file=f)
@@ -1071,6 +1079,11 @@ current_isa = ["rv64ic"]
 insn_c_addi("c_addiw", wmode=True)
 insn_c_alu("c_subw", "100111", "00", "rvfi_rs1_rdata[31:0] - rvfi_rs2_rdata[31:0]", wmode=True)
 insn_c_alu("c_addw", "100111", "01", "rvfi_rs1_rdata[31:0] + rvfi_rs2_rdata[31:0]", wmode=True)
+
+insn_c_l("c_ld", "011", 8, True)
+insn_c_s("c_sd", "111", 8)
+insn_c_lsp("c_ldsp", "011", 8, True)
+insn_c_ssp("c_sdsp", "111", 8)
 
 ## ISA Propagate
 
