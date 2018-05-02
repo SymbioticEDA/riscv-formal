@@ -35,7 +35,7 @@ module rvfi_insn_mulhu (
   wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'hd13db50d949ce5e8;
   wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata + rvfi_rs2_rdata) ^ altops_bitmask;
 `else
-  wire [`RISCV_FORMAL_XLEN-1:0] result = (`RISCV_FORMAL_XLEN'b0, rvfi_rs1_rdata} * {`RISCV_FORMAL_XLEN'b0, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN;
+  wire [`RISCV_FORMAL_XLEN-1:0] result = ({`RISCV_FORMAL_XLEN'b0, rvfi_rs1_rdata} * {`RISCV_FORMAL_XLEN'b0, rvfi_rs2_rdata}) >> `RISCV_FORMAL_XLEN;
 `endif
   assign spec_valid = rvfi_valid && !insn_padding && insn_funct7 == 7'b 0000001 && insn_funct3 == 3'b 011 && insn_opcode == 7'b 0110011;
   assign spec_rs1_addr = insn_rs1;
