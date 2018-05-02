@@ -19,10 +19,12 @@ def handle_isa(isa):
             print("    .rvfi_rs1_rdata(32'h00000000),", file=f)
             print("    .rvfi_rs2_rdata(32'h00000000),", file=f)
             print("    .rvfi_mem_rdata(32'h00000000),", file=f)
-            print("    .spec_valid(valid[%d])," % index, file=f)
+            print("    .spec_valid(valid[%d])" % index, file=f)
             print("  );", file=f)
             
         print("endmodule", file=f)
 
 handle_isa("rv32i")
 handle_isa("rv32ic")
+handle_isa("rv64i")
+handle_isa("rv64ic")

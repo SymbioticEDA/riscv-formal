@@ -1,6 +1,6 @@
-// Check if a given instruction is an RV32I instruction (without SYSTEM opcode)
+// Check if a given instruction is an RV64I instruction (without SYSTEM opcode)
 //
-module riscv_rv32i_insn (
+module riscv_rv64i_insn (
 	input [31:0] insn,
 	output reg valid
 );
@@ -20,20 +20,20 @@ module riscv_rv32i_insn (
 		end
 
 		if (insn[6:0] == 7'b 00_000_11) begin // LOAD
-			valid = (insn[14:12] != 3'b 011) && (insn[14:12] != 3'b 110) && (insn[14:12] != 3'b 111);
+			valid = (insn[14:12] != 3'b 111);
 		end
 
 		if (insn[6:0] == 7'b 01_000_11) begin // STORE
-			valid = (insn[14:12] == 3'b 000) || (insn[14:12] == 3'b 001) || (insn[14:12] == 3'b 010);
+			valid = (insn[14:12] == 3'b 000) || (insn[14:12] == 3'b 001) || (insn[14:12] == 3'b 010) || (insn[14:12] == 3'b 011);
 		end
 
 		if (insn[6:0] == 7'b 00_100_11) begin // OP-IMM
 			case (insn[14:12])
 				3'b 001: begin // SLLI
-					valid = insn[31:25] == 7'b 0000000;
+					valid = insn[31:26] == 6'b 000000;
 				end
 				3'b 101: begin // SRLI SRAI
-					valid = (insn[31:25] == 7'b 0000000) || (insn[31:25] == 7'b 0100000);
+					valid = (insn[31:26] == 6'b 000000) || (insn[31:26] == 6'b 010000);
 				end
 				default: begin
 					valid = 1;
@@ -47,6 +47,31 @@ module riscv_rv32i_insn (
 					valid = (insn[31:25] == 7'b 0000000) || (insn[31:25] == 7'b 0100000);
 				end
 				default: begin
+					valid = insn[31:25] == 7'b 0000000;
+				end
+			endcase
+		end
+
+		if (insn[6:0] == 7'b 00_110_11) begin // OP-IMM-32
+			case (insn[14:12])
+				3'b 001: begin // SLLIW
+					valid = insn[31:25] == 7'b 0000000;
+				end
+				3'b 101: begin // SRLIW SRAIW
+					valid = (insn[31:25] == 7'b 0000000) || (insn[31:25] == 7'b 0100000);
+				end
+				3'b 000: begin // ADDIW
+					valid = 1;
+				end
+			endcase
+		end
+
+		if (insn[6:0] == 7'b 01_110_11) begin // OP-32
+			case (insn[14:12])
+				3'b 000, 3'b 101: begin // ADDW SUBW SRLW SRAW
+					valid = (insn[31:25] == 7'b 0000000) || (insn[31:25] == 7'b 0100000);
+				end
+				3'b 001: begin // SLLW
 					valid = insn[31:25] == 7'b 0000000;
 				end
 			endcase

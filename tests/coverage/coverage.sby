@@ -1,50 +1,65 @@
+[tasks]
+rv32
+rv64
+
 [options]
 mode bmc
 depth 1
 
 [engines]
-smtbmc z3
+smtbmc yices
 
 [script]
-verilog_defines -D DEBUGNETS
 verilog_defines -D RISCV_FORMAL
 verilog_defines -D RISCV_FORMAL_NRET=1
-verilog_defines -D RISCV_FORMAL_XLEN=32
+rv32: verilog_defines -D RISCV_FORMAL_XLEN=32
+rv64: verilog_defines -D RISCV_FORMAL_XLEN=64
 verilog_defines -D RISCV_FORMAL_ILEN=32
 verilog_defines -D RISCV_FORMAL_COMPRESSED
 read_verilog -sv rvfi_macros.vh
 
 --pycode-begin--
 import os
-with open("../../insns/isa_rv32ic.txt") as f:
-  for filename in os.listdir("../../insns/"):
-    if filename.startswith("insn_") and filename.endswith(".v"):
-    	output("read_verilog -sv %s" % filename)
+for filename in os.listdir("../../insns/"):
+  if filename.startswith("insn_") and filename.endswith(".v"):
+    output("read_verilog -sv %s" % filename)
 --pycode-end--
 
 read_verilog isa_coverage_rv32i.v
 read_verilog isa_coverage_rv32ic.v
 
+read_verilog isa_coverage_rv64i.v
+read_verilog isa_coverage_rv64ic.v
+
 read_verilog riscv_rv32i_insn.v
+read_verilog riscv_rv32ic_insn.v
+
+read_verilog riscv_rv64i_insn.v
+read_verilog riscv_rv64ic_insn.v
 
 read_verilog -sv coverage.sv
-prep -flatten -top coverage
+rv32: prep -flatten -top coverage32
+rv64: prep -flatten -top coverage64
 
 [files]
 coverage.sv
 ../../checks/rvfi_macros.vh
-../../insns/isa_rv32ic.v
 
 --pycode-begin--
 import os
-with open("../../insns/isa_rv32ic.txt") as f:
-  for filename in os.listdir("../../insns/"):
-    if filename.startswith("insn_") and filename.endswith(".v"):
-    	output("../../insns/%s" % filename)
+for filename in os.listdir("../../insns/"):
+  if filename.startswith("insn_") and filename.endswith(".v"):
+    output("../../insns/%s" % filename)
 --pycode-end--
 
 isa_coverage_rv32i.v
 isa_coverage_rv32ic.v
 
-riscv_rv32i_insn.v
+isa_coverage_rv64i.v
+isa_coverage_rv64ic.v
 
+riscv_rv32i_insn.v
+riscv_rv32ic_insn.v
+
+riscv_rv64i_insn.v
+riscv_rv64ic_insn.v

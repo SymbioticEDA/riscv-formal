@@ -1,3 +1,6 @@
-/coverage
+/coverage_rv32
+/coverage_rv64
 /isa_coverage_rv32i.v
 /isa_coverage_rv32ic.v
+/isa_coverage_rv64i.v
+/isa_coverage_rv64ic.v
