@@ -225,17 +225,16 @@ def check_insn(insn, chanidx):
                 : prep -flatten -nordff -top rvfi_testbench
                 :
                 : [files]
-                : @checkch@.sv
                 : @basedir@/@cfgname@/rvfi_macros.vh
                 : @basedir@/@cfgname@/rvfi_channel.sv
                 : @basedir@/@cfgname@/rvfi_testbench.sv
                 : @basedir@/@cfgname@/rvfi_insn_check.sv
                 : @basedir@/insns/insn_@insn@.v
+                :
+                : [file @checkch@.sv]
         """, **hargs)
 
-
-    with open("%s/%s.sv" % (cfgname, check), "w") as sv_file:
-        print_hfmt(sv_file, """
+        print_hfmt(sby_file, """
                 : `define RISCV_FORMAL
                 : `define RISCV_FORMAL_NRET @nret@
                 : `define RISCV_FORMAL_XLEN @xlen@
@@ -248,15 +247,15 @@ def check_insn(insn, chanidx):
         """, **hargs)
 
         if blackbox:
-            print("`define RISCV_FORMAL_BLACKBOX_REGS", file=sv_file)
+            print("`define RISCV_FORMAL_BLACKBOX_REGS", file=sby_file)
 
         if compr:
-            print("`define RISCV_FORMAL_COMPRESSED", file=sv_file)
+            print("`define RISCV_FORMAL_COMPRESSED", file=sby_file)
 
         if "defines" in config:
-            print_hfmt(sv_file, config["defines"], **hargs)
+            print_hfmt(sby_file, config["defines"], **hargs)
 
-        print_hfmt(sv_file, """
+        print_hfmt(sby_file, """
                 : `include "rvfi_macros.vh"
                 : `include "rvfi_channel.sv"
                 : `include "rvfi_testbench.sv"
@@ -318,15 +317,15 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
                 : prep -flatten -nordff -top rvfi_testbench
                 :
                 : [files]
-                : @checkch@.sv
                 : @basedir@/@cfgname@/rvfi_macros.vh
                 : @basedir@/@cfgname@/rvfi_channel.sv
                 : @basedir@/@cfgname@/rvfi_testbench.sv
                 : @basedir@/@cfgname@/rvfi_@check@_check.sv
+                :
+                : [file @checkch@.sv]
         """, **hargs)
 
-    with open("%s/%s.sv" % (cfgname, check), "w") as sv_file:
-        print_hfmt(sv_file, """
+        print_hfmt(sby_file, """
                 : `define RISCV_FORMAL
                 : `define RISCV_FORMAL_NRET @nret@
                 : `define RISCV_FORMAL_XLEN @xlen@
@@ -337,24 +336,24 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
         """, **hargs)
 
         if blackbox and hargs["check"] != "liveness":
-            print("`define RISCV_FORMAL_BLACKBOX_ALU", file=sv_file)
+            print("`define RISCV_FORMAL_BLACKBOX_ALU", file=sby_file)
 
         if blackbox and hargs["check"] != "reg":
-            print("`define RISCV_FORMAL_BLACKBOX_REGS", file=sv_file)
+            print("`define RISCV_FORMAL_BLACKBOX_REGS", file=sby_file)
 
         if chanidx is not None:
-            print("`define RISCV_FORMAL_CHANNEL_IDX %d" % chanidx, file=sv_file)
+            print("`define RISCV_FORMAL_CHANNEL_IDX %d" % chanidx, file=sby_file)
 
         if trig is not None:
-            print("`define RISCV_FORMAL_TRIG_CYCLE %d" % trig, file=sv_file)
+            print("`define RISCV_FORMAL_TRIG_CYCLE %d" % trig, file=sby_file)
 
         if "defines" in config:
-            print_hfmt(sv_file, config["defines"], **hargs)
+            print_hfmt(sby_file, config["defines"], **hargs)
 
         if ("defines %s" % hargs["check"]) in config:
-            print_hfmt(sv_file, config["defines %s" % hargs["check"]], **hargs)
+            print_hfmt(sby_file, config["defines %s" % hargs["check"]], **hargs)
 
-        print_hfmt(sv_file, """
+        print_hfmt(sby_file, """
                 : `include "rvfi_macros.vh"
                 : `include "rvfi_channel.sv"
                 : `include "rvfi_testbench.sv"
