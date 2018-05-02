@@ -32,11 +32,26 @@ module testbench (
 		.valid(valid_ch1)
 	);
 
+	function [0:0] check_insn;
+		input [31:0] insn;
+		begin
+			check_insn = 1;
+			casez (rvfi_insn_ch0)
+				32'b ???????_?????_?????_???_1110011: // SYSTEM
+					check_insn = 0;
+				32'b ???????_?????_?????_???_0001111: // MISC-MEM
+					check_insn = 0;
+				32'b ???????_?????_?????_???_0101111: // AMO
+					check_insn = 0;
+			endcase
+		end
+	endfunction
+
 	always @* begin
-		if (!reset && rvfi_valid_ch0 && rvfi_insn_ch0[6:0] != 7'b 11_100_11 && !rvfi_trap_ch0) begin
+		if (!reset && rvfi_valid_ch0 && check_insn(rvfi_insn_ch0) && !rvfi_trap_ch0) begin
 			assert (valid_ch0);
 		end
-		if (!reset && rvfi_valid_ch1 && rvfi_insn_ch1[6:0] != 7'b 11_100_11 && !rvfi_trap_ch0) begin
+		if (!reset && rvfi_valid_ch1 && check_insn(rvfi_insn_ch1) && !rvfi_trap_ch0) begin
 			assert (valid_ch1);
 		end
 	end

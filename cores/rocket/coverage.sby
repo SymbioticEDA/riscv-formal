@@ -2,6 +2,7 @@
 mode bmc
 tbtop uut.rocket
 depth 20
+append 5
 
 [engines]
 smtbmc boolector
