@@ -171,6 +171,12 @@ There is also no extension to the RVFI port necessary to accommodate the `LR`, `
 
 Verification of this instructions for a single-core systems can be done using the RVFI port only. A strategy must be defined to verify their correct behavior in multicore systems.
 
+For atomic instructions with `rd = x0` a core might have no way of knowing the old or new value of the memory location. For those situations we add an additional RVFI output port:
+
+    output [NRET          - 1 : 0] rvfi_mem_extamo
+
+When `rvfi_mem_extamo` is set, `rvfi_mem_wdata` carries the `rs2` value used with the atomic instruction instead of the new value in the memory location. `rvfi_mem_rmask` is all-zeros in this case.
+
 ### Skipping instructions
 
 Consider the following sequence of instructions:
