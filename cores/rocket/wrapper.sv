@@ -405,6 +405,16 @@ module MulDiv (
 
 	always @* begin
 		result = 123456789;
+		case (io_req_bits_fn)
+			0: result = (io_req_bits_in1 + io_req_bits_in2) ^ 64'h 2cdf52a55876063e; // MUL
+			1: result = (io_req_bits_in1 + io_req_bits_in2) ^ 64'h 15d01651f6583fb7; // MULH
+			2: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h ea3969edecfbe137; // MULHSU
+			3: result = (io_req_bits_in1 + io_req_bits_in2) ^ 64'h d13db50d949ce5e8; // MULHU
+			4: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h 29bbf66f7f8529ec; // DIV
+			5: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h 8c629acb10e8fd70; // DIVU
+			6: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h f5b7d8538da68fa5; // REM
+			7: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h bc4402413138d0e1; // REMU
+		endcase
 	end
 
 	assign io_req_ready = $anyseq(1) && !internal_busy;
@@ -413,7 +423,7 @@ module MulDiv (
 	assign io_resp_bits_tag = internal_done ? internal_tag : $anyseq(5);
 
 	always @(posedge clock) begin
-		if (reset) begin
+		if (reset || io_kill) begin
 			internal_busy <= 0;
 			internal_done <= 0;
 		end else begin

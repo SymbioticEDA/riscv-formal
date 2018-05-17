@@ -9,7 +9,7 @@ export RISCV=$PWD/riscv-tools
 enable_compressed=true
 enable_inithack=true
 enable_64bits=true
-enable_muldiv=false
+enable_muldiv=true
 
 if [ ! -d rocket-chip ]; then
 	git clone https://github.com/freechipsproject/rocket-chip
@@ -258,6 +258,7 @@ read_ilang @basedir@/cores/@core@/@core@-syn/@ilang_file@
 
 [filter-checks]
 + insn_(lb|lbu|lh|lhu|lw|lwu|ld|c_lw|c_lwsp|c_ld|c_ldsp)_ch1
++ insn_(mul|mulh|mulhsu|mulhu|div|divu|rem|remu|mulw|divw|divuw|remw|remuw)_ch1
 - insn_.*_ch1
 EOT
 
