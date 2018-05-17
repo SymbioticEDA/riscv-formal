@@ -378,3 +378,67 @@ module RVFIMonitor (
 	assign errcode = 0;
 endmodule
 `endif
+
+`ifndef ROCKET_INIT
+module MulDiv (
+	input         clock,
+	input         reset,
+	output        io_req_ready,
+	input         io_req_valid,
+	input  [3:0]  io_req_bits_fn,
+	input         io_req_bits_dw,
+	input  [63:0] io_req_bits_in1,
+	input  [63:0] io_req_bits_in2,
+	input  [4:0]  io_req_bits_tag,
+	input         io_kill,
+	input         io_resp_ready,
+	output        io_resp_valid,
+	output [63:0] io_resp_bits_data,
+	output [4:0]  io_resp_bits_tag
+);
+	reg [63:0] internal_data;
+	reg [ 4:0] internal_tag;
+	reg        internal_busy = 0;
+	reg        internal_done = 0;
+
+	reg [63:0] result;
+
+	always @* begin
+		result = 123456789;
+	end
+
+	assign io_req_ready = $anyseq(1) && !internal_busy;
+	assign io_resp_valid = internal_done;
+	assign io_resp_bits_data = internal_done ? internal_data : $anyseq(64);
+	assign io_resp_bits_tag = internal_done ? internal_tag : $anyseq(5);
+
+	always @(posedge clock) begin
+		if (reset) begin
+			internal_busy <= 0;
+			internal_done <= 0;
+		end else begin
+			if (io_req_ready && io_req_valid) begin
+				internal_data <= result;
+				internal_tag <= io_req_bits_tag;
+				internal_busy <= 1;
+			end
+
+			if (internal_busy && $anyseq(1)) begin
+				internal_done <= 1;
+			end
+
+			if (io_resp_ready && io_resp_valid) begin
+				internal_busy <= 0;
+				internal_done <= 0;
+			end
+		end
+	end
+
+	reg [2:0] done_cnt = 0;
+
+	always @(posedge clock) begin
+		done_cnt <= done_cnt + |{done_cnt, internal_done};
+		// cover(done_cnt == 7);
+	end
+endmodule
+`endif

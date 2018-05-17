@@ -9,6 +9,7 @@ export RISCV=$PWD/riscv-tools
 enable_compressed=true
 enable_inithack=true
 enable_64bits=true
+enable_muldiv=false
 
 if [ ! -d rocket-chip ]; then
 	git clone https://github.com/freechipsproject/rocket-chip
@@ -33,6 +34,10 @@ EOT
 	else
 		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /new WithRVFIMonitors/ s/$/\n  new WithoutCompressed ++/; };' src/main/scala/system/Configs.scala
 		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)i -p RVFIMonitor -c 2; ) > src/main/resources/vsrc/RVFIMonitor.v
+	fi
+
+	if $enable_muldiv; then
+		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /new WithoutMulDiv/ d; };' src/main/scala/system/Configs.scala
 	fi
 
 	if $enable_64bits; then
@@ -196,6 +201,7 @@ sim -clock clock -reset reset -rstlen 10 -zinit -w -vcd rocket-syn/init.vcd -n 3
 rename rvfi_wrapper.uut RocketTile
 hierarchy -top RocketTile
 uniquify
+chtype -set MulDiv RocketTile.core/div
 hierarchy
 
 # rename -hide w:_*
@@ -224,7 +230,7 @@ yosys -v2 -l rocket-syn/rocket-syn.log rocket-syn/rocket-syn.ys
 
 cat > checks.cfg <<EOT
 [options]
-isa rv$(if $enable_64bits; then echo  64; else echo  32; fi)i$(if $enable_compressed; then echo c; fi)
+isa rv$(if $enable_64bits; then echo  64; else echo  32; fi)i$(if $enable_muldiv; then echo m; fi)$(if $enable_compressed; then echo c; fi)
 nret 2
 
 insn    $(if $enable_inithack; then echo "      20"; else echo "      35"; fi)
@@ -243,6 +249,7 @@ dumpsmt2
 // \`define FAST_MEM
 \`define RISCV_FORMAL_VALIDADDR(addr) ({31{addr[32]}} == addr[63:33])
 \`define RISCV_FORMAL_PMA_MAP rocket_pma_map
+\`define RISCV_FORMAL_ALTOPS
 
 [script-sources]
 read_verilog -sv @basedir@/tests/coverage/riscv_rv32i_insn.v
