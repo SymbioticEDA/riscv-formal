@@ -101,41 +101,41 @@ module rvfi_insn_check (
 			end
 			if (!reset && check) begin
 				assume(spec_valid);
-			end
-			if (valid && (!`rvformal_addr_valid(pc_rdata) || !insn_pma_x || mem_access_fault)) begin
-				assert(trap);
-				assert(rd_addr == 0);
-				assert(rd_wdata == 0);
-				assert(mem_wmask == 0);
-			end else
-			if (spec_valid) begin
-				assert(spec_rs1_addr == rs1_addr);
-				assert(spec_rs2_addr == rs2_addr);
 
-				if (!spec_trap) begin
-					assert(spec_rd_addr == rd_addr);
-					assert(spec_rd_wdata == rd_wdata);
-					assert(`rvformal_addr_eq(spec_pc_wdata, pc_wdata));
+				if (!`rvformal_addr_valid(pc_rdata) || !insn_pma_x || mem_access_fault) begin
+					assert(trap);
+					assert(rd_addr == 0);
+					assert(rd_wdata == 0);
+					assert(mem_wmask == 0);
+				end else begin
+					assert(spec_rs1_addr == rs1_addr);
+					assert(spec_rs2_addr == rs2_addr);
 
-					if (spec_mem_wmask || spec_mem_rmask) begin
-						assert(`rvformal_addr_eq(spec_mem_addr, mem_addr));
+					if (!spec_trap) begin
+						assert(spec_rd_addr == rd_addr);
+						assert(spec_rd_wdata == rd_wdata);
+						assert(`rvformal_addr_eq(spec_pc_wdata, pc_wdata));
+
+						if (spec_mem_wmask || spec_mem_rmask) begin
+							assert(`rvformal_addr_eq(spec_mem_addr, mem_addr));
+						end
+
+						for (i = 0; i < `RISCV_FORMAL_XLEN/8; i = i+1) begin
+							if (spec_mem_wmask[i]) begin
+								assert(mem_wmask[i]);
+								assert(spec_mem_wdata[i*8 +: 8] == mem_wdata[i*8 +: 8]);
+							end else if (mem_wmask[i]) begin
+								assert(mem_rmask[i]);
+								assert(mem_rdata[i*8 +: 8] == mem_wdata[i*8 +: 8]);
+							end
+							if (spec_mem_rmask[i]) begin
+								assert(mem_rmask[i]);
+							end
+						end
 					end
 
-					for (i = 0; i < `RISCV_FORMAL_XLEN/8; i = i+1) begin
-						if (spec_mem_wmask[i]) begin
-							assert(mem_wmask[i]);
-							assert(spec_mem_wdata[i*8 +: 8] == mem_wdata[i*8 +: 8]);
-						end else if (mem_wmask[i]) begin
-							assert(mem_rmask[i]);
-							assert(mem_rdata[i*8 +: 8] == mem_wdata[i*8 +: 8]);
-						end
-						if (spec_mem_rmask[i]) begin
-							assert(mem_rmask[i]);
-						end
-					end
+					assert(spec_trap == trap);
 				end
-
-				assert(spec_trap == trap);
 			end
 		end
 `ifndef RISCV_FORMAL_CHANNEL_IDX
