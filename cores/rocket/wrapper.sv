@@ -27,8 +27,9 @@ module rvfi_wrapper (
 	(* keep *) wire  [                   3:0] io_master_0_d_bits_size;
 	(* keep *) wire                           io_master_0_d_bits_source;
 	(* keep *) wire                           io_master_0_d_bits_sink;
+	(* keep *) wire                           io_master_0_d_bits_denied;
 	(* keep *) wire  [`RISCV_FORMAL_XLEN-1:0] io_master_0_d_bits_data;
-	(* keep *) wire                           io_master_0_d_bits_error;
+	(* keep *) wire                           io_master_0_d_bits_corrupt;
 
 	(* keep *) wire                           io_slave_0_a_valid = 0;
 	(* keep *) wire  [                   2:0] io_slave_0_a_bits_opcode = 0;
@@ -38,6 +39,7 @@ module rvfi_wrapper (
 	(* keep *) wire  [                  31:0] io_slave_0_a_bits_address = 0;
 	(* keep *) wire  [       `XLEN_BYTES-1:0] io_slave_0_a_bits_mask = 0;
 	(* keep *) wire  [`RISCV_FORMAL_XLEN-1:0] io_slave_0_a_bits_data = 0;
+	(* keep *) wire                           io_slave_0_a_bits_corrupt = 0;
 	(* keep *) wire                           io_slave_0_d_ready = 0;
 
 	// Rocket Tile Outputs
@@ -50,6 +52,7 @@ module rvfi_wrapper (
 	(* keep *) wire [                  31:0] io_master_0_a_bits_address;
 	(* keep *) wire [       `XLEN_BYTES-1:0] io_master_0_a_bits_mask;
 	(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] io_master_0_a_bits_data;
+	(* keep *) wire                          io_master_0_a_bits_corrupt;
 	(* keep *) wire                          io_master_0_d_ready;
 
 	(* keep *) wire                          io_slave_0_a_ready;
@@ -59,8 +62,9 @@ module rvfi_wrapper (
 	(* keep *) wire [                   2:0] io_slave_0_d_bits_size;
 	(* keep *) wire [                   4:0] io_slave_0_d_bits_source;
 	(* keep *) wire                          io_slave_0_d_bits_sink;
+	(* keep *) wire                          io_slave_0_d_bits_denied;
 	(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] io_slave_0_d_bits_data;
-	(* keep *) wire                          io_slave_0_d_bits_error;
+	(* keep *) wire                          io_slave_0_d_bits_corrupt;
 
 	// TileLink A-D Dummy Slave
 
@@ -81,7 +85,8 @@ module rvfi_wrapper (
 		.channel_d_ready        (io_master_0_d_ready       ),
 		.channel_d_valid        (io_master_0_d_valid       ),
 		.channel_d_bits_data    (io_master_0_d_bits_data   ),
-		.channel_d_bits_error   (io_master_0_d_bits_error  ),
+		.channel_d_bits_denied  (io_master_0_d_bits_denied ),
+		.channel_d_bits_corrupt (io_master_0_d_bits_corrupt),
 		.channel_d_bits_opcode  (io_master_0_d_bits_opcode ),
 		.channel_d_bits_param   (io_master_0_d_bits_param  ),
 		.channel_d_bits_sink    (io_master_0_d_bits_sink   ),
@@ -115,6 +120,7 @@ module rvfi_wrapper (
 		.auto_sync_xing_out_a_bits_address (io_master_0_a_bits_address),
 		.auto_sync_xing_out_a_bits_mask    (io_master_0_a_bits_mask   ),
 		.auto_sync_xing_out_a_bits_data    (io_master_0_a_bits_data   ),
+		.auto_sync_xing_out_a_bits_corrupt (io_master_0_a_bits_corrupt),
 
 		.auto_sync_xing_out_d_ready        (io_master_0_d_ready       ),
 		.auto_sync_xing_out_d_valid        (io_master_0_d_valid       ),
@@ -123,8 +129,9 @@ module rvfi_wrapper (
 		.auto_sync_xing_out_d_bits_size    (io_master_0_d_bits_size   ),
 		.auto_sync_xing_out_d_bits_source  (io_master_0_d_bits_source ),
 		.auto_sync_xing_out_d_bits_sink    (io_master_0_d_bits_sink   ),
+		.auto_sync_xing_out_d_bits_denied  (io_master_0_d_bits_denied ),
 		.auto_sync_xing_out_d_bits_data    (io_master_0_d_bits_data   ),
-		.auto_sync_xing_out_d_bits_error   (io_master_0_d_bits_error  ),
+		.auto_sync_xing_out_d_bits_corrupt (io_master_0_d_bits_corrupt),
 
 		.auto_sync_xing_in_a_ready          (io_slave_0_a_ready        ),
 		.auto_sync_xing_in_a_valid          (io_slave_0_a_valid        ),
@@ -135,6 +142,7 @@ module rvfi_wrapper (
 		.auto_sync_xing_in_a_bits_address   (io_slave_0_a_bits_address ),
 		.auto_sync_xing_in_a_bits_mask      (io_slave_0_a_bits_mask    ),
 		.auto_sync_xing_in_a_bits_data      (io_slave_0_a_bits_data    ),
+		.auto_sync_xing_in_a_bits_corrupt   (io_slave_0_a_bits_corrupt ),
 
 		.auto_sync_xing_in_d_ready          (io_slave_0_d_ready        ),
 		.auto_sync_xing_in_d_valid          (io_slave_0_d_valid        ),
@@ -143,8 +151,9 @@ module rvfi_wrapper (
 		.auto_sync_xing_in_d_bits_size      (io_slave_0_d_bits_size    ),
 		.auto_sync_xing_in_d_bits_source    (io_slave_0_d_bits_source  ),
 		.auto_sync_xing_in_d_bits_sink      (io_slave_0_d_bits_sink    ),
+		.auto_sync_xing_in_d_bits_denied    (io_slave_0_d_bits_denied  ),
 		.auto_sync_xing_in_d_bits_data      (io_slave_0_d_bits_data    ),
-		.auto_sync_xing_in_d_bits_error     (io_slave_0_d_bits_error   )
+		.auto_sync_xing_in_d_bits_corrupt   (io_slave_0_d_bits_corrupt )
 	);
 
 `ifdef ROCKET_HIER_REF
@@ -240,7 +249,8 @@ module tilelink_ad_dummy (
 	output reg                          channel_d_bits_source,
 	output reg                          channel_d_bits_sink,
 	output reg [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data,
-	output reg                          channel_d_bits_error
+	output reg                          channel_d_bits_denied,
+	output reg                          channel_d_bits_corrupt
 );
 	reg busy = 0, ready, last;
 	reg [15:0] count, next_count;
@@ -280,13 +290,14 @@ module tilelink_ad_dummy (
 	wire delay_a = 1, delay_d = 1;
   `endif
 
-	wire [                   2:0] channel_d_bits_opcode_nd = 0;
-	wire [                   1:0] channel_d_bits_param_nd  = 0;
-	wire [                   3:0] channel_d_bits_size_nd   = 0;
-	wire                          channel_d_bits_source_nd = 0;
-	wire                          channel_d_bits_sink_nd   = 0;
-	wire [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data_nd   = op_address > 32'h 0001_0100 && cycle > 250 ? 64'h_f05ff06f_f05ff06f : 64'h_00000013_00000013;
-	wire                          channel_d_bits_error_nd  = 0;
+	wire [                   2:0] channel_d_bits_opcode_nd  = 0;
+	wire [                   1:0] channel_d_bits_param_nd   = 0;
+	wire [                   3:0] channel_d_bits_size_nd    = 0;
+	wire                          channel_d_bits_source_nd  = 0;
+	wire                          channel_d_bits_sink_nd    = 0;
+	wire [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data_nd    = op_address > 32'h 0001_0100 && cycle > 250 ? 64'h_f05ff06f_f05ff06f : 64'h_00000013_00000013;
+	wire                          channel_d_bits_denied_nd  = 0;
+	wire                          channel_d_bits_corrupt_nd = 0;
 `else
 	`rvformal_rand_reg delay_a_nd;
 	`rvformal_rand_reg delay_d_nd;
@@ -303,7 +314,8 @@ module tilelink_ad_dummy (
 	`rvformal_rand_reg                          channel_d_bits_source_nd;
 	`rvformal_rand_reg                          channel_d_bits_sink_nd;
 	`rvformal_rand_reg [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data_nd;
-	`rvformal_rand_reg                          channel_d_bits_error_nd;
+	`rvformal_rand_reg                          channel_d_bits_denied_nd;
+	`rvformal_rand_reg                          channel_d_bits_corrupt_nd;
 `endif
 
 	assign channel_a_ready = (!busy || (last && channel_d_ready && channel_d_valid)) && !reset && !delay_a;
@@ -320,7 +332,8 @@ module tilelink_ad_dummy (
 		channel_d_bits_source = channel_d_bits_source_nd;
 		channel_d_bits_sink = channel_d_bits_sink_nd;
 		channel_d_bits_data = channel_d_bits_data_nd;
-		channel_d_bits_error = 1; // channel_d_bits_error_nd
+		channel_d_bits_denied = 1; // channel_d_bits_denied_nd
+		channel_d_bits_corrupt = 1; // channel_d_bits_corrupt_nd
 
 		if (busy) begin
 			if (op_opcode == opcode_a_get) begin
@@ -328,7 +341,8 @@ module tilelink_ad_dummy (
 				channel_d_bits_param = 0;
 				channel_d_bits_size = op_size;
 				channel_d_bits_source = op_source;
-				channel_d_bits_error = 0;
+				channel_d_bits_denied = 0;
+				channel_d_bits_corrupt = 0;
 				next_count = count + (`RISCV_FORMAL_XLEN / 8);
 				last = next_count >= (1 << op_size);
 				ready = 1;
