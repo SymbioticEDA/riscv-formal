@@ -235,8 +235,8 @@ nret 2
 
 insn    $(if $enable_inithack; then echo "      20"; else echo "      35"; fi)
 reg     $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
-pc_fwd  $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
-pc_bwd  $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
+pc_fwd  $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
+pc_bwd  $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 unique  $(if $enable_inithack; then echo "10 15 20"; else echo "25 30 35"; fi)
 causal  $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
 hang    $(if $enable_inithack; then echo "10    35"; else echo "25    50"; fi)
