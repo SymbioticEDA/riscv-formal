@@ -96,6 +96,19 @@ def format_r(f):
     print("  wire [4:0] insn_rd     = rvfi_insn[11: 7];", file=f)
     print("  wire [6:0] insn_opcode = rvfi_insn[ 6: 0];", file=f)
 
+def format_ra(f):
+    print("", file=f)
+    print("  // R-type instruction format (atomics variation)", file=f)
+    print("  wire [`RISCV_FORMAL_ILEN-1:0] insn_padding = rvfi_insn >> 32;", file=f)
+    print("  wire [6:0] insn_funct5 = rvfi_insn[31:27];", file=f)
+    print("  wire       insn_aq     = rvfi_insn[26];", file=f)
+    print("  wire       insn_rl     = rvfi_insn[25];", file=f)
+    print("  wire [4:0] insn_rs2    = rvfi_insn[24:20];", file=f)
+    print("  wire [4:0] insn_rs1    = rvfi_insn[19:15];", file=f)
+    print("  wire [2:0] insn_funct3 = rvfi_insn[14:12];", file=f)
+    print("  wire [4:0] insn_rd     = rvfi_insn[11: 7];", file=f)
+    print("  wire [6:0] insn_opcode = rvfi_insn[ 6: 0];", file=f)
+
 def format_i(f):
     print("", file=f)
     print("  // I-type instruction format", file=f)
@@ -579,6 +592,54 @@ def insn_alu(insn, funct7, funct3, expr, alt_add=None, alt_sub=None, shamt=False
 
         footer(f)
 
+def insn_amo(insn, funct5, funct3, expr):
+    with open("insn_%s.v" % insn, "w") as f:
+        header(f, insn)
+        format_ra(f)
+
+        if funct3 == "010":
+            oprange = "31:0"
+            numbytes = 4
+        else:
+            oprange = "63:0"
+            numbytes = 8
+
+        print("", file=f)
+        print("  // %s instruction" % insn.upper(), file=f)
+        print("  wire [%s] mem_result = %s;" % (oprange, expr), file=f)
+        print("  wire [%s] reg_result = rvfi_mem_rdata[%s];" % (oprange, oprange), file=f)
+        print("  wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata;", file=f)
+
+        print("`ifdef RISCV_FORMAL_ALIGNED_MEM", file=f)
+
+        assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct5 == 5'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b 0101111" % (funct5, funct3))
+        assign(f, "spec_rs1_addr", "insn_rs1")
+        assign(f, "spec_rs2_addr", "insn_rs2")
+        assign(f, "spec_rd_addr", "insn_rd")
+        assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(reg_result) : 0")
+        assign(f, "spec_mem_addr", "addr & ~(`RISCV_FORMAL_XLEN/8-1)")
+        assign(f, "spec_mem_wmask", "((1 << %d)-1) << (addr-spec_mem_addr)" % numbytes)
+        assign(f, "spec_mem_wdata", "mem_result << (8*(addr-spec_mem_addr))")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 4")
+        assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
+
+        print("`else", file=f)
+
+        assign(f, "spec_valid", "rvfi_valid && !insn_padding && insn_funct5 == 5'b %s && insn_funct3 == 3'b %s && insn_opcode == 7'b 0101111" % (funct5, funct3))
+        assign(f, "spec_rs1_addr", "insn_rs1")
+        assign(f, "spec_rs2_addr", "insn_rs2")
+        assign(f, "spec_rd_addr", "insn_rd")
+        assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(reg_result) : 0")
+        assign(f, "spec_mem_addr", "addr")
+        assign(f, "spec_mem_wmask", "((1 << %d)-1)" % numbytes)
+        assign(f, "spec_mem_wdata", "mem_result")
+        assign(f, "spec_pc_wdata", "rvfi_pc_rdata + 4")
+        assign(f, "spec_trap", "(addr & (%d-1)) != 0" % numbytes)
+
+        print("`endif", file=f)
+
+        footer(f)
+
 def insn_c_addi4spn(insn="c_addi4spn"):
     with open("insn_%s.v" % insn, "w") as f:
         header(f, insn)
@@ -1053,6 +1114,34 @@ insn_alu("divuw",   "0000001", "101", "rvfi_rs1_rdata[31:0] / rvfi_rs2_rdata[31:
 
 insn_alu("remw",    "0000001", "110", "$signed(rvfi_rs1_rdata[31:0]) % $signed(rvfi_rs2_rdata[31:0])", alt_sub=0xf5b7d8538da68fa5, wmode=True)
 insn_alu("remuw",   "0000001", "111", "rvfi_rs1_rdata[31:0] % rvfi_rs2_rdata[31:0]", alt_sub=0xbc4402413138d0e1, wmode=True)
+
+## Atomics ISA (A)
+
+# current_isa = ["rv32ia"]
+
+# FIXME: LR.W / SC.W
+# insn_amo("amoswap_w", "00001", "010", "rvfi_rs2_rdata[31:0]")
+# insn_amo("amoadd_w",  "00000", "010", "rvfi_mem_extamo ? rvfi_rs2_rdata[31:0] : rvfi_mem_rdata + rvfi_rs2_rdata[31:0]")
+# insn_amo("amoxor_w",  "00100", "010", "rvfi_mem_extamo ? rvfi_rs2_rdata[31:0] : rvfi_mem_rdata ^ rvfi_rs2_rdata[31:0]")
+# insn_amo("amoand_w",  "01100", "010", "rvfi_mem_extamo ? rvfi_rs2_rdata[31:0] : rvfi_mem_rdata & rvfi_rs2_rdata[31:0]")
+# insn_amo("amoor_w",   "01000", "010", "rvfi_mem_extamo ? rvfi_rs2_rdata[31:0] : rvfi_mem_rdata | rvfi_rs2_rdata[31:0]")
+# insn_amo("amomin_w",  "10000", "010", "rvfi_mem_extamo ? rvfi_rs2_rdata[31:0] : ($signed(rvfi_mem_rdata) < $signed(rvfi_rs2_rdata[31:0]) ? rvfi_mem_rdata : rvfi_rs2_rdata[31:0])")
+# insn_amo("amomax_w",  "10100", "010", "rvfi_mem_extamo ? rvfi_rs2_rdata[31:0] : ($signed(rvfi_mem_rdata) > $signed(rvfi_rs2_rdata[31:0]) ? rvfi_mem_rdata : rvfi_rs2_rdata[31:0])")
+# insn_amo("amominu_w", "11000", "010", "rvfi_mem_extamo ? rvfi_rs2_rdata[31:0] : (rvfi_mem_rdata < rvfi_rs2_rdata[31:0] ? rvfi_mem_rdata : rvfi_rs2_rdata[31:0])")
+# insn_amo("amomaxu_w", "11100", "010", "rvfi_mem_extamo ? rvfi_rs2_rdata[31:0] : (rvfi_mem_rdata > rvfi_rs2_rdata[31:0] ? rvfi_mem_rdata : rvfi_rs2_rdata[31:0])")
+
+# current_isa = ["rv64ia"]
+
+# FIXME: LR.D / SC.D
+# insn_amo("amoswap_d", "00001", "011", "rvfi_rs2_rdata[63:0]")
+# insn_amo("amoadd_d",  "00000", "011", "rvfi_mem_extamo ? rvfi_rs2_rdata[63:0] : rvfi_mem_rdata + rvfi_rs2_rdata[63:0]")
+# insn_amo("amoxor_d",  "00100", "011", "rvfi_mem_extamo ? rvfi_rs2_rdata[63:0] : rvfi_mem_rdata ^ rvfi_rs2_rdata[63:0]")
+# insn_amo("amoand_d",  "01100", "011", "rvfi_mem_extamo ? rvfi_rs2_rdata[63:0] : rvfi_mem_rdata & rvfi_rs2_rdata[63:0]")
+# insn_amo("amoor_d",   "01000", "011", "rvfi_mem_extamo ? rvfi_rs2_rdata[63:0] : rvfi_mem_rdata | rvfi_rs2_rdata[63:0]")
+# insn_amo("amomin_d",  "10000", "011", "rvfi_mem_extamo ? rvfi_rs2_rdata[63:0] : ($signed(rvfi_mem_rdata) < $signed(rvfi_rs2_rdata[63:0]) ? rvfi_mem_rdata : rvfi_rs2_rdata[63:0])")
+# insn_amo("amomax_d",  "10100", "011", "rvfi_mem_extamo ? rvfi_rs2_rdata[63:0] : ($signed(rvfi_mem_rdata) > $signed(rvfi_rs2_rdata[63:0]) ? rvfi_mem_rdata : rvfi_rs2_rdata[63:0])")
+# insn_amo("amominu_d", "11000", "011", "rvfi_mem_extamo ? rvfi_rs2_rdata[63:0] : (rvfi_mem_rdata < rvfi_rs2_rdata[63:0] ? rvfi_mem_rdata : rvfi_rs2_rdata[63:0])")
+# insn_amo("amomaxu_d", "11100", "011", "rvfi_mem_extamo ? rvfi_rs2_rdata[63:0] : (rvfi_mem_rdata > rvfi_rs2_rdata[63:0] ? rvfi_mem_rdata : rvfi_rs2_rdata[63:0])")
 
 ## Compressed Integer ISA (IC)
 
