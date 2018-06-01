@@ -1044,6 +1044,16 @@ insn_alu("divu",   "0000001", "101", "rvfi_rs1_rdata / rvfi_rs2_rdata", alt_sub=
 insn_alu("rem",    "0000001", "110", "$signed(rvfi_rs1_rdata) % $signed(rvfi_rs2_rdata)", alt_sub=0xf5b7d8538da68fa5)
 insn_alu("remu",   "0000001", "111", "rvfi_rs1_rdata % rvfi_rs2_rdata", alt_sub=0xbc4402413138d0e1)
 
+current_isa = ["rv64im"]
+
+insn_alu("mulw",    "0000001", "000", "rvfi_rs1_rdata[31:0] * rvfi_rs2_rdata[31:0]", alt_add=0x2cdf52a55876063e, wmode=True)
+
+insn_alu("divw",    "0000001", "100", "$signed(rvfi_rs1_rdata[31:0]) / $signed(rvfi_rs2_rdata[31:0])", alt_sub=0x29bbf66f7f8529ec, wmode=True)
+insn_alu("divuw",   "0000001", "101", "rvfi_rs1_rdata[31:0] / rvfi_rs2_rdata[31:0]", alt_sub=0x8c629acb10e8fd70, wmode=True)
+
+insn_alu("remw",    "0000001", "110", "$signed(rvfi_rs1_rdata[31:0]) % $signed(rvfi_rs2_rdata[31:0])", alt_sub=0xf5b7d8538da68fa5, wmode=True)
+insn_alu("remuw",   "0000001", "111", "rvfi_rs1_rdata[31:0] % rvfi_rs2_rdata[31:0]", alt_sub=0xbc4402413138d0e1, wmode=True)
+
 ## Compressed Integer ISA (IC)
 
 current_isa = ["rv32ic"]

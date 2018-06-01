@@ -44,6 +44,8 @@ c_swsp
 c_xor
 div
 divu
+divuw
+divw
 jal
 jalr
 lb
@@ -58,10 +60,13 @@ mul
 mulh
 mulhsu
 mulhu
+mulw
 or
 ori
 rem
 remu
+remuw
+remw
 sb
 sd
 sh
