@@ -1097,36 +1097,34 @@ insn_c_ssp("c_sdsp", "111", 8)
 
 ## ISA Propagate
 
-def isa_propagate(from_isa, to_isa):
-    global isa_database
-    assert from_isa in isa_database
-    if to_isa not in isa_database:
-        isa_database[to_isa] = set()
-    isa_database[to_isa] |= isa_database[from_isa]
+def isa_propagate_pair(from_isa, to_isa):
+     global isa_database
+     assert from_isa in isa_database
+     if to_isa not in isa_database:
+         isa_database[to_isa] = set()
+     isa_database[to_isa] |= isa_database[from_isa]
 
-isa_propagate("rv32i", "rv32ic")
-isa_propagate("rv32i", "rv32im")
+def isa_propagate(suffix):
+    for i in range(2 ** len(suffix)):
+        src = ""
+        for k in range(len(suffix)):
+            if ((i >> k) & 1) == 0:
+                src += suffix[k]
+        if src != suffix:
+            isa_propagate_pair("rv32i"+src, "rv32i"+suffix)
+            isa_propagate_pair("rv64i"+src, "rv64i"+suffix)
+    isa_propagate_pair("rv32i"+suffix, "rv64i"+suffix)
 
-isa_propagate("rv32ic", "rv32imc")
-isa_propagate("rv32im", "rv32imc")
-
-isa_propagate("rv32i", "rv64i")
-isa_propagate("rv32ic", "rv64ic")
-isa_propagate("rv32im", "rv64im")
-isa_propagate("rv32imc", "rv64imc")
-
-isa_propagate("rv64i", "rv64ic")
-isa_propagate("rv64i", "rv64im")
-
-isa_propagate("rv64ic", "rv64imc")
-isa_propagate("rv64im", "rv64imc")
+isa_propagate("")
+isa_propagate("c")
+isa_propagate("m")
+isa_propagate("mc")
 
 ## ISA Fixup
 
 for isa, insns in isa_database.items():
     if isa.startswith("rv64"):
         insns.discard("c_jal")
-
 
 ## ISA Listings and ISA Models
 
