@@ -26,7 +26,7 @@ module rvfi_wrapper (
 	(* keep *) wire  [                   1:0] io_master_0_d_bits_param;
 	(* keep *) wire  [                   3:0] io_master_0_d_bits_size;
 	(* keep *) wire                           io_master_0_d_bits_source;
-	(* keep *) wire  [                   3:0] io_master_0_d_bits_sink;
+	(* keep *) wire  [                   2:0] io_master_0_d_bits_sink;
 	(* keep *) wire                           io_master_0_d_bits_denied;
 	(* keep *) wire  [`RISCV_FORMAL_XLEN-1:0] io_master_0_d_bits_data;
 	(* keep *) wire                           io_master_0_d_bits_corrupt;
@@ -247,7 +247,7 @@ module tilelink_ad_dummy (
 	output reg [                   1:0] channel_d_bits_param,
 	output reg [                   3:0] channel_d_bits_size,
 	output reg                          channel_d_bits_source,
-	output reg [                   3:0] channel_d_bits_sink,
+	output reg [                   2:0] channel_d_bits_sink,
 	output reg [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data,
 	output reg                          channel_d_bits_denied,
 	output reg                          channel_d_bits_corrupt
@@ -294,7 +294,7 @@ module tilelink_ad_dummy (
 	wire [                   1:0] channel_d_bits_param_nd   = 0;
 	wire [                   3:0] channel_d_bits_size_nd    = 0;
 	wire                          channel_d_bits_source_nd  = 0;
-	wire [                   3:0] channel_d_bits_sink_nd    = 0;
+	wire [                   2:0] channel_d_bits_sink_nd    = 0;
 	wire [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data_nd    = op_address > 32'h 0001_0100 && cycle > 250 ? 64'h_f05ff06f_f05ff06f : 64'h_00000013_00000013;
 	wire                          channel_d_bits_denied_nd  = 0;
 	wire                          channel_d_bits_corrupt_nd = 0;
@@ -312,7 +312,7 @@ module tilelink_ad_dummy (
 	`rvformal_rand_reg [                   1:0] channel_d_bits_param_nd;
 	`rvformal_rand_reg [                   3:0] channel_d_bits_size_nd;
 	`rvformal_rand_reg                          channel_d_bits_source_nd;
-	`rvformal_rand_reg [                   3:0] channel_d_bits_sink_nd;
+	`rvformal_rand_reg [                   2:0] channel_d_bits_sink_nd;
 	`rvformal_rand_reg [`RISCV_FORMAL_XLEN-1:0] channel_d_bits_data_nd;
 	`rvformal_rand_reg                          channel_d_bits_denied_nd;
 	`rvformal_rand_reg                          channel_d_bits_corrupt_nd;
@@ -429,6 +429,9 @@ module MulDiv (
 			6: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h f5b7d8538da68fa5; // REM
 			7: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h bc4402413138d0e1; // REMU
 		endcase
+		if (!io_req_bits_dw) begin
+			result = $signed(result << 32) >>> 32;
+		end
 	end
 
 	assign io_req_ready = $anyseq(1) && !internal_busy;
