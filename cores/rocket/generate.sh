@@ -246,6 +246,12 @@ hang    $(if $enable_inithack; then echo "10    35"; else echo "25    50"; fi)
 
 reg_ch1 $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 
+[sort]
+(reg|causal)_ch1
+insn_(lb|lbu|lh|lhu|lw|lwu|ld|c_lw|c_lwsp|c_ld|c_ldsp)_ch1
+pc_(bwd|fwd)_ch1
+reg_ch0
+
 [defines]
 \`define ROCKET_NORESET
 // \`define FAST_MEM

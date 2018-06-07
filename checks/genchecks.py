@@ -131,7 +131,6 @@ def get_depth_cfg(patterns):
             for pat in patterns:
                 if re.fullmatch(line[0], pat):
                     ret = [int(s) for s in line[1:]]
-    print(patterns, ret)
     return ret
 
 # ------------------------------ Instruction Checkers ------------------------------
@@ -340,10 +339,19 @@ check_cons("hang", start=0, depth=1)
 
 # ------------------------------ Makefile ------------------------------
 
+def checks_key(check):
+    if "sort" in config:
+        for index, line in enumerate(config["sort"].split("\n")):
+            if re.matchfull(line.strip(), check):
+                return "%04d-%s" % (index, check)
+    if check.startswith("insn_"):
+        return "9999-%s" % check
+    return "9998-%s" % check
+
 with open("%s/makefile" % cfgname, "w") as mkfile:
     print("all:", end="", file=mkfile)
 
-    checks = list(sorted(consistency_checks)) + list(sorted(instruction_checks))
+    checks = list(sorted(consistency_checks | instruction_checks, key=checks_key))
 
     for check in checks:
         print(" %s/PASS" % check, end="", file=mkfile)
