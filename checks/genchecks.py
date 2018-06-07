@@ -342,7 +342,7 @@ check_cons("hang", start=0, depth=1)
 def checks_key(check):
     if "sort" in config:
         for index, line in enumerate(config["sort"].split("\n")):
-            if re.matchfull(line.strip(), check):
+            if re.fullmatch(line.strip(), check):
                 return "%04d-%s" % (index, check)
     if check.startswith("insn_"):
         return "9999-%s" % check
