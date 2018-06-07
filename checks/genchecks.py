@@ -8,31 +8,7 @@ ilen = 32
 xlen = 32
 compr = False
 
-insn_depth = None
-
-reg_start = None
-reg_depth = None
-
-pc_fwd_start = None
-pc_fwd_depth = None
-
-pc_bwd_start = None
-pc_bwd_depth = None
-
-liveness_start = None
-liveness_trig = None
-liveness_depth = None
-
-unique_start = None
-unique_trig = None
-unique_depth = None
-
-causal_start = None
-causal_depth = None
-
-hang_start = None
-hang_depth = None
-
+depths = list()
 blackbox = False
 
 cfgname = "checks"
@@ -79,47 +55,6 @@ if "options" in config:
         elif line[0] == "isa":
             assert len(line) == 2
             isa = line[1]
-
-        elif line[0] == "insn":
-            assert len(line) == 2
-            insn_depth = int(line[1])
-
-        elif line[0] == "reg":
-            assert len(line) == 3
-            reg_start = int(line[1])
-            reg_depth = int(line[2])
-
-        elif line[0] == "pc_fwd":
-            assert len(line) == 3
-            pc_fwd_start = int(line[1])
-            pc_fwd_depth = int(line[2])
-
-        elif line[0] == "pc_bwd":
-            assert len(line) == 3
-            pc_bwd_start = int(line[1])
-            pc_bwd_depth = int(line[2])
-
-        elif line[0] == "liveness":
-            assert len(line) == 4
-            liveness_start = int(line[1])
-            liveness_trig = int(line[2])
-            liveness_depth = int(line[3])
-
-        elif line[0] == "unique":
-            assert len(line) == 4
-            unique_start = int(line[1])
-            unique_trig = int(line[2])
-            unique_depth = int(line[3])
-
-        elif line[0] == "causal":
-            assert len(line) == 3
-            causal_start = int(line[1])
-            causal_depth = int(line[2])
-
-        elif line[0] == "hang":
-            assert len(line) == 3
-            hang_start = int(line[1])
-            hang_depth = int(line[2])
 
         elif line[0] == "blackbox":
             assert len(line) == 1
@@ -186,18 +121,36 @@ def test_disabled(check):
                 return line[0] == "-"
     return False
 
+def get_depth_cfg(patterns):
+    ret = None
+    if "depth" in config:
+        for line in config["depth"].split("\n"):
+            line = line.strip().split()
+            if len(line) == 0:
+                continue
+            for pat in patterns:
+                if re.fullmatch(line[0], pat):
+                    ret = [int(s) for s in line[1:]]
+    print(patterns, ret)
+    return ret
+
 # ------------------------------ Instruction Checkers ------------------------------
 
 def check_insn(insn, chanidx):
     check = "insn_%s_ch%d" % (insn, chanidx)
+    depth_cfg = get_depth_cfg(["insn", "insn_ch%d" % chanidx, "insn_%s" % insn, "insn_%s_ch%d" % (insn, chanidx)])
+
+    if depth_cfg is None: return
+    assert len(depth_cfg) == 1
+
     if test_disabled(check): return
     instruction_checks.add(check)
 
     hargs["insn"] = insn
     hargs["checkch"] = check
     hargs["channel"] = "%d" % chanidx
-    hargs["depth"] = insn_depth
-    hargs["depth_plus"] = insn_depth + 2
+    hargs["depth"] = depth_cfg[0]
+    hargs["depth_plus"] = depth_cfg[0] + 2
 
     with open("%s/%s.sby" % (cfgname, check), "w") as sby_file:
         print_hfmt(sby_file, """
@@ -263,11 +216,10 @@ def check_insn(insn, chanidx):
                 : `include "insn_@insn@.v"
         """, **hargs)
 
-if insn_depth is not None:
-    with open("../../insns/isa_%s.txt" % isa) as isa_file:
-        for insn in isa_file:
-            for chanidx in range(nret):
-                check_insn(insn.strip(), chanidx)
+with open("../../insns/isa_%s.txt" % isa) as isa_file:
+    for insn in isa_file:
+        for chanidx in range(nret):
+            check_insn(insn.strip(), chanidx)
 
 # ------------------------------ Consistency Checkers ------------------------------
 
@@ -275,12 +227,28 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
     hargs["check"] = check
     hargs["start"] = start
 
+    if chanidx is not None:
+        depth_cfg = get_depth_cfg([check, "%s_ch%d" % (check, chanidx)])
+        hargs["channel"] = "%d" % chanidx
+        check += "_ch%d" % chanidx
+
+    else:
+        depth_cfg = get_depth_cfg([check])
+
+    if depth_cfg is None: return
+
+    if start is not None:
+        start = depth_cfg[start]
+
+    if trig is not None:
+        trig = depth_cfg[trig]
+
+    if depth is not None:
+        depth = depth_cfg[depth]
+
     hargs["depth"] = depth
     hargs["depth_plus"] = depth + 2
 
-    if chanidx is not None:
-        hargs["channel"] = "%d" % chanidx
-        check += "_ch%d" % chanidx
     hargs["checkch"] = check
 
     if test_disabled(check): return
@@ -361,26 +329,14 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
         """, **hargs)
 
 for i in range(nret):
-    if reg_start is not None:
-        check_cons("reg", chanidx=i, start=reg_start, depth=reg_depth)
+    check_cons("reg", chanidx=i, start=0, depth=1)
+    check_cons("pc_fwd", chanidx=i, start=0, depth=1)
+    check_cons("pc_bwd", chanidx=i, start=0, depth=1)
+    check_cons("liveness", chanidx=i, start=0, trig=1, depth=2)
+    check_cons("unique", chanidx=i, start=0, trig=1, depth=2)
+    check_cons("causal", chanidx=i, start=0, depth=1)
 
-    if pc_fwd_start is not None:
-        check_cons("pc_fwd", chanidx=i, start=pc_fwd_start, depth=pc_fwd_depth)
-
-    if pc_bwd_start is not None:
-        check_cons("pc_bwd", chanidx=i, start=pc_bwd_start, depth=pc_bwd_depth)
-
-    if liveness_start is not None:
-        check_cons("liveness", chanidx=i, start=liveness_start, trig=liveness_trig, depth=liveness_depth)
-
-    if unique_start is not None:
-        check_cons("unique", chanidx=i, start=unique_start, trig=unique_trig, depth=unique_depth)
-
-    if causal_start is not None:
-        check_cons("causal", chanidx=i, start=causal_start, depth=causal_depth)
-
-if hang_start is not None:
-    check_cons("hang", start=hang_start, depth=hang_depth)
+check_cons("hang", start=0, depth=1)
 
 # ------------------------------ Makefile ------------------------------
 

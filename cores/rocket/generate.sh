@@ -232,7 +232,10 @@ cat > checks.cfg <<EOT
 [options]
 isa rv$(if $enable_64bits; then echo  64; else echo  32; fi)i$(if $enable_muldiv; then echo m; fi)$(if $enable_compressed; then echo c; fi)
 nret 2
+solver boolector
+dumpsmt2
 
+[depth]
 insn    $(if $enable_inithack; then echo "      20"; else echo "      35"; fi)
 reg     $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
 pc_fwd  $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
@@ -241,8 +244,7 @@ unique  $(if $enable_inithack; then echo "10 15 20"; else echo "25 30 35"; fi)
 causal  $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
 hang    $(if $enable_inithack; then echo "10    35"; else echo "25    50"; fi)
 
-solver boolector
-dumpsmt2
+reg_ch1 $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 
 [defines]
 \`define ROCKET_NORESET
