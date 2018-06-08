@@ -224,7 +224,6 @@ with open("../../insns/isa_%s.txt" % isa) as isa_file:
 
 def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
     hargs["check"] = check
-    hargs["start"] = start
 
     if chanidx is not None:
         depth_cfg = get_depth_cfg([check, "%s_ch%d" % (check, chanidx)])
@@ -245,6 +244,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
     if depth is not None:
         depth = depth_cfg[depth]
 
+    hargs["start"] = start
     hargs["depth"] = depth
     hargs["depth_plus"] = depth + 2
 
