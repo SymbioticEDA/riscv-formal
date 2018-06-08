@@ -354,12 +354,14 @@ with open("%s/makefile" % cfgname, "w") as mkfile:
     checks = list(sorted(consistency_checks | instruction_checks, key=checks_key))
 
     for check in checks:
-        print(" %s/PASS" % check, end="", file=mkfile)
+        print(" %s" % check, end="", file=mkfile)
     print(file=mkfile)
 
     for check in checks:
-        print("%s/PASS:" % check, file=mkfile)
+        print("%s: %s/.stamp" % (check, check), file=mkfile)
+        print("%s/.stamp:" % check, file=mkfile)
         print("\t%s %s.sby" % (sbycmd, check), file=mkfile)
+        print(".PHONY: %s" % check, file=mkfile)
 
 print("Generated %d checks." % (len(consistency_checks) + len(instruction_checks)))
 
