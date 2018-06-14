@@ -348,7 +348,17 @@ module tilelink_ad_dummy (
 				ready = 1;
 			end
 
-			// TBD: opcode_a_putfulldata
+			if (op_opcode == opcode_a_putfulldata) begin
+				channel_d_bits_opcode = opcode_d_accessack;
+				channel_d_bits_param = 0;
+				channel_d_bits_size = op_size;
+				channel_d_bits_source = op_source;
+				channel_d_bits_denied = 0;
+				channel_d_bits_corrupt = 0;
+				last = 1;
+				ready = 1;
+			end
+
 			// TBD: opcode_a_putpartialdata
 			// TBD: opcode_a_arithmeticdata
 			// TBD: opcode_a_logicaldata
