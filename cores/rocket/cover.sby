@@ -12,8 +12,8 @@ verilog_defines -D RISCV_FORMAL_NRET=2
 verilog_defines -D RISCV_FORMAL_XLEN=64
 verilog_defines -D RISCV_FORMAL_ILEN=32
 verilog_defines -D RISCV_FORMAL_COMPRESSED
+verilog_defines -D RISCV_FORMAL_FAIRNESS
 verilog_defines -D ROCKET_NORESET
-verilog_defines -D FAST_MEM
 read_verilog -sv rvfi_macros.vh
 read_verilog -sv rvfi_channel.sv
 read_verilog -sv wrapper.sv

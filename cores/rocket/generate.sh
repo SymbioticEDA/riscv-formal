@@ -242,7 +242,7 @@ pc_fwd  $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 pc_bwd  $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 unique  $(if $enable_inithack; then echo "10 15 20"; else echo "25 30 35"; fi)
 causal  $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
-hang    $(if $enable_inithack; then echo "10    35"; else echo "25    50"; fi)
+hang    $(if $enable_inithack; then echo "10    40"; else echo "20    50"; fi)
 
 reg_ch1 $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 
@@ -254,7 +254,6 @@ reg_ch0
 
 [defines]
 \`define ROCKET_NORESET
-// \`define FAST_MEM
 \`define RISCV_FORMAL_VALIDADDR(addr) ({31{addr[32]}} == addr[63:33])
 \`define RISCV_FORMAL_PMA_MAP rocket_pma_map
 \`define RISCV_FORMAL_ALTOPS

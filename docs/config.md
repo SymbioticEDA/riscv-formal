@@ -71,6 +71,13 @@ When checking for consistency of the stream of retired instructions (such as
 "regcheck") it is possible to black-box the actual ALU operations. This macro
 may be used in the core under test to black-box the ALU.
 
+RISCV_FORMAL_FAIRNESS
+---------------------
+
+When checking for liveness of the core, then the peripherals and abstractions
+used in the check must guranatee fairness. This macro should be tested by the
+peripherals and abstractions to decide if fairness guranatees should be enabled.
+
 RISCV_FORMAL_VALIDADDR(addr)
 ----------------------------
 

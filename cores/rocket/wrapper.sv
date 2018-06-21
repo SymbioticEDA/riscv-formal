@@ -302,7 +302,7 @@ module tilelink_ad_dummy (
 	`rvformal_rand_reg delay_a_nd;
 	`rvformal_rand_reg delay_d_nd;
 
-  `ifdef FAST_MEM
+  `ifdef RISCV_FORMAL_FAIRNESS
 	wire delay_a = 0, delay_d = 0;
   `else
 	wire delay_a = delay_a_nd, delay_d = delay_d_nd;
@@ -444,7 +444,12 @@ module MulDiv (
 		end
 	end
 
+`ifdef RISCV_FORMAL_FAIRNESS
+	assign io_req_ready = !internal_busy;
+`else
 	assign io_req_ready = $anyseq(1) && !internal_busy;
+`endif
+
 	assign io_resp_valid = internal_done;
 	assign io_resp_bits_data = internal_done ? internal_data : $anyseq(64);
 	assign io_resp_bits_tag = internal_done ? internal_tag : $anyseq(5);
@@ -460,9 +465,15 @@ module MulDiv (
 				internal_busy <= 1;
 			end
 
+`ifdef RISCV_FORMAL_FAIRNESS
+			if (internal_busy) begin
+				internal_done <= 1;
+			end
+`else
 			if (internal_busy && $anyseq(1)) begin
 				internal_done <= 1;
 			end
+`endif
 
 			if (io_resp_ready && io_resp_valid) begin
 				internal_busy <= 0;

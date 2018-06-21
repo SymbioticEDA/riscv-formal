@@ -314,6 +314,9 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
         if trig is not None:
             print("`define RISCV_FORMAL_TRIG_CYCLE %d" % trig, file=sby_file)
 
+        if hargs["check"] in ("liveness", "hang"):
+            print("`define RISCV_FORMAL_FAIRNESS", file=sby_file)
+
         if "defines" in config:
             print_hfmt(sby_file, config["defines"], **hargs)
 
