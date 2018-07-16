@@ -183,7 +183,7 @@ def check_insn(insn, chanidx):
                 : @basedir@/@cfgname@/rvfi_insn_check.sv
                 : @basedir@/insns/insn_@insn@.v
                 :
-                : [file @checkch@.sv]
+                : [file defines.sv]
         """, **hargs)
 
         print_hfmt(sby_file, """
@@ -209,6 +209,9 @@ def check_insn(insn, chanidx):
 
         print_hfmt(sby_file, """
                 : `include "rvfi_macros.vh"
+                :
+                : [file @checkch@.sv]
+                : `include "defines.sv"
                 : `include "rvfi_channel.sv"
                 : `include "rvfi_testbench.sv"
                 : `include "rvfi_insn_check.sv"
@@ -289,7 +292,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
                 : @basedir@/@cfgname@/rvfi_testbench.sv
                 : @basedir@/@cfgname@/rvfi_@check@_check.sv
                 :
-                : [file @checkch@.sv]
+                : [file defines.sv]
         """, **hargs)
 
         print_hfmt(sby_file, """
@@ -325,6 +328,9 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
 
         print_hfmt(sby_file, """
                 : `include "rvfi_macros.vh"
+                :
+                : [file @checkch@.sv]
+                : `include "defines.sv"
                 : `include "rvfi_channel.sv"
                 : `include "rvfi_testbench.sv"
                 : `include "rvfi_@check@_check.sv"
