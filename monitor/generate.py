@@ -141,6 +141,7 @@ print("  input [%d:0] rvfi_mem_rmask," % (channels*xlen//8-1))
 print("  input [%d:0] rvfi_mem_wmask," % (channels*xlen//8-1))
 print("  input [%d:0] rvfi_mem_rdata," % (channels*xlen-1))
 print("  input [%d:0] rvfi_mem_wdata," % (channels*xlen-1))
+print("  input [%d:0] rvfi_mem_extamo," % (channels-1))
 print("  output reg [15:0] errcode")
 print(");")
 
@@ -166,6 +167,7 @@ for chidx in range(channels):
     print("  wire [%d:0] ch%d_rvfi_mem_wmask = rvfi_mem_wmask[%d:%d];" % (xlen//8-1, chidx, xlen//8*chidx+xlen//8-1, xlen//8*chidx))
     print("  wire [%d:0] ch%d_rvfi_mem_rdata = rvfi_mem_rdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx))
     print("  wire [%d:0] ch%d_rvfi_mem_wdata = rvfi_mem_wdata[%d:%d];" % (xlen-1, chidx, xlen*chidx+xlen-1, xlen*chidx))
+    print("  wire ch%d_rvfi_mem_extamo = rvfi_mem_extamo[%d];" % (chidx, chidx))
     print()
 
     print("  wire ch%d_spec_valid;" % (chidx))
