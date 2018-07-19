@@ -237,6 +237,7 @@ dumpsmt2
 
 [depth]
 insn    $(if $enable_inithack; then echo "      20"; else echo "      35"; fi)
+ill     $(if $enable_inithack; then echo "      20"; else echo "      35"; fi)
 reg     $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
 pc_fwd  $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 pc_bwd  $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
@@ -266,7 +267,7 @@ read_ilang @basedir@/cores/@core@/@core@-syn/@ilang_file@
 [filter-checks]
 + insn_(lb|lbu|lh|lhu|lw|lwu|ld|c_lw|c_lwsp|c_ld|c_ldsp)_ch1
 + insn_(mul|mulh|mulhsu|mulhu|div|divu|rem|remu|mulw|divw|divuw|remw|remuw)_ch1
-- insn_.*_ch1
+- (insn_.*|ill)_ch1
 EOT
 
 python3 ../../checks/genchecks.py

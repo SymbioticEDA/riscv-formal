@@ -240,6 +240,8 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
 
     if start is not None:
         start = depth_cfg[start]
+    else:
+        start = 1
 
     if trig is not None:
         trig = depth_cfg[trig]
@@ -343,6 +345,7 @@ for i in range(nret):
     check_cons("liveness", chanidx=i, start=0, trig=1, depth=2)
     check_cons("unique", chanidx=i, start=0, trig=1, depth=2)
     check_cons("causal", chanidx=i, start=0, depth=1)
+    check_cons("ill", chanidx=i, depth=0)
 
 check_cons("hang", start=0, depth=1)
 
