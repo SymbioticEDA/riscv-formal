@@ -29,6 +29,23 @@ if [ ! -d rocket-chip ]; then
 >   })
 EOT
 
+	patch src/main/scala/rocket/RocketCore.scala << "EOT"
+896c896,899
+<     val csr_mcycle = UInt(INPUT, width=nret*xlen)
+---
+>     val rvfi_csr_mcycle_rdata = UInt(INPUT, width=nret*xlen)
+>     val rvfi_csr_mcycle_wdata = UInt(INPUT, width=nret*xlen)
+>     val rvfi_csr_mcycle_rmask = UInt(INPUT, width=nret*xlen)
+>     val rvfi_csr_mcycle_wmask = UInt(INPUT, width=nret*xlen)
+926c929,932
+<     io.csr_mcycle := content.map(_.mcycle).asUInt
+---
+>     io.rvfi_csr_mcycle_rdata := content.map(_.mcycle).asUInt
+>     io.rvfi_csr_mcycle_wdata := content.map(_.mcycle).asUInt
+>     io.rvfi_csr_mcycle_rmask := SInt(-1, width=nret*xlen).asUInt
+>     io.rvfi_csr_mcycle_wmask := SInt(-1, width=nret*xlen).asUInt
+EOT
+
 	if $enable_compressed; then
 		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)ic -p RVFIMonitor -c 2; ) > src/main/resources/vsrc/RVFIMonitor.v
 	else
@@ -114,6 +131,11 @@ expose rvfi_mon_rvfi_halt
 expose rvfi_mon_rvfi_intr
 expose rvfi_mon_rvfi_valid
 
+expose rvfi_mon_rvfi_csr_mcycle_rdata
+expose rvfi_mon_rvfi_csr_mcycle_wdata
+expose rvfi_mon_rvfi_csr_mcycle_rmask
+expose rvfi_mon_rvfi_csr_mcycle_wmask
+
 rename rvfi_mon_rvfi_insn      rvfi_insn
 rename rvfi_mon_rvfi_mem_addr  rvfi_mem_addr
 rename rvfi_mon_rvfi_mem_rdata rvfi_mem_rdata
@@ -133,6 +155,11 @@ rename rvfi_mon_rvfi_trap      rvfi_trap
 rename rvfi_mon_rvfi_halt      rvfi_halt
 rename rvfi_mon_rvfi_intr      rvfi_intr
 rename rvfi_mon_rvfi_valid     rvfi_valid
+
+rename rvfi_mon_rvfi_csr_mcycle_rdata rvfi_csr_mcycle_rdata
+rename rvfi_mon_rvfi_csr_mcycle_wdata rvfi_csr_mcycle_wdata
+rename rvfi_mon_rvfi_csr_mcycle_rmask rvfi_csr_mcycle_rmask
+rename rvfi_mon_rvfi_csr_mcycle_wmask rvfi_csr_mcycle_wmask
 
 delete rvfi_mon
 cd ..
@@ -161,6 +188,11 @@ add -output rvfi_halt       $(if $enable_64bits; then echo   2; else echo   2; f
 add -output rvfi_intr       $(if $enable_64bits; then echo   2; else echo   2; fi)
 add -output rvfi_valid      $(if $enable_64bits; then echo   2; else echo   2; fi)
 
+add -output rvfi_csr_mcycle_rdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
+add -output rvfi_csr_mcycle_wdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
+add -output rvfi_csr_mcycle_rmask  $(if $enable_64bits; then echo 128; else echo  64; fi)
+add -output rvfi_csr_mcycle_wmask  $(if $enable_64bits; then echo 128; else echo  64; fi)
+
 connect -port core rvfi_insn      rvfi_insn
 connect -port core rvfi_mem_addr  rvfi_mem_addr
 connect -port core rvfi_mem_rdata rvfi_mem_rdata
@@ -180,6 +212,11 @@ connect -port core rvfi_trap      rvfi_trap
 connect -port core rvfi_halt      rvfi_halt
 connect -port core rvfi_intr      rvfi_intr
 connect -port core rvfi_valid     rvfi_valid
+
+connect -port core rvfi_csr_mcycle_rdata rvfi_csr_mcycle_rdata
+connect -port core rvfi_csr_mcycle_wdata rvfi_csr_mcycle_wdata
+connect -port core rvfi_csr_mcycle_rmask rvfi_csr_mcycle_rmask
+connect -port core rvfi_csr_mcycle_wmask rvfi_csr_mcycle_wmask
 
 cd ..
 
