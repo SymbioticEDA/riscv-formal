@@ -22,7 +22,7 @@ If you want to inspect counter example traces you will need
 [gtkwave](http://gtkwave.sourceforge.net/). Whatever version of gtkwave is
 pre-packaged in your distribution is probably fine.
 
-If you want to disasample the code executed in the counter example traces you
+If you want to disassemble the code executed in the counter example traces you
 will need an installation of 32 bit [riscv-tools](https://github.com/riscv/riscv-tools),
 specifically you'll need `riscv32-unknown-elf-gcc` and `riscv32-unknown-elf-objdump`
 in your `$PATH`.
@@ -49,7 +49,7 @@ python3 ../../checks/genchecks.py
 make -C checks -j$(nproc)
 ```
 
-This will run in the order of four CPU hours (AMD Bulldozer at 3.6 GHz). It
+This will run on the order of four CPU hours (AMD Bulldozer at 3.6 GHz). It
 is over 60 individual checks than can all run in parallel if the machine has
 sufficient memory and cores. So if you run it on a large server you can
 completely verify the core in just a few minutes.
@@ -80,14 +80,14 @@ Or you can simply use gtkwave to display the counter example trace:
 gtkwave checks/liveness_ch0/engine_0/trace.vcd checks.gtkw
 ```
 
-Exercise 2: Build a RVFI Monitor and run it
+Exercise 2: Build an RVFI Monitor and run it
 -------------------------------------------
 
-A RVFI Monitor can be run side-by-side with your core and will detect when the
+An RVFI Monitor can be run side-by-side with your core and will detect when the
 core violates the ISA spec. RVFI monitors are synthesizable, so in addition to
 simulation they can also be used in FPGA emulation testing.
 
-Let's built a RVFI Monitor to be used with PicoRV32. PicoRV32 supports the
+Let's build an RVFI Monitor to be used with PicoRV32. PicoRV32 supports the
 rv32ic ISA (`-i rv32ic`), its RVFI port is one channel wide (`-c 1`), and it
 performs memory operations with word alignment (`-a`):
 

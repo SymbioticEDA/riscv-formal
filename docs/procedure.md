@@ -28,13 +28,13 @@ The `pc_fwd` check assumes that the core retires an instruction at the end of th
 
 ### Register Checks
 
-This checks if writes to and reads from the register file are consisten with each other, i.e. if the value written to a register matches the value read from the register file by a later instructions.
+This checks if writes to and reads from the register file are consistent with each other, i.e. if the value written to a register matches the value read from the register file by a later instructions.
 
 This check assumes that the last instruction at the end of the bounded model check, reads a register. It then checks that the value read is consistent with the matching write to the same register by an earlier instruction.
 
 ### Causality
 
-The core may retire instructions out-of-order as long as causality is preserved. (This means a regisert write must be retired before the register reads that depend on it.) This check tests if the
+The core may retire instructions out-of-order as long as causality is preserved. (This means a register write must be retired before the register reads that depend on it.) This check tests if the
 instruction stream is causal with respect to registers.
 
 ### Liveness
