@@ -4,7 +4,7 @@ Examples of bugs found by riscv-formal
 
 This page lists a few examples of common types of bugs found by riscv-formal.
 
-This page is intentionally a bit vague on the details. It's purpose is to give
+This page is intentionally a bit vague on the details. Its purpose is to give
 readers an idea of what kind of bugs can be found with riscv-formal, not to
 pillory implementations for long fixed bugs.
 

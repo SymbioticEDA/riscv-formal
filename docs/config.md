@@ -47,7 +47,7 @@ fused instructions this is the maximum length of a complete fused instruction.
 RISCV_FORMAL_COMPRESSED
 -----------------------
 
-For cores supporting the RISC-V Compressed ISA is define must be set.
+For cores supporting the RISC-V Compressed ISA this define must be set.
 
 RISCV_FORMAL_ALIGNED_MEM
 ------------------------
@@ -75,8 +75,8 @@ RISCV_FORMAL_FAIRNESS
 ---------------------
 
 When checking for liveness of the core, then the peripherals and abstractions
-used in the check must guranatee fairness. This macro should be tested by the
-peripherals and abstractions to decide if fairness guranatees should be enabled.
+used in the check must guarantee fairness. This macro should be tested by the
+peripherals and abstractions to decide if fairness guarantees should be enabled.
 
 RISCV_FORMAL_VALIDADDR(addr)
 ----------------------------
@@ -100,7 +100,7 @@ The Verilog file `rvfi_macros.vh` defines a few useful helper macros.
 RVFI_WIRES, RVFI_OUTPUTS, RVFI_INPUTS, RVFI_CONN
 ------------------------------------------------
 
-Macros to declare wires, ouptut ports, or input ports for all `rvfi_*` signals. The last
+Macros to declare wires, output ports, or input ports for all `rvfi_*` signals. The last
 macro is for creating the proper connections on module instances. This macros can be
 useful for routing the `rvfi_*` signals through the design hierarchy.
 
