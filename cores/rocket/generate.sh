@@ -294,6 +294,7 @@ reg_ch0
 \`define ROCKET_NORESET
 \`define RISCV_FORMAL_VALIDADDR(addr) ({31{addr[32]}} == addr[63:33])
 \`define RISCV_FORMAL_PMA_MAP rocket_pma_map
+\'define RISCV_FORMAL_CSR_MCYCLE
 \`define RISCV_FORMAL_ALTOPS
 
 [script-sources]
