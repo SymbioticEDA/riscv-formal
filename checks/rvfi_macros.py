@@ -80,6 +80,41 @@ for csr in csrs_xlen:
     print("`define rvformal_csr_%s_conn" % csr)
     print("`endif")
 
+for csr in csrs_64:
+    print("")
+    print("`ifdef RISCV_FORMAL_CSR_%s" % csr.upper())
+
+    print("`define rvformal_csr_%s_wires \\" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rmask; \\" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wmask; \\" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rdata; \\" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wdata;" % csr)
+
+    print("`define rvformal_csr_%s_outputs , \\" % csr)
+    print("output [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rmask, \\" % csr)
+    print("output [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wmask, \\" % csr)
+    print("output [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
+    print("output [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wdata" % csr)
+
+    print("`define rvformal_csr_%s_inputs , \\" % csr)
+    print("input [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rmask, \\" % csr)
+    print("input [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wmask, \\" % csr)
+    print("input [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
+    print("input [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wdata" % csr)
+
+    print("`define rvformal_csr_%s_conn , \\" % csr)
+    print(".rvfi_csr_%s_rmask (rvfi_csr_%s_rmask), \\" % (csr, csr))
+    print(".rvfi_csr_%s_wmask (rvfi_csr_%s_wmask), \\" % (csr, csr))
+    print(".rvfi_csr_%s_rdata (rvfi_csr_%s_rdata), \\" % (csr, csr))
+    print(".rvfi_csr_%s_wdata (rvfi_csr_%s_wdata)" % (csr, csr))
+
+    print("`else")
+    print("`define rvformal_csr_%s_wires" % csr)
+    print("`define rvformal_csr_%s_outputs" % csr)
+    print("`define rvformal_csr_%s_inputs" % csr)
+    print("`define rvformal_csr_%s_conn" % csr)
+    print("`endif")
+
 print("")
 print("`define RVFI_WIRES                                                                   \\")
 print("(* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_valid;      \\")
