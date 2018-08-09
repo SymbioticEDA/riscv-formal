@@ -67,7 +67,7 @@ for csr in csrs_xlen:
     print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
     print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_wdata" % csr)
 
-    print("`define rvformal_csr_%s_channel \\" % csr)
+    print("`define rvformal_csr_%s_channel(_idx) \\" % csr)
     print("wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_%s_rmask  = rvfi_csr_%s_rmask  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \\" % (csr, csr))
     print("wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_%s_wmask  = rvfi_csr_%s_wmask  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \\" % (csr, csr))
     print("wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_%s_rdata  = rvfi_csr_%s_rdata  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \\" % (csr, csr))
@@ -83,7 +83,7 @@ for csr in csrs_xlen:
     print("`define rvformal_csr_%s_wires" % csr)
     print("`define rvformal_csr_%s_outputs" % csr)
     print("`define rvformal_csr_%s_inputs" % csr)
-    print("`define rvformal_csr_%s_channel" % csr)
+    print("`define rvformal_csr_%s_channel(_idx)" % csr)
     print("`define rvformal_csr_%s_conn" % csr)
     print("`endif")
 
@@ -109,7 +109,7 @@ for csr in csrs_64:
     print("input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
     print("input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_wdata" % csr)
 
-    print("`define rvformal_csr_%s_channel \\" % csr)
+    print("`define rvformal_csr_%s_channel(_idx) \\" % csr)
     print("wire [64 - 1 : 0] csr_%s_rmask  = rvfi_csr_%s_rmask  [(_idx)*64 +: 64]; \\" % (csr, csr))
     print("wire [64 - 1 : 0] csr_%s_wmask  = rvfi_csr_%s_wmask  [(_idx)*64 +: 64]; \\" % (csr, csr))
     print("wire [64 - 1 : 0] csr_%s_rdata  = rvfi_csr_%s_rdata  [(_idx)*64 +: 64]; \\" % (csr, csr))
@@ -125,7 +125,7 @@ for csr in csrs_64:
     print("`define rvformal_csr_%s_wires" % csr)
     print("`define rvformal_csr_%s_outputs" % csr)
     print("`define rvformal_csr_%s_inputs" % csr)
-    print("`define rvformal_csr_%s_channel" % csr)
+    print("`define rvformal_csr_%s_channel(_idx)" % csr)
     print("`define rvformal_csr_%s_conn" % csr)
     print("`endif")
 
@@ -224,7 +224,7 @@ print("wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] mem_wmask  = rvfi_mem_wmask  [(_idx)*
 print("wire [`RISCV_FORMAL_XLEN   - 1 : 0] mem_rdata  = rvfi_mem_rdata  [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\")
 print("wire [`RISCV_FORMAL_XLEN   - 1 : 0] mem_wdata  = rvfi_mem_wdata  [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\")
 for csr in all_csrs:
-    print("`rvformal_csr_%s_channel \\" % csr)
+    print("`rvformal_csr_%s_channel(_idx) \\" % csr)
 print("end endgenerate")
 
 print("")
