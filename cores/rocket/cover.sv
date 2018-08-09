@@ -3,6 +3,9 @@ module testbench (
 );
 	`RVFI_WIRES
 
+	`RVFI_CHANNEL(rvfi_ch0, 0)
+	`RVFI_CHANNEL(rvfi_ch1, 1)
+
 `ifdef YOSYS
 	assume property (reset == $initstate);
 `endif
@@ -12,12 +15,6 @@ module testbench (
 		.reset (reset),
 		`RVFI_CONN
 	);
-
-`define RVFI_CHANNEL_POSTFIX _ch0
-`RVFI_CHANNEL(0)
-
-`define RVFI_CHANNEL_POSTFIX _ch1
-`RVFI_CHANNEL(1)
 
 	localparam [31:0] opcode0 = 32'h00051663; // bnez a0,18 <foo+0xc>
 	localparam [31:0] opcode1 = 32'h00310093; // addi ra,sp,3

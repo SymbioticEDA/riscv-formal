@@ -50,22 +50,28 @@ for csr in csrs_xlen:
     print("`ifdef RISCV_FORMAL_CSR_%s" % csr.upper())
 
     print("`define rvformal_csr_%s_wires \\" % csr)
-    print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_rmask; \\" % csr)
-    print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_wmask; \\" % csr)
-    print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_rdata; \\" % csr)
-    print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_wdata;" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_rmask; \\" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_wmask; \\" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_rdata; \\" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_wdata;" % csr)
 
     print("`define rvformal_csr_%s_outputs , \\" % csr)
-    print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_rmask, \\" % csr)
-    print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_wmask, \\" % csr)
-    print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
-    print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_wdata" % csr)
+    print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_rmask, \\" % csr)
+    print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_wmask, \\" % csr)
+    print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
+    print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_wdata" % csr)
 
     print("`define rvformal_csr_%s_inputs , \\" % csr)
-    print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_rmask, \\" % csr)
-    print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_wmask, \\" % csr)
-    print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
-    print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_%s_wdata" % csr)
+    print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_rmask, \\" % csr)
+    print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_wmask, \\" % csr)
+    print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
+    print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_%s_wdata" % csr)
+
+    print("`define rvformal_csr_%s_channel(_idx) , \\" % csr)
+    print("wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_%s_rmask  = rvfi_csr_%s_rmask  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \\" % (csr, csr))
+    print("wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_%s_wmask  = rvfi_csr_%s_wmask  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \\" % (csr, csr))
+    print("wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_%s_rdata  = rvfi_csr_%s_rdata  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \\" % (csr, csr))
+    print("wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_%s_wdata  = rvfi_csr_%s_wdata  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN];" % (csr, csr))
 
     print("`define rvformal_csr_%s_conn , \\" % csr)
     print(".rvfi_csr_%s_rmask (rvfi_csr_%s_rmask), \\" % (csr, csr))
@@ -85,22 +91,28 @@ for csr in csrs_64:
     print("`ifdef RISCV_FORMAL_CSR_%s" % csr.upper())
 
     print("`define rvformal_csr_%s_wires \\" % csr)
-    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rmask; \\" % csr)
-    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wmask; \\" % csr)
-    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rdata; \\" % csr)
-    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wdata;" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_rmask; \\" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_wmask; \\" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_rdata; \\" % csr)
+    print("(* keep *) wire [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_wdata;" % csr)
 
     print("`define rvformal_csr_%s_outputs , \\" % csr)
-    print("output [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rmask, \\" % csr)
-    print("output [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wmask, \\" % csr)
-    print("output [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
-    print("output [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wdata" % csr)
+    print("output [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_rmask, \\" % csr)
+    print("output [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_wmask, \\" % csr)
+    print("output [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
+    print("output [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_wdata" % csr)
 
     print("`define rvformal_csr_%s_inputs , \\" % csr)
-    print("input [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rmask, \\" % csr)
-    print("input [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wmask, \\" % csr)
-    print("input [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
-    print("input [`RISCV_FORMAL_NRET * 64                   - 1 : 0] rvfi_csr_%s_wdata" % csr)
+    print("input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_rmask, \\" % csr)
+    print("input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_wmask, \\" % csr)
+    print("input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_rdata, \\" % csr)
+    print("input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_%s_wdata" % csr)
+
+    print("`define rvformal_csr_%s_channel(_idx) , \\" % csr)
+    print("wire [64 - 1 : 0] csr_%s_rmask  = rvfi_csr_%s_rmask  [(_idx)*64 +: 64]; \\" % (csr, csr))
+    print("wire [64 - 1 : 0] csr_%s_wmask  = rvfi_csr_%s_wmask  [(_idx)*64 +: 64]; \\" % (csr, csr))
+    print("wire [64 - 1 : 0] csr_%s_rdata  = rvfi_csr_%s_rdata  [(_idx)*64 +: 64]; \\" % (csr, csr))
+    print("wire [64 - 1 : 0] csr_%s_wdata  = rvfi_csr_%s_wdata  [(_idx)*64 +: 64];" % (csr, csr))
 
     print("`define rvformal_csr_%s_conn , \\" % csr)
     print(".rvfi_csr_%s_rmask (rvfi_csr_%s_rmask), \\" % (csr, csr))
@@ -188,6 +200,32 @@ for csr in all_csrs:
     print("`rvformal_csr_%s_inputs%s" % (csr, "" if csr == all_csrs[-1] else " \\"))
 
 print("")
+print("`define RVFI_CHANNEL(_name, _idx) \\")
+print("generate begin:_name \\")
+print("wire [                 1   - 1 : 0] valid      = rvfi_valid      [(_idx)*(                 1  )  +:                  1  ]; \\")
+print("wire [                64   - 1 : 0] order      = rvfi_order      [(_idx)*(                64  )  +:                 64  ]; \\")
+print("wire [`RISCV_FORMAL_ILEN   - 1 : 0] insn       = rvfi_insn       [(_idx)*(`RISCV_FORMAL_ILEN  )  +: `RISCV_FORMAL_ILEN  ]; \\")
+print("wire [                 1   - 1 : 0] trap       = rvfi_trap       [(_idx)*(                 1  )  +:                  1  ]; \\")
+print("wire [                 1   - 1 : 0] halt       = rvfi_halt       [(_idx)*(                 1  )  +:                  1  ]; \\")
+print("wire [                 1   - 1 : 0] intr       = rvfi_intr       [(_idx)*(                 1  )  +:                  1  ]; \\")
+print("wire [                 5   - 1 : 0] rs1_addr   = rvfi_rs1_addr   [(_idx)*(                 5  )  +:                  5  ]; \\")
+print("wire [                 5   - 1 : 0] rs2_addr   = rvfi_rs2_addr   [(_idx)*(                 5  )  +:                  5  ]; \\")
+print("wire [`RISCV_FORMAL_XLEN   - 1 : 0] rs1_rdata  = rvfi_rs1_rdata  [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\")
+print("wire [`RISCV_FORMAL_XLEN   - 1 : 0] rs2_rdata  = rvfi_rs2_rdata  [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\")
+print("wire [                 5   - 1 : 0] rd_addr    = rvfi_rd_addr    [(_idx)*(                 5  )  +:                  5  ]; \\")
+print("wire [`RISCV_FORMAL_XLEN   - 1 : 0] rd_wdata   = rvfi_rd_wdata   [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\")
+print("wire [`RISCV_FORMAL_XLEN   - 1 : 0] pc_rdata   = rvfi_pc_rdata   [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\")
+print("wire [`RISCV_FORMAL_XLEN   - 1 : 0] pc_wdata   = rvfi_pc_wdata   [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\")
+print("wire [`RISCV_FORMAL_XLEN   - 1 : 0] mem_addr   = rvfi_mem_addr   [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\")
+print("wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] mem_rmask  = rvfi_mem_rmask  [(_idx)*(`RISCV_FORMAL_XLEN/8)  +: `RISCV_FORMAL_XLEN/8]; \\")
+print("wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] mem_wmask  = rvfi_mem_wmask  [(_idx)*(`RISCV_FORMAL_XLEN/8)  +: `RISCV_FORMAL_XLEN/8]; \\")
+print("wire [`RISCV_FORMAL_XLEN   - 1 : 0] mem_rdata  = rvfi_mem_rdata  [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\")
+print("wire [`RISCV_FORMAL_XLEN   - 1 : 0] mem_wdata  = rvfi_mem_wdata  [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\")
+for csr in all_csrs:
+    print("`rvformal_csr_%s_channel(_idx) \\" % csr)
+print("end endgenerate")
+
+print("")
 print("`define RVFI_CONN                  \\")
 print(".rvfi_valid     (rvfi_valid    ),  \\")
 print(".rvfi_order     (rvfi_order    ),  \\")
@@ -210,27 +248,3 @@ print(".rvfi_mem_rdata (rvfi_mem_rdata),  \\")
 print(".rvfi_mem_wdata (rvfi_mem_wdata)   \\")
 for csr in all_csrs:
     print("`rvformal_csr_%s_conn%s" % (csr, "" if csr == all_csrs[-1] else " \\"))
-
-print("""
-`define RVFI_CHANNEL(_n) \\
-wire [                 1   - 1 : 0]     rvfi_valid`RVFI_CHANNEL_POSTFIX = rvfi_valid      [(_n)*(                 1  )  +:                  1  ]; \\
-wire [                64   - 1 : 0]     rvfi_order`RVFI_CHANNEL_POSTFIX = rvfi_order      [(_n)*(                64  )  +:                 64  ]; \\
-wire [`RISCV_FORMAL_ILEN   - 1 : 0]      rvfi_insn`RVFI_CHANNEL_POSTFIX = rvfi_insn       [(_n)*(`RISCV_FORMAL_ILEN  )  +: `RISCV_FORMAL_ILEN  ]; \\
-wire [                 1   - 1 : 0]      rvfi_trap`RVFI_CHANNEL_POSTFIX = rvfi_trap       [(_n)*(                 1  )  +:                  1  ]; \\
-wire [                 1   - 1 : 0]      rvfi_halt`RVFI_CHANNEL_POSTFIX = rvfi_halt       [(_n)*(                 1  )  +:                  1  ]; \\
-wire [                 1   - 1 : 0]      rvfi_intr`RVFI_CHANNEL_POSTFIX = rvfi_intr       [(_n)*(                 1  )  +:                  1  ]; \\
-wire [                 5   - 1 : 0]  rvfi_rs1_addr`RVFI_CHANNEL_POSTFIX = rvfi_rs1_addr   [(_n)*(                 5  )  +:                  5  ]; \\
-wire [                 5   - 1 : 0]  rvfi_rs2_addr`RVFI_CHANNEL_POSTFIX = rvfi_rs2_addr   [(_n)*(                 5  )  +:                  5  ]; \\
-wire [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata`RVFI_CHANNEL_POSTFIX = rvfi_rs1_rdata  [(_n)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\
-wire [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata`RVFI_CHANNEL_POSTFIX = rvfi_rs2_rdata  [(_n)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\
-wire [                 5   - 1 : 0]   rvfi_rd_addr`RVFI_CHANNEL_POSTFIX = rvfi_rd_addr    [(_n)*(                 5  )  +:                  5  ]; \\
-wire [`RISCV_FORMAL_XLEN   - 1 : 0]  rvfi_rd_wdata`RVFI_CHANNEL_POSTFIX = rvfi_rd_wdata   [(_n)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\
-wire [`RISCV_FORMAL_XLEN   - 1 : 0]  rvfi_pc_rdata`RVFI_CHANNEL_POSTFIX = rvfi_pc_rdata   [(_n)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\
-wire [`RISCV_FORMAL_XLEN   - 1 : 0]  rvfi_pc_wdata`RVFI_CHANNEL_POSTFIX = rvfi_pc_wdata   [(_n)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\
-wire [`RISCV_FORMAL_XLEN   - 1 : 0]  rvfi_mem_addr`RVFI_CHANNEL_POSTFIX = rvfi_mem_addr   [(_n)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\
-wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_rmask`RVFI_CHANNEL_POSTFIX = rvfi_mem_rmask  [(_n)*(`RISCV_FORMAL_XLEN/8)  +: `RISCV_FORMAL_XLEN/8]; \\
-wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_wmask`RVFI_CHANNEL_POSTFIX = rvfi_mem_wmask  [(_n)*(`RISCV_FORMAL_XLEN/8)  +: `RISCV_FORMAL_XLEN/8]; \\
-wire [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata`RVFI_CHANNEL_POSTFIX = rvfi_mem_rdata  [(_n)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \\
-wire [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata`RVFI_CHANNEL_POSTFIX = rvfi_mem_wdata  [(_n)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ];
-""")
-
