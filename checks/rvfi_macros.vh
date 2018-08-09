@@ -50,6 +50,7 @@ wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_fflags_wdata  = rvfi_csr_fflags_wdata  [(_
 `define rvformal_csr_fflags_wires
 `define rvformal_csr_fflags_outputs
 `define rvformal_csr_fflags_inputs
+`define rvformal_csr_fflags_channel
 `define rvformal_csr_fflags_conn
 `endif
 
@@ -83,6 +84,7 @@ wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_frm_wdata  = rvfi_csr_frm_wdata  [(_idx)*`
 `define rvformal_csr_frm_wires
 `define rvformal_csr_frm_outputs
 `define rvformal_csr_frm_inputs
+`define rvformal_csr_frm_channel
 `define rvformal_csr_frm_conn
 `endif
 
@@ -116,6 +118,7 @@ wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_fcsr_wdata  = rvfi_csr_fcsr_wdata  [(_idx)
 `define rvformal_csr_fcsr_wires
 `define rvformal_csr_fcsr_outputs
 `define rvformal_csr_fcsr_inputs
+`define rvformal_csr_fcsr_channel
 `define rvformal_csr_fcsr_conn
 `endif
 
@@ -149,6 +152,7 @@ wire [64 - 1 : 0] csr_cycle_wdata  = rvfi_csr_cycle_wdata  [(_idx)*64 +: 64];
 `define rvformal_csr_cycle_wires
 `define rvformal_csr_cycle_outputs
 `define rvformal_csr_cycle_inputs
+`define rvformal_csr_cycle_channel
 `define rvformal_csr_cycle_conn
 `endif
 
@@ -182,6 +186,7 @@ wire [64 - 1 : 0] csr_time_wdata  = rvfi_csr_time_wdata  [(_idx)*64 +: 64];
 `define rvformal_csr_time_wires
 `define rvformal_csr_time_outputs
 `define rvformal_csr_time_inputs
+`define rvformal_csr_time_channel
 `define rvformal_csr_time_conn
 `endif
 
@@ -215,6 +220,7 @@ wire [64 - 1 : 0] csr_instret_wdata  = rvfi_csr_instret_wdata  [(_idx)*64 +: 64]
 `define rvformal_csr_instret_wires
 `define rvformal_csr_instret_outputs
 `define rvformal_csr_instret_inputs
+`define rvformal_csr_instret_channel
 `define rvformal_csr_instret_conn
 `endif
 
@@ -248,6 +254,7 @@ wire [64 - 1 : 0] csr_mcycle_wdata  = rvfi_csr_mcycle_wdata  [(_idx)*64 +: 64];
 `define rvformal_csr_mcycle_wires
 `define rvformal_csr_mcycle_outputs
 `define rvformal_csr_mcycle_inputs
+`define rvformal_csr_mcycle_channel
 `define rvformal_csr_mcycle_conn
 `endif
 
@@ -281,6 +288,7 @@ wire [64 - 1 : 0] csr_minstret_wdata  = rvfi_csr_minstret_wdata  [(_idx)*64 +: 6
 `define rvformal_csr_minstret_wires
 `define rvformal_csr_minstret_outputs
 `define rvformal_csr_minstret_inputs
+`define rvformal_csr_minstret_channel
 `define rvformal_csr_minstret_conn
 `endif
 

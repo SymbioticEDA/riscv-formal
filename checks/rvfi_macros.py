@@ -83,6 +83,7 @@ for csr in csrs_xlen:
     print("`define rvformal_csr_%s_wires" % csr)
     print("`define rvformal_csr_%s_outputs" % csr)
     print("`define rvformal_csr_%s_inputs" % csr)
+    print("`define rvformal_csr_%s_channel" % csr)
     print("`define rvformal_csr_%s_conn" % csr)
     print("`endif")
 
@@ -124,6 +125,7 @@ for csr in csrs_64:
     print("`define rvformal_csr_%s_wires" % csr)
     print("`define rvformal_csr_%s_outputs" % csr)
     print("`define rvformal_csr_%s_inputs" % csr)
+    print("`define rvformal_csr_%s_channel" % csr)
     print("`define rvformal_csr_%s_conn" % csr)
     print("`endif")
 
