@@ -36,7 +36,7 @@ input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_fflags_rmask, \
 input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_fflags_wmask, \
 input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_fflags_rdata, \
 input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_fflags_wdata
-`define rvformal_csr_fflags_channel(_idx) , \
+`define rvformal_csr_fflags_channel \
 wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_fflags_rmask  = rvfi_csr_fflags_rmask  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \
 wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_fflags_wmask  = rvfi_csr_fflags_wmask  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \
 wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_fflags_rdata  = rvfi_csr_fflags_rdata  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \
@@ -70,7 +70,7 @@ input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_frm_rmask, \
 input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_frm_wmask, \
 input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_frm_rdata, \
 input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_frm_wdata
-`define rvformal_csr_frm_channel(_idx) , \
+`define rvformal_csr_frm_channel \
 wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_frm_rmask  = rvfi_csr_frm_rmask  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \
 wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_frm_wmask  = rvfi_csr_frm_wmask  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \
 wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_frm_rdata  = rvfi_csr_frm_rdata  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \
@@ -104,7 +104,7 @@ input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_fcsr_rmask, \
 input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_fcsr_wmask, \
 input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_fcsr_rdata, \
 input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN - 1 : 0] rvfi_csr_fcsr_wdata
-`define rvformal_csr_fcsr_channel(_idx) , \
+`define rvformal_csr_fcsr_channel \
 wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_fcsr_rmask  = rvfi_csr_fcsr_rmask  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \
 wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_fcsr_wmask  = rvfi_csr_fcsr_wmask  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \
 wire [`RISCV_FORMAL_XLEN - 1 : 0] csr_fcsr_rdata  = rvfi_csr_fcsr_rdata  [(_idx)*`RISCV_FORMAL_XLEN  +: `RISCV_FORMAL_XLEN]; \
@@ -138,7 +138,7 @@ input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_cycle_rmask, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_cycle_wmask, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_cycle_rdata, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_cycle_wdata
-`define rvformal_csr_cycle_channel(_idx) , \
+`define rvformal_csr_cycle_channel \
 wire [64 - 1 : 0] csr_cycle_rmask  = rvfi_csr_cycle_rmask  [(_idx)*64 +: 64]; \
 wire [64 - 1 : 0] csr_cycle_wmask  = rvfi_csr_cycle_wmask  [(_idx)*64 +: 64]; \
 wire [64 - 1 : 0] csr_cycle_rdata  = rvfi_csr_cycle_rdata  [(_idx)*64 +: 64]; \
@@ -172,7 +172,7 @@ input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_time_rmask, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_time_wmask, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_time_rdata, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_time_wdata
-`define rvformal_csr_time_channel(_idx) , \
+`define rvformal_csr_time_channel \
 wire [64 - 1 : 0] csr_time_rmask  = rvfi_csr_time_rmask  [(_idx)*64 +: 64]; \
 wire [64 - 1 : 0] csr_time_wmask  = rvfi_csr_time_wmask  [(_idx)*64 +: 64]; \
 wire [64 - 1 : 0] csr_time_rdata  = rvfi_csr_time_rdata  [(_idx)*64 +: 64]; \
@@ -206,7 +206,7 @@ input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_instret_rmask, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_instret_wmask, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_instret_rdata, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_instret_wdata
-`define rvformal_csr_instret_channel(_idx) , \
+`define rvformal_csr_instret_channel \
 wire [64 - 1 : 0] csr_instret_rmask  = rvfi_csr_instret_rmask  [(_idx)*64 +: 64]; \
 wire [64 - 1 : 0] csr_instret_wmask  = rvfi_csr_instret_wmask  [(_idx)*64 +: 64]; \
 wire [64 - 1 : 0] csr_instret_rdata  = rvfi_csr_instret_rdata  [(_idx)*64 +: 64]; \
@@ -240,7 +240,7 @@ input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_mcycle_rmask, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_mcycle_wmask, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_mcycle_rdata, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_mcycle_wdata
-`define rvformal_csr_mcycle_channel(_idx) , \
+`define rvformal_csr_mcycle_channel \
 wire [64 - 1 : 0] csr_mcycle_rmask  = rvfi_csr_mcycle_rmask  [(_idx)*64 +: 64]; \
 wire [64 - 1 : 0] csr_mcycle_wmask  = rvfi_csr_mcycle_wmask  [(_idx)*64 +: 64]; \
 wire [64 - 1 : 0] csr_mcycle_rdata  = rvfi_csr_mcycle_rdata  [(_idx)*64 +: 64]; \
@@ -274,7 +274,7 @@ input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_minstret_rmask, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_minstret_wmask, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_minstret_rdata, \
 input [`RISCV_FORMAL_NRET * 64 - 1 : 0] rvfi_csr_minstret_wdata
-`define rvformal_csr_minstret_channel(_idx) , \
+`define rvformal_csr_minstret_channel \
 wire [64 - 1 : 0] csr_minstret_rmask  = rvfi_csr_minstret_rmask  [(_idx)*64 +: 64]; \
 wire [64 - 1 : 0] csr_minstret_wmask  = rvfi_csr_minstret_wmask  [(_idx)*64 +: 64]; \
 wire [64 - 1 : 0] csr_minstret_rdata  = rvfi_csr_minstret_rdata  [(_idx)*64 +: 64]; \
@@ -380,7 +380,7 @@ input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata   \
 `rvformal_csr_minstret_inputs
 
 `define RVFI_CHANNEL(_name, _idx) \
-generate begin:_name \
+generate if(1) begin:_name \
 wire [                 1   - 1 : 0] valid      = rvfi_valid      [(_idx)*(                 1  )  +:                  1  ]; \
 wire [                64   - 1 : 0] order      = rvfi_order      [(_idx)*(                64  )  +:                 64  ]; \
 wire [`RISCV_FORMAL_ILEN   - 1 : 0] insn       = rvfi_insn       [(_idx)*(`RISCV_FORMAL_ILEN  )  +: `RISCV_FORMAL_ILEN  ]; \
@@ -400,14 +400,14 @@ wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] mem_rmask  = rvfi_mem_rmask  [(_idx)*(`RISCV
 wire [`RISCV_FORMAL_XLEN/8 - 1 : 0] mem_wmask  = rvfi_mem_wmask  [(_idx)*(`RISCV_FORMAL_XLEN/8)  +: `RISCV_FORMAL_XLEN/8]; \
 wire [`RISCV_FORMAL_XLEN   - 1 : 0] mem_rdata  = rvfi_mem_rdata  [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \
 wire [`RISCV_FORMAL_XLEN   - 1 : 0] mem_wdata  = rvfi_mem_wdata  [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \
-`rvformal_csr_fflags_channel(_idx) \
-`rvformal_csr_frm_channel(_idx) \
-`rvformal_csr_fcsr_channel(_idx) \
-`rvformal_csr_cycle_channel(_idx) \
-`rvformal_csr_time_channel(_idx) \
-`rvformal_csr_instret_channel(_idx) \
-`rvformal_csr_mcycle_channel(_idx) \
-`rvformal_csr_minstret_channel(_idx) \
+`rvformal_csr_fflags_channel \
+`rvformal_csr_frm_channel \
+`rvformal_csr_fcsr_channel \
+`rvformal_csr_cycle_channel \
+`rvformal_csr_time_channel \
+`rvformal_csr_instret_channel \
+`rvformal_csr_mcycle_channel \
+`rvformal_csr_minstret_channel \
 end endgenerate
 
 `define RVFI_CONN                  \

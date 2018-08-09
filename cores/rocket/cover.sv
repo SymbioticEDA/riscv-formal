@@ -40,66 +40,66 @@ module testbench (
 	wire o3 = p0o3m0 || p0o3m1 || p1o3m0 || p1o3m1;
 	wire o4 = p0o4m0 || p0o4m1 || p1o4m0 || p1o4m1;
 
-	wire is_p0_ch0 = (rvfi_pc_rdata_ch0 & 32'hffff0000) == 32'h00010000;
-	wire is_p1_ch0 = (rvfi_pc_rdata_ch0 & 32'hffff0000) == 32'h00020000;
+	wire is_p0_ch0 = (rvfi_ch0.pc_rdata & 32'hffff0000) == 32'h00010000;
+	wire is_p1_ch0 = (rvfi_ch0.pc_rdata & 32'hffff0000) == 32'h00020000;
 
-	wire is_m0_ch0 = (rvfi_mem_addr_ch0 & 32'hffff0000) == 32'h00010000;
-	wire is_m1_ch0 = (rvfi_mem_addr_ch0 & 32'hffff0000) == 32'h00020000;
+	wire is_m0_ch0 = (rvfi_ch0.mem_addr & 32'hffff0000) == 32'h00010000;
+	wire is_m1_ch0 = (rvfi_ch0.mem_addr & 32'hffff0000) == 32'h00020000;
 
-	wire is_p0_ch1 = (rvfi_pc_rdata_ch1 & 32'hffff0000) == 32'h00010000;
-	wire is_p1_ch1 = (rvfi_pc_rdata_ch1 & 32'hffff0000) == 32'h00020000;
+	wire is_p0_ch1 = (rvfi_ch1.pc_rdata & 32'hffff0000) == 32'h00010000;
+	wire is_p1_ch1 = (rvfi_ch1.pc_rdata & 32'hffff0000) == 32'h00020000;
 
-	wire is_m0_ch1 = (rvfi_mem_addr_ch1 & 32'hffff0000) == 32'h00010000;
-	wire is_m1_ch1 = (rvfi_mem_addr_ch1 & 32'hffff0000) == 32'h00020000;
+	wire is_m0_ch1 = (rvfi_ch1.mem_addr & 32'hffff0000) == 32'h00010000;
+	wire is_m1_ch1 = (rvfi_ch1.mem_addr & 32'hffff0000) == 32'h00020000;
 
 	always @(posedge clk) begin
 		if (!reset) begin
-			if (rvfi_valid_ch0) begin
-				if (rvfi_insn_ch0 == opcode0) begin
+			if (rvfi_ch0.valid) begin
+				if (rvfi_ch0.insn == opcode0) begin
 					if (is_p0_ch0) p0o0 <= 1;
 					if (is_p1_ch0) p1o0 <= 1;
 				end
-				if (rvfi_insn_ch0 == opcode1) begin
+				if (rvfi_ch0.insn == opcode1) begin
 					if (is_p0_ch0) p0o1 <= 1;
 					if (is_p1_ch0) p1o1 <= 1;
 				end
-				if (rvfi_insn_ch0 == opcode2) begin
+				if (rvfi_ch0.insn == opcode2) begin
 					if (is_p0_ch0) p0o2 <= 1;
 					if (is_p1_ch0) p1o2 <= 1;
 				end
-				if (rvfi_insn_ch0 == opcode3) begin
+				if (rvfi_ch0.insn == opcode3) begin
 					if (is_p0_ch0 && is_m0_ch0) p0o3m0 <= 1;
 					if (is_p0_ch0 && is_m1_ch0) p0o3m1 <= 1;
 					if (is_p1_ch0 && is_m0_ch0) p1o3m0 <= 1;
 					if (is_p1_ch0 && is_m1_ch0) p1o3m1 <= 1;
 				end
-				if (rvfi_insn_ch0 == opcode4) begin
+				if (rvfi_ch0.insn == opcode4) begin
 					if (is_p0_ch0 && is_m0_ch0) p0o4m0 <= 1;
 					if (is_p0_ch0 && is_m1_ch0) p0o4m1 <= 1;
 					if (is_p1_ch0 && is_m0_ch0) p1o4m0 <= 1;
 					if (is_p1_ch0 && is_m1_ch0) p1o4m1 <= 1;
 				end
 			end
-			if (rvfi_valid_ch1) begin
-				if (rvfi_insn_ch1 == opcode0) begin
+			if (rvfi_ch1.valid) begin
+				if (rvfi_ch1.insn == opcode0) begin
 					if (is_p0_ch1) p0o0 <= 1;
 					if (is_p1_ch1) p1o0 <= 1;
 				end
-				if (rvfi_insn_ch1 == opcode1) begin
+				if (rvfi_ch1.insn == opcode1) begin
 					if (is_p0_ch1) p0o1 <= 1;
 					if (is_p1_ch1) p1o1 <= 1;
 				end
-				if (rvfi_insn_ch1 == opcode2) begin
+				if (rvfi_ch1.insn == opcode2) begin
 					if (is_p0_ch1) p0o2 <= 1;
 					if (is_p1_ch1) p1o2 <= 1;
 				end
-				if (rvfi_insn_ch1 == opcode3) begin
+				if (rvfi_ch1.insn == opcode3) begin
 					if (is_p0_ch1 && is_m0_ch1) p0o3m0 <= 1;
 					if (is_p0_ch1 && is_m1_ch1) p0o3m1 <= 1;
 					if (is_p1_ch1 && is_m0_ch1) p1o3m0 <= 1;
 					if (is_p1_ch1 && is_m1_ch1) p1o3m1 <= 1;
 				end
-				if (rvfi_insn_ch1 == opcode4) begin
+				if (rvfi_ch1.insn == opcode4) begin
 					if (is_p0_ch1 && is_m0_ch1) p0o4m0 <= 1;
 					if (is_p0_ch1 && is_m1_ch1) p0o4m1 <= 1;
 					if (is_p1_ch1 && is_m0_ch1) p1o4m0 <= 1;

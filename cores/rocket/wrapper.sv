@@ -143,7 +143,7 @@ module rvfi_wrapper (
 		.auto_tl_slave_xing_in_d_bits_opcode    (io_slave_0_d_bits_opcode  ),
 		.auto_tl_slave_xing_in_d_bits_size      (io_slave_0_d_bits_size    ),
 		.auto_tl_slave_xing_in_d_bits_source    (io_slave_0_d_bits_source  ),
-		.auto_tl_slave_xing_in_d_bits_data      (io_slave_0_d_bits_data    ),
+		.auto_tl_slave_xing_in_d_bits_data      (io_slave_0_d_bits_data    )
 	);
 
 `ifdef ROCKET_HIER_REF
