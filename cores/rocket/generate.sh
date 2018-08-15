@@ -284,6 +284,8 @@ hang    $(if $enable_inithack; then echo "10    40"; else echo "20    50"; fi)
 
 reg_ch1 $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 
+csrw    $(if $enable_inithack; then echo "      20"; else echo "      35"; fi)
+
 [sort]
 (reg|causal)_ch1
 insn_(lb|lbu|lh|lhu|lw|lwu|ld|c_lw|c_lwsp|c_ld|c_ldsp)_ch1

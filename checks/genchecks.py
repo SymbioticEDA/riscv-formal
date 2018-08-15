@@ -359,6 +359,7 @@ for i in range(nret):
     check_cons("liveness", chanidx=i, start=0, trig=1, depth=2)
     check_cons("unique", chanidx=i, start=0, trig=1, depth=2)
     check_cons("causal", chanidx=i, start=0, depth=1)
+    check_cons("csrw", chanidx=i, depth=0)
     check_cons("ill", chanidx=i, depth=0)
 
 check_cons("hang", start=0, depth=1)
