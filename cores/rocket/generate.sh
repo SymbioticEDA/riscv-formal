@@ -18,34 +18,6 @@ if [ ! -d rocket-chip ]; then
 	git checkout RVFI
 	git submodule update --init
 
-	patch src/main/scala/system/Configs.scala << "EOT"
-84,86c84,86
-<   new BaseConfig())//.alter((site, here, up) => {
-< //    case freechips.rocketchip.tile.XLen => 64
-< //  })
----
->   new BaseConfig()).alter((site, here, up) => {
->     case freechips.rocketchip.tile.XLen => 32
->   })
-EOT
-
-	patch src/main/scala/rocket/RocketCore.scala << "EOT"
-896c896,899
-<     val csr_mcycle = UInt(INPUT, width=nret*xlen)
----
->     val rvfi_csr_mcycle_rdata = UInt(INPUT, width=nret*xlen)
->     val rvfi_csr_mcycle_wdata = UInt(INPUT, width=nret*xlen)
->     val rvfi_csr_mcycle_rmask = UInt(INPUT, width=nret*xlen)
->     val rvfi_csr_mcycle_wmask = UInt(INPUT, width=nret*xlen)
-926c929,932
-<     io.csr_mcycle := content.map(_.mcycle).asUInt
----
->     io.rvfi_csr_mcycle_rdata := content.map(_.mcycle).asUInt
->     io.rvfi_csr_mcycle_wdata := content.map(_.mcycle).asUInt
->     io.rvfi_csr_mcycle_rmask := SInt(-1, width=nret*xlen).asUInt
->     io.rvfi_csr_mcycle_wmask := SInt(-1, width=nret*xlen).asUInt
-EOT
-
 	if $enable_compressed; then
 		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)ic -p RVFIMonitor -c 2; ) > src/main/resources/vsrc/RVFIMonitor.v
 	else
@@ -296,7 +268,7 @@ reg_ch0
 \`define ROCKET_NORESET
 \`define RISCV_FORMAL_VALIDADDR(addr) ({31{addr[32]}} == addr[63:33])
 \`define RISCV_FORMAL_PMA_MAP rocket_pma_map
-\'define RISCV_FORMAL_CSR_MCYCLE
+\`define RISCV_FORMAL_CSR_MCYCLE
 \`define RISCV_FORMAL_ALTOPS
 
 [script-sources]
