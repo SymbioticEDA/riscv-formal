@@ -10,6 +10,7 @@ while read dir; do echo "$dir	$(git -C $dir log -n1 --oneline)"; \
 	expand -t30 > cexdata/version.txt
 
 cp rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v cexdata/rocketchip.v
+cp rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.fir cexdata/rocketchip.fir
 cp rocket-chip/src/main/scala/system/Configs.scala cexdata/Configs.scala
 git -C rocket-chip diff src/main/scala/system/Configs.scala > cexdata/Configs.scala.diff
 cp rocket-syn/init.vcd cexdata/init.vcd
