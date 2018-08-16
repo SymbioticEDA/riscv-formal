@@ -149,9 +149,13 @@ def get_depth_cfg(patterns):
 
 # ------------------------------ Instruction Checkers ------------------------------
 
-def check_insn(insn, chanidx):
-    check = "insn_%s_ch%d" % (insn, chanidx)
-    depth_cfg = get_depth_cfg(["insn", "insn_ch%d" % chanidx, "insn_%s" % insn, "insn_%s_ch%d" % (insn, chanidx)])
+def check_insn(insn, chanidx, csr_mode=False):
+    if csr_mode:
+        check = "csrw_%s_ch%d" % (insn, chanidx)
+        depth_cfg = get_depth_cfg(["csrw", "csrw_ch%d" % chanidx, "csrw_%s" % insn, "csrw_%s_ch%d" % (insn, chanidx)])
+    else:
+        check = "insn_%s_ch%d" % (insn, chanidx)
+        depth_cfg = get_depth_cfg(["insn", "insn_ch%d" % chanidx, "insn_%s" % insn, "insn_%s_ch%d" % (insn, chanidx)])
 
     if depth_cfg is None: return
     assert len(depth_cfg) == 1
@@ -194,23 +198,40 @@ def check_insn(insn, chanidx):
                 : @basedir@/@cfgname@/rvfi_macros.vh
                 : @basedir@/@cfgname@/rvfi_channel.sv
                 : @basedir@/@cfgname@/rvfi_testbench.sv
-                : @basedir@/@cfgname@/rvfi_insn_check.sv
-                : @basedir@/insns/insn_@insn@.v
-                :
-                : [file defines.sv]
         """, **hargs)
 
+        if csr_mode:
+            print_hfmt(sby_file, """
+                    : @basedir@/@cfgname@/rvfi_csrw_check.sv
+            """, **hargs)
+        else:
+            print_hfmt(sby_file, """
+                    : @basedir@/@cfgname@/rvfi_insn_check.sv
+                    : @basedir@/insns/insn_@insn@.v
+            """, **hargs)
+
         print_hfmt(sby_file, """
+                :
+                : [file defines.sv]
                 : `define RISCV_FORMAL
                 : `define RISCV_FORMAL_NRET @nret@
                 : `define RISCV_FORMAL_XLEN @xlen@
                 : `define RISCV_FORMAL_ILEN @ilen@
-                : `define RISCV_FORMAL_CHECKER rvfi_insn_check
                 : `define RISCV_FORMAL_RESET_CYCLES 1
                 : `define RISCV_FORMAL_CHECK_CYCLE @depth@
-                : `define RISCV_FORMAL_INSN_MODEL rvfi_insn_@insn@
                 : `define RISCV_FORMAL_CHANNEL_IDX @channel@
         """, **hargs)
+
+        if csr_mode:
+            print_hfmt(sby_file, """
+                    : `define RISCV_FORMAL_CHECKER rvfi_csrw_check
+                    : `define RISCV_FORMAL_CSR_NAME @insn@
+            """, **hargs)
+        else:
+            print_hfmt(sby_file, """
+                    : `define RISCV_FORMAL_CHECKER rvfi_insn_check
+                    : `define RISCV_FORMAL_INSN_MODEL rvfi_insn_@insn@
+            """, **hargs)
 
         if blackbox:
             print("`define RISCV_FORMAL_BLACKBOX_REGS", file=sby_file)
@@ -228,14 +249,26 @@ def check_insn(insn, chanidx):
                 : `include "defines.sv"
                 : `include "rvfi_channel.sv"
                 : `include "rvfi_testbench.sv"
-                : `include "rvfi_insn_check.sv"
-                : `include "insn_@insn@.v"
         """, **hargs)
+
+        if csr_mode:
+            print_hfmt(sby_file, """
+                    : `include "rvfi_csrw_check.sv"
+            """, **hargs)
+        else:
+            print_hfmt(sby_file, """
+                    : `include "rvfi_insn_check.sv"
+                    : `include "insn_@insn@.v"
+            """, **hargs)
 
 with open("../../insns/isa_%s.txt" % isa) as isa_file:
     for insn in isa_file:
         for chanidx in range(nret):
             check_insn(insn.strip(), chanidx)
+
+for csr in ["mcycle"]:
+    for chanidx in range(nret):
+        check_insn(csr, chanidx, csr_mode=True)
 
 # ------------------------------ Consistency Checkers ------------------------------
 
@@ -359,7 +392,6 @@ for i in range(nret):
     check_cons("liveness", chanidx=i, start=0, trig=1, depth=2)
     check_cons("unique", chanidx=i, start=0, trig=1, depth=2)
     check_cons("causal", chanidx=i, start=0, depth=1)
-    check_cons("csrw", chanidx=i, depth=0)
     check_cons("ill", chanidx=i, depth=0)
 
 check_cons("hang", start=0, depth=1)
