@@ -28,6 +28,7 @@ Table of contents
 
 - [Quickstart Guide](docs/quickstart.md)
 - [The RVFI Interface Specification](docs/rvfi.md)
+- [RISC-V Formal CSR Sematics](docs/csrs.md)
 - [Configuration macros used by riscv-formal](docs/config.md)
 - [The riscv-formal Verification Procedure](docs/procedure.md)
 - [Examples of bugs found with riscv-formal](docs/examplebugs.md)

@@ -17,6 +17,7 @@ The Interface consists only of output signals. Each signal is a concatenation of
     output [NRET        - 1 : 0] rvfi_trap
     output [NRET        - 1 : 0] rvfi_halt
     output [NRET        - 1 : 0] rvfi_intr
+    output [NRET * 2    - 1 : 0] rvfi_mode
 
 When the core retires an instruction, it asserts the `rvfi_valid` signal and uses the signals described below to output the details of the retired instruction. The signals below are only valid during such a cycle and can be driven to arbitrary values in a cycle in which `rvfi_valid` is not asserted.
 
@@ -30,7 +31,9 @@ In addition, `rvfi_trap` must be set for a misaligned memory read or write in PM
 
 The signal `rvfi_halt` must be set when the instruction is the last instruction that the core retires before halting execution. It should not be set for an instruction that triggers a trap condition if the CPU reacts to the trap by executing a trap handler. This signal enables verification of liveness properties.
 
-Finally `rvfi_intr` must be set for the first instruction that is part of a trap handler, i.e. an instruction that has a `rvfi_pc_rdata` that does not match the `rvfi_pc_wdata` of the previous instruction.
+`rvfi_intr` must be set for the first instruction that is part of a trap handler, i.e. an instruction that has a `rvfi_pc_rdata` that does not match the `rvfi_pc_wdata` of the previous instruction.
+
+Finally `rvfi_mode` must be set to the current privilege level, using the following encoding: 0=U-Mode, 1=S-Mode, 2=Reserved, 3=M-Mode
 
 ### Integer Register Read/Write
 
@@ -102,27 +105,9 @@ The bitmasks are 64 bits wide. RV32 implementations only use the lower 32 bits o
 | REM       |    Sub   | 0xf5b7d8538da68fa5 |
 | REMU      |    Sub   | 0xbc4402413138d0e1 |
 
-
-RVFI TODOs and Requests for Comments
-------------------------------------
-
-The following section contains notes on future extensions to RVFI. They will come part of the spec as soon as there is at least one core that implements the feature, and a matching formal check that utilises the feature. In many cases the additional ports will only be used (and expected from the core) when additional to-be-defined `RISCV_FORMAL_*` Verilog defines are set.
-
-### Support for RV64 ISAs
-
-Models for RV64I-only instructions are still missing. They will be added as soon as a RV64 processor with RVFI support becomes available.
-
-### Support for fused instructions
-
-Fused instructions are simply handled as larger instructions in RVFI. Additional `rvfi_rs*` ports (or even `rvfi_rd*` ports) may be added to accommodate the fused instructions.
-
-No instruction models for fused instructions have been created yet.
-
-Alternatively fused instructions may be output as individual instructions in separate RVFI channels.
-
 ### Control and Status Registers (CSRs)
 
-For each supported CSR there will be four additional output ports:
+For each supported CSR there are four additional output ports:
 
     output [NRET * XLEN - 1 : 0] rvfi_csr_<csrname>_rmask
     output [NRET * XLEN - 1 : 0] rvfi_csr_<csrname>_wmask
@@ -137,6 +122,26 @@ the machine state.
 
 If reading a CSR has side effects, those side effects are not triggered by raised
 `rmask` bits but by the type of the instruction.
+
+The Verilog define `RISCV_FORMAL_CSR_<CSRNAME>` must be set for each CSR traced
+via RVFI by the core under test.
+
+See [RISC-V Formal CSR Sematics](csrs.md) for the exact semantics of CSR values
+output via RVFI.
+
+
+RVFI TODOs and Requests for Comments
+------------------------------------
+
+The following section contains notes on future extensions to RVFI. They will come part of the spec as soon as there is at least one core that implements the feature, and a matching formal check that utilises the feature. In many cases the additional ports will only be used (and expected from the core) when additional to-be-defined `RISCV_FORMAL_*` Verilog defines are set.
+
+### Support for fused instructions
+
+Fused instructions are simply handled as larger instructions in RVFI. Additional `rvfi_rs*` ports (or even `rvfi_rd*` ports) may be added to accommodate the fused instructions.
+
+No instruction models for fused instructions have been created yet.
+
+Alternatively fused instructions may be output as individual instructions in separate RVFI channels.
 
 ### Modelling of Floating-Point State
 
