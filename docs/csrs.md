@@ -1,4 +1,3 @@
-
 RISC-V Formal CSR Sematics
 ==========================
 
@@ -34,7 +33,8 @@ Nothing special for these CSRs.
 
 #### mcounteren
 
-Currently only bits 2:1 of `mcounteren` are supported by riscv-formal.
+Currently only the `IR` and `CY` bits of `mcounteren` are supported by
+riscv-formal. The other bits are ignored.
 
 ### Machine Trap Handling
 
