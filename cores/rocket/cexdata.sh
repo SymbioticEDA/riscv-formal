@@ -20,12 +20,14 @@ for x in checks/*/FAIL coverage/FAIL; do
 	x=${x%/FAIL}
 	y=${x#checks/}
 	cp $x/logfile.txt cexdata/$y.log
-	cp $x/engine_*/trace.vcd cexdata/$y.vcd
-	if grep -q "^isa rv64" checks.cfg; then
-		python3 disasm.py --64 cexdata/$y.vcd > cexdata/$y.asm
-	fi
-	if grep -q "^isa rv32" checks.cfg; then
-		python3 disasm.py cexdata/$y.vcd > cexdata/$y.asm
+	if test -f $x/engine_*/trace.vcd; then
+		cp $x/engine_*/trace.vcd cexdata/$y.vcd
+		if grep -q "^isa rv64" checks.cfg; then
+			python3 disasm.py --64 cexdata/$y.vcd > cexdata/$y.asm
+		fi
+		if grep -q "^isa rv32" checks.cfg; then
+			python3 disasm.py cexdata/$y.vcd > cexdata/$y.asm
+		fi
 	fi
 done
 
