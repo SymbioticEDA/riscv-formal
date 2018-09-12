@@ -101,8 +101,8 @@ module rvfi_insn_check (
 		assign mem_pma_w = 1;
 `endif
 
-		wire mem_access_fault = spec_valid && (spec_rs1_addr == rs1_addr) &&
-				((spec_mem_rmask && !mem_pma_r) || (spec_mem_wmask && !mem_pma_w));
+		wire mem_access_fault = (spec_mem_rmask && !mem_pma_r) || (spec_mem_wmask && !mem_pma_w) ||
+				((spec_mem_rmask || spec_mem_wmask) && !`rvformal_addr_valid(spec_mem_addr));
 
 		integer i;
 
