@@ -43,6 +43,20 @@ module rvfi_csrw_check (
 	wire [`RISCV_FORMAL_XLEN-1:0] effective_csr_insn_wmask = csr_insn_rmask | csr_insn_wmask;
 	wire [`RISCV_FORMAL_XLEN-1:0] effective_csr_insn_wdata = (csr_insn_wdata & csr_insn_wmask) | (csr_insn_rdata & ~csr_insn_wmask);
 
+	wire [`RISCV_FORMAL_XLEN-1:0] spec_pc_wdata = rvfi.pc_rdata + 4;
+
+	wire insn_pma_x;
+
+`ifdef RISCV_FORMAL_PMA_MAP
+	`RISCV_FORMAL_PMA_MAP insn_pma (
+		.address(rvfi.pc_rdata),
+		.log2len(rvfi.insn[1:0] == 2'b11 ? 2'd2 : 2'd1),
+		.X(insn_pma_x)
+	);
+`else
+	assign insn_pma_x = 1;
+`endif
+
 	integer i;
 
 	always @* begin
@@ -50,16 +64,28 @@ module rvfi_csrw_check (
 			assume (csr_insn_valid);
 			assume (csr_insn_addr == `csrindex(`RISCV_FORMAL_CSR_NAME));
 
-			if (rvfi.rd_addr == 0) begin
+			if (!`rvformal_addr_valid(rvfi.pc_rdata) || !insn_pma_x) begin
+				assert (rvfi.trap);
+				assert (rvfi.rd_addr == 0);
 				assert (rvfi.rd_wdata == 0);
 			end else begin
-				assert (csr_insn_rmask == {`RISCV_FORMAL_XLEN{1'b1}});
-				assert (csr_insn_rdata == rvfi.rd_wdata);
+				assert (!rvfi.trap);
+				assert (rvfi.rd_addr == rvfi.insn[11:7]);
+				assert (`rvformal_addr_eq(rvfi.pc_wdata, spec_pc_wdata));
+
+				if (rvfi.rd_addr == 0) begin
+					assert (rvfi.rd_wdata == 0);
+				end else begin
+					assert (csr_insn_rmask == {`RISCV_FORMAL_XLEN{1'b1}});
+					assert (csr_insn_rdata == rvfi.rd_wdata);
+				end
+
+				assert (((csr_insn_smask | csr_insn_cmask) & ~effective_csr_insn_wmask) == 0);
+				assert ((csr_insn_smask & ~effective_csr_insn_wdata) == 0);
+				assert ((csr_insn_cmask & effective_csr_insn_wdata) == 0);
 			end
 
-			assert (((csr_insn_smask | csr_insn_cmask) & ~effective_csr_insn_wmask) == 0);
-			assert ((csr_insn_smask & ~effective_csr_insn_wdata) == 0);
-			assert ((csr_insn_cmask & effective_csr_insn_wdata) == 0);
+			assert (rvfi.mem_wmask == 0);
 		end
 	end
 endmodule
