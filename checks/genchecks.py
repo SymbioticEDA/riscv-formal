@@ -167,7 +167,8 @@ def check_insn(insn, chanidx, csr_mode=False):
     hargs["checkch"] = check
     hargs["channel"] = "%d" % chanidx
     hargs["depth"] = depth_cfg[0]
-    hargs["depth_plus"] = depth_cfg[0] + 2
+    hargs["depth_plus"] = depth_cfg[0] + 1
+    hargs["skip"] = depth_cfg[0]
 
     with open("%s/%s.sby" % (cfgname, check), "w") as sby_file:
         print_hfmt(sby_file, """
@@ -176,6 +177,7 @@ def check_insn(insn, chanidx, csr_mode=False):
                 : append @append@
                 : tbtop wrapper.uut
                 : depth @depth_plus@
+                : skip @skip@
                 :
                 : [engines]
                 : @engine@
@@ -298,7 +300,8 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
 
     hargs["start"] = start
     hargs["depth"] = depth
-    hargs["depth_plus"] = depth + 2
+    hargs["depth_plus"] = depth + 1
+    hargs["skip"] = depth
 
     hargs["checkch"] = check
 
@@ -312,6 +315,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
                 : append @append@
                 : tbtop wrapper.uut
                 : depth @depth_plus@
+                : skip @skip@
                 :
                 : [engines]
                 : @engine@
