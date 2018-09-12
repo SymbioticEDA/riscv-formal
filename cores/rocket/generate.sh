@@ -108,6 +108,16 @@ expose rvfi_mon_rvfi_csr_mcycle_wdata
 expose rvfi_mon_rvfi_csr_mcycle_rmask
 expose rvfi_mon_rvfi_csr_mcycle_wmask
 
+expose rvfi_mon_rvfi_csr_instret_rdata
+expose rvfi_mon_rvfi_csr_instret_wdata
+expose rvfi_mon_rvfi_csr_instret_rmask
+expose rvfi_mon_rvfi_csr_instret_wmask
+
+expose rvfi_mon_rvfi_csr_misa_rdata
+expose rvfi_mon_rvfi_csr_misa_wdata
+expose rvfi_mon_rvfi_csr_misa_rmask
+expose rvfi_mon_rvfi_csr_misa_wmask
+
 rename rvfi_mon_rvfi_insn      rvfi_insn
 rename rvfi_mon_rvfi_mem_addr  rvfi_mem_addr
 rename rvfi_mon_rvfi_mem_rdata rvfi_mem_rdata
@@ -132,6 +142,16 @@ rename rvfi_mon_rvfi_csr_mcycle_rdata rvfi_csr_mcycle_rdata
 rename rvfi_mon_rvfi_csr_mcycle_wdata rvfi_csr_mcycle_wdata
 rename rvfi_mon_rvfi_csr_mcycle_rmask rvfi_csr_mcycle_rmask
 rename rvfi_mon_rvfi_csr_mcycle_wmask rvfi_csr_mcycle_wmask
+
+rename rvfi_mon_rvfi_csr_instret_rdata rvfi_csr_instret_rdata
+rename rvfi_mon_rvfi_csr_instret_wdata rvfi_csr_instret_wdata
+rename rvfi_mon_rvfi_csr_instret_rmask rvfi_csr_instret_rmask
+rename rvfi_mon_rvfi_csr_instret_wmask rvfi_csr_instret_wmask
+
+rename rvfi_mon_rvfi_csr_misa_rdata rvfi_csr_misa_rdata
+rename rvfi_mon_rvfi_csr_misa_wdata rvfi_csr_misa_wdata
+rename rvfi_mon_rvfi_csr_misa_rmask rvfi_csr_misa_rmask
+rename rvfi_mon_rvfi_csr_misa_wmask rvfi_csr_misa_wmask
 
 delete rvfi_mon
 cd ..
@@ -160,10 +180,20 @@ add -output rvfi_halt       $(if $enable_64bits; then echo   2; else echo   2; f
 add -output rvfi_intr       $(if $enable_64bits; then echo   2; else echo   2; fi)
 add -output rvfi_valid      $(if $enable_64bits; then echo   2; else echo   2; fi)
 
-add -output rvfi_csr_mcycle_rdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_csr_mcycle_wdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_csr_mcycle_rmask  $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_csr_mcycle_wmask  $(if $enable_64bits; then echo 128; else echo  64; fi)
+add -output rvfi_csr_mcycle_rdata  128
+add -output rvfi_csr_mcycle_wdata  128
+add -output rvfi_csr_mcycle_rmask  128
+add -output rvfi_csr_mcycle_wmask  128
+
+add -output rvfi_csr_instret_rdata  128
+add -output rvfi_csr_instret_wdata  128
+add -output rvfi_csr_instret_rmask  128
+add -output rvfi_csr_instret_wmask  128
+
+add -output rvfi_csr_misa_rdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
+add -output rvfi_csr_misa_wdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
+add -output rvfi_csr_misa_rmask  $(if $enable_64bits; then echo 128; else echo  64; fi)
+add -output rvfi_csr_misa_wmask  $(if $enable_64bits; then echo 128; else echo  64; fi)
 
 connect -port core rvfi_insn      rvfi_insn
 connect -port core rvfi_mem_addr  rvfi_mem_addr
@@ -189,6 +219,16 @@ connect -port core rvfi_csr_mcycle_rdata rvfi_csr_mcycle_rdata
 connect -port core rvfi_csr_mcycle_wdata rvfi_csr_mcycle_wdata
 connect -port core rvfi_csr_mcycle_rmask rvfi_csr_mcycle_rmask
 connect -port core rvfi_csr_mcycle_wmask rvfi_csr_mcycle_wmask
+
+connect -port core rvfi_csr_instret_rdata rvfi_csr_instret_rdata
+connect -port core rvfi_csr_instret_wdata rvfi_csr_instret_wdata
+connect -port core rvfi_csr_instret_rmask rvfi_csr_instret_rmask
+connect -port core rvfi_csr_instret_wmask rvfi_csr_instret_wmask
+
+connect -port core rvfi_csr_misa_rdata rvfi_csr_misa_rdata
+connect -port core rvfi_csr_misa_wdata rvfi_csr_misa_wdata
+connect -port core rvfi_csr_misa_rmask rvfi_csr_misa_rmask
+connect -port core rvfi_csr_misa_wmask rvfi_csr_misa_wmask
 
 cd ..
 
