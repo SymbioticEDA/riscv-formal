@@ -33,12 +33,12 @@ module rvfi_csrw_check (
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wdata = `csrget(`RISCV_FORMAL_CSR_NAME, wdata);
 
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_smask =
-		/* CSRRW, CSRRWI */ (rvfi.insn[13:12] == 1) ? csr_insn_wdata :
-		/* CSRRS, CSRRSI */ (rvfi.insn[13:12] == 2) ? csr_insn_wdata : 0;
+		/* CSRRW, CSRRWI */ (rvfi.insn[13:12] == 1) ? csr_insn_arg :
+		/* CSRRS, CSRRSI */ (rvfi.insn[13:12] == 2) ? csr_insn_arg : 0;
 
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_cmask =
-		/* CSRRW, CSRRWI */ (rvfi.insn[13:12] == 1) ? ~csr_insn_wdata :
-		/* CSRCS, CSRRCI */ (rvfi.insn[13:12] == 3) ? csr_insn_wdata : 0;
+		/* CSRRW, CSRRWI */ (rvfi.insn[13:12] == 1) ? ~csr_insn_arg :
+		/* CSRCS, CSRRCI */ (rvfi.insn[13:12] == 3) ? csr_insn_arg : 0;
 
 	wire [`RISCV_FORMAL_XLEN-1:0] effective_csr_insn_wmask = csr_insn_rmask | csr_insn_wmask;
 	wire [`RISCV_FORMAL_XLEN-1:0] effective_csr_insn_wdata = (csr_insn_wdata & csr_insn_wmask) | (csr_insn_rdata & ~csr_insn_wmask);
