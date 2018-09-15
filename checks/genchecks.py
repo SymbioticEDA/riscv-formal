@@ -268,7 +268,7 @@ with open("../../insns/isa_%s.txt" % isa) as isa_file:
         for chanidx in range(nret):
             check_insn(insn.strip(), chanidx)
 
-for csr in ["mcycle"]:
+for csr in ["misa", "mcycle", "minstret"]:
     for chanidx in range(nret):
         check_insn(csr, chanidx, csr_mode=True)
 

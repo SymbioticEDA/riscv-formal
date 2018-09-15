@@ -38,10 +38,10 @@ print("`define rvformal_addr_eq(a, b) ((`rvformal_addr_valid(a) == `rvformal_add
 
 csrs_xlen = list()
 csrs_xlen += "fflags frm fcsr".split()
+csrs_xlen += "misa".split()
 
 csrs_64 = list()
-csrs_64 += "cycle time instret".split()
-csrs_64 += "mcycle minstret".split()
+csrs_64 += "time mcycle minstret".split()
 
 all_csrs = csrs_xlen + csrs_64
 

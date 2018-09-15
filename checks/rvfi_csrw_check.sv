@@ -18,7 +18,9 @@ module rvfi_csrw_check (
 );
 	`RVFI_CHANNEL(rvfi, `RISCV_FORMAL_CHANNEL_IDX)
 
-	localparam [11:0] csr_index_mcycle = 12'hB00;
+	localparam [11:0] csr_index_misa     = 12'h301;
+	localparam [11:0] csr_index_mcycle   = 12'hB00;
+	localparam [11:0] csr_index_minstret = 12'hB02;
 
 	`define csrget(_name, _type) rvfi.csr_``_name``_``_type
 	`define csrindex(_name) csr_index_``_name

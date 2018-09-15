@@ -18,6 +18,8 @@ if [ ! -d rocket-chip ]; then
 	git checkout RVFI
 	git submodule update --init
 
+	sed -i -e 's/rvfi_csr_instret_/rvfi_csr_minstret_/g;' src/main/scala/rocket/RocketCore.scala
+
 	if $enable_compressed; then
 		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)ic -p RVFIMonitor -c 2; ) > src/main/resources/vsrc/RVFIMonitor.v
 	else
@@ -108,10 +110,10 @@ expose rvfi_mon_rvfi_csr_mcycle_wdata
 expose rvfi_mon_rvfi_csr_mcycle_rmask
 expose rvfi_mon_rvfi_csr_mcycle_wmask
 
-expose rvfi_mon_rvfi_csr_instret_rdata
-expose rvfi_mon_rvfi_csr_instret_wdata
-expose rvfi_mon_rvfi_csr_instret_rmask
-expose rvfi_mon_rvfi_csr_instret_wmask
+expose rvfi_mon_rvfi_csr_minstret_rdata
+expose rvfi_mon_rvfi_csr_minstret_wdata
+expose rvfi_mon_rvfi_csr_minstret_rmask
+expose rvfi_mon_rvfi_csr_minstret_wmask
 
 expose rvfi_mon_rvfi_csr_misa_rdata
 expose rvfi_mon_rvfi_csr_misa_wdata
@@ -143,10 +145,10 @@ rename rvfi_mon_rvfi_csr_mcycle_wdata rvfi_csr_mcycle_wdata
 rename rvfi_mon_rvfi_csr_mcycle_rmask rvfi_csr_mcycle_rmask
 rename rvfi_mon_rvfi_csr_mcycle_wmask rvfi_csr_mcycle_wmask
 
-rename rvfi_mon_rvfi_csr_instret_rdata rvfi_csr_instret_rdata
-rename rvfi_mon_rvfi_csr_instret_wdata rvfi_csr_instret_wdata
-rename rvfi_mon_rvfi_csr_instret_rmask rvfi_csr_instret_rmask
-rename rvfi_mon_rvfi_csr_instret_wmask rvfi_csr_instret_wmask
+rename rvfi_mon_rvfi_csr_minstret_rdata rvfi_csr_minstret_rdata
+rename rvfi_mon_rvfi_csr_minstret_wdata rvfi_csr_minstret_wdata
+rename rvfi_mon_rvfi_csr_minstret_rmask rvfi_csr_minstret_rmask
+rename rvfi_mon_rvfi_csr_minstret_wmask rvfi_csr_minstret_wmask
 
 rename rvfi_mon_rvfi_csr_misa_rdata rvfi_csr_misa_rdata
 rename rvfi_mon_rvfi_csr_misa_wdata rvfi_csr_misa_wdata
@@ -185,10 +187,10 @@ add -output rvfi_csr_mcycle_wdata  128
 add -output rvfi_csr_mcycle_rmask  128
 add -output rvfi_csr_mcycle_wmask  128
 
-add -output rvfi_csr_instret_rdata  128
-add -output rvfi_csr_instret_wdata  128
-add -output rvfi_csr_instret_rmask  128
-add -output rvfi_csr_instret_wmask  128
+add -output rvfi_csr_minstret_rdata  128
+add -output rvfi_csr_minstret_wdata  128
+add -output rvfi_csr_minstret_rmask  128
+add -output rvfi_csr_minstret_wmask  128
 
 add -output rvfi_csr_misa_rdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
 add -output rvfi_csr_misa_wdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
@@ -220,10 +222,10 @@ connect -port core rvfi_csr_mcycle_wdata rvfi_csr_mcycle_wdata
 connect -port core rvfi_csr_mcycle_rmask rvfi_csr_mcycle_rmask
 connect -port core rvfi_csr_mcycle_wmask rvfi_csr_mcycle_wmask
 
-connect -port core rvfi_csr_instret_rdata rvfi_csr_instret_rdata
-connect -port core rvfi_csr_instret_wdata rvfi_csr_instret_wdata
-connect -port core rvfi_csr_instret_rmask rvfi_csr_instret_rmask
-connect -port core rvfi_csr_instret_wmask rvfi_csr_instret_wmask
+connect -port core rvfi_csr_minstret_rdata rvfi_csr_minstret_rdata
+connect -port core rvfi_csr_minstret_wdata rvfi_csr_minstret_wdata
+connect -port core rvfi_csr_minstret_rmask rvfi_csr_minstret_rmask
+connect -port core rvfi_csr_minstret_wmask rvfi_csr_minstret_wmask
 
 connect -port core rvfi_csr_misa_rdata rvfi_csr_misa_rdata
 connect -port core rvfi_csr_misa_wdata rvfi_csr_misa_wdata
