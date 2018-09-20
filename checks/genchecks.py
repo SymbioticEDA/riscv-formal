@@ -14,7 +14,7 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-import os, sys, shutil, re
+import os, sys, shutil, re, getopt
 
 nret = 1
 isa = "rv32i"
@@ -26,16 +26,36 @@ depths = list()
 blackbox = False
 
 cfgname = "checks"
-basedir = "%s/../.." % os.getcwd()
+basedir = "../.." # Assuming run from within riscv-formal/cores/<core>. Relative path for now.
 corename = os.getcwd().split("/")[-1]
 solver = "boolector"
 dumpsmt2 = False
 sbycmd = "sby"
 config = dict()
 
-if len(sys.argv) > 1:
-    assert len(sys.argv) == 2
-    cfgname = sys.argv[1]
+# Parse command-line options.
+
+def usage():
+    print("Usage: " + sys.argv[0] + " [--basedir <riscv-formal-repo-dir>] [<checks-dir>]")
+    sys.exit(1)
+
+try:
+    opts, argv = getopt.getopt(sys.argv[1:], "", ["basedir="])
+except getopt.GetoptError:
+    usage()
+for opt, val in opts:
+    if opt == "--basedir":
+        basedir = val
+if len(argv) > 1:
+    cfgname = argv[1]
+    if len(argv) > 2:
+        usage()
+
+# basedir must be absolute.
+if (basedir[0] != "/"):
+    basedir = "%s/%s" % (os.getcwd(), basedir)
+
+# Read config file.
 
 print("Reading %s.cfg." % cfgname)
 with open("%s.cfg" % cfgname, "r") as f:
@@ -263,7 +283,7 @@ def check_insn(insn, chanidx, csr_mode=False):
                     : `include "insn_@insn@.v"
             """, **hargs)
 
-with open("../../insns/isa_%s.txt" % isa) as isa_file:
+with open("%s/insns/isa_%s.txt" % (basedir, isa)) as isa_file:
     for insn in isa_file:
         for chanidx in range(nret):
             check_insn(insn.strip(), chanidx)
