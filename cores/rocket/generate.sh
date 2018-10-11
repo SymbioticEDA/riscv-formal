@@ -10,6 +10,7 @@ enable_compressed=true
 enable_inithack=true
 enable_64bits=true
 enable_muldiv=true
+enable_misa=true
 
 if [ ! -d rocket-chip ]; then
 	git clone https://github.com/freechipsproject/rocket-chip
@@ -25,6 +26,10 @@ if [ ! -d rocket-chip ]; then
 	else
 		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /new WithRVFIMonitors/ s/$/\n  new WithoutCompressed ++/; };' src/main/scala/system/Configs.scala
 		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)i -p RVFIMonitor -c 2; ) > src/main/resources/vsrc/RVFIMonitor.v
+	fi
+
+	if $enable_misa; then
+		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /new WithoutMISAWrite/ d; };' src/main/scala/system/Configs.scala
 	fi
 
 	if $enable_muldiv; then
@@ -76,6 +81,8 @@ verilog_defines -D RISCV_FORMAL
 verilog_defines -D RISCV_FORMAL_NRET=2
 verilog_defines -D RISCV_FORMAL_XLEN=$(if $enable_64bits; then echo 64; else echo 32; fi)
 verilog_defines -D RISCV_FORMAL_ILEN=32
+verilog_defines -D RISCV_FORMAL_CSR_MCYCLE
+verilog_defines -D RISCV_FORMAL_CSR_MISA
 
 read_verilog -sv ../../checks/rvfi_macros.vh
 read_verilog -sv ../../checks/rvfi_channel.sv
@@ -311,6 +318,7 @@ reg_ch0
 \`define RISCV_FORMAL_VALIDADDR(addr) ({31{addr[32]}} == addr[63:33])
 \`define RISCV_FORMAL_PMA_MAP rocket_pma_map
 \`define RISCV_FORMAL_CSR_MCYCLE
+\`define RISCV_FORMAL_CSR_MISA
 \`define RISCV_FORMAL_ALTOPS
 
 [script-sources]
