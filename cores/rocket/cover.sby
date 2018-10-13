@@ -14,6 +14,7 @@ verilog_defines -D RISCV_FORMAL_ILEN=32
 verilog_defines -D RISCV_FORMAL_COMPRESSED
 verilog_defines -D RISCV_FORMAL_FAIRNESS
 verilog_defines -D RISCV_FORMAL_CSR_MCYCLE
+verilog_defines -D RISCV_FORMAL_CSR_MISA
 verilog_defines -D ROCKET_NORESET
 read_verilog -sv rvfi_macros.vh
 read_verilog -sv rvfi_channel.sv
