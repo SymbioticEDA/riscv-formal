@@ -1,12 +1,16 @@
 // DO NOT EDIT -- auto-generated from riscv-formal/insns/generate.py
 
 module rvfi_insn_c_j (
-  input                                rvfi_valid,
-  input [`RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
+  input                                 rvfi_valid,
+  input  [`RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
+`ifdef RISCV_FORMAL_CSR_MISA
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_misa_rdata,
+  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_csr_misa_rmask,
+`endif
 
   output                                spec_valid,
   output                                spec_trap,
@@ -28,6 +32,13 @@ module rvfi_insn_c_j (
   wire [2:0] insn_funct3 = rvfi_insn[15:13];
   wire [1:0] insn_opcode = rvfi_insn[1:0];
 
+`ifdef RISCV_FORMAL_CSR_MISA
+  wire misa_ok = (rvfi_csr_misa_rdata & `RISCV_FORMAL_XLEN'h 4) == `RISCV_FORMAL_XLEN'h 4;
+  assign spec_csr_misa_rmask = `RISCV_FORMAL_XLEN'h 4;
+`else
+  wire misa_ok = 1;
+`endif
+
   // C_J instruction
   wire [`RISCV_FORMAL_XLEN-1:0] next_pc = rvfi_pc_rdata + insn_imm;
   assign spec_valid = rvfi_valid && !insn_padding && insn_funct3 == 3'b 101 && insn_opcode == 2'b 01;
@@ -38,7 +49,7 @@ module rvfi_insn_c_j (
   assign spec_rs2_addr = 0;
   assign spec_rd_addr = 0;
   assign spec_rd_wdata = 0;
-  assign spec_trap = 0;
+  assign spec_trap = !misa_ok;
   assign spec_mem_addr = 0;
   assign spec_mem_rmask = 0;
   assign spec_mem_wmask = 0;

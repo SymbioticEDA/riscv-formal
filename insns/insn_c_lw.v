@@ -1,12 +1,16 @@
 // DO NOT EDIT -- auto-generated from riscv-formal/insns/generate.py
 
 module rvfi_insn_c_lw (
-  input                                rvfi_valid,
-  input [`RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
+  input                                 rvfi_valid,
+  input  [`RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
+`ifdef RISCV_FORMAL_CSR_MISA
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_misa_rdata,
+  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_csr_misa_rmask,
+`endif
 
   output                                spec_valid,
   output                                spec_trap,
@@ -29,6 +33,13 @@ module rvfi_insn_c_lw (
   wire [4:0] insn_rd = {1'b1, rvfi_insn[4:2]};
   wire [1:0] insn_opcode = rvfi_insn[1:0];
 
+`ifdef RISCV_FORMAL_CSR_MISA
+  wire misa_ok = (rvfi_csr_misa_rdata & `RISCV_FORMAL_XLEN'h 4) == `RISCV_FORMAL_XLEN'h 4;
+  assign spec_csr_misa_rmask = `RISCV_FORMAL_XLEN'h 4;
+`else
+  wire misa_ok = 1;
+`endif
+
   // C_LW instruction
 `ifdef RISCV_FORMAL_ALIGNED_MEM
   wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;
@@ -40,7 +51,7 @@ module rvfi_insn_c_lw (
   assign spec_mem_rmask = ((1 << 4)-1) << (addr-spec_mem_addr);
   assign spec_rd_wdata = spec_rd_addr ? $signed(result) : 0;
   assign spec_pc_wdata = rvfi_pc_rdata + 2;
-  assign spec_trap = (addr & (4-1)) != 0;
+  assign spec_trap = ((addr & (4-1)) != 0) || !misa_ok;
 `else
   wire [`RISCV_FORMAL_XLEN-1:0] addr = rvfi_rs1_rdata + insn_imm;
   wire [31:0] result = rvfi_mem_rdata;
@@ -51,7 +62,7 @@ module rvfi_insn_c_lw (
   assign spec_mem_rmask = ((1 << 4)-1);
   assign spec_rd_wdata = spec_rd_addr ? $signed(result) : 0;
   assign spec_pc_wdata = rvfi_pc_rdata + 2;
-  assign spec_trap = 0;
+  assign spec_trap = !misa_ok;
 `endif
 
   // default assignments

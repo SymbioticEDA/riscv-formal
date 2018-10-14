@@ -1,12 +1,16 @@
 // DO NOT EDIT -- auto-generated from riscv-formal/insns/generate.py
 
 module rvfi_insn_bltu (
-  input                                rvfi_valid,
-  input [`RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
-  input [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
+  input                                 rvfi_valid,
+  input  [`RISCV_FORMAL_ILEN   - 1 : 0] rvfi_insn,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_pc_rdata,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs2_rdata,
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,
+`ifdef RISCV_FORMAL_CSR_MISA
+  input  [`RISCV_FORMAL_XLEN   - 1 : 0] rvfi_csr_misa_rdata,
+  output [`RISCV_FORMAL_XLEN   - 1 : 0] spec_csr_misa_rmask,
+`endif
 
   output                                spec_valid,
   output                                spec_trap,
@@ -29,6 +33,19 @@ module rvfi_insn_bltu (
   wire [2:0] insn_funct3 = rvfi_insn[14:12];
   wire [6:0] insn_opcode = rvfi_insn[ 6: 0];
 
+`ifdef RISCV_FORMAL_CSR_MISA
+  wire misa_ok = (rvfi_csr_misa_rdata & `RISCV_FORMAL_XLEN'h 0) == `RISCV_FORMAL_XLEN'h 0;
+  assign spec_csr_misa_rmask = `RISCV_FORMAL_XLEN'h 4;
+  wire ialign16 = (rvfi_csr_misa_rdata & `RISCV_FORMAL_XLEN'h 4) != `RISCV_FORMAL_XLEN'h 0;
+`else
+  wire misa_ok = 1;
+`ifdef RISCV_FORMAL_COMPRESSED
+  wire ialign16 = 1;
+`else
+  wire ialign16 = 0;
+`endif
+`endif
+
   // BLTU instruction
   wire cond = rvfi_rs1_rdata < rvfi_rs2_rdata;
   wire [`RISCV_FORMAL_XLEN-1:0] next_pc = cond ? rvfi_pc_rdata + insn_imm : rvfi_pc_rdata + 4;
@@ -36,11 +53,7 @@ module rvfi_insn_bltu (
   assign spec_rs1_addr = insn_rs1;
   assign spec_rs2_addr = insn_rs2;
   assign spec_pc_wdata = next_pc;
-`ifdef RISCV_FORMAL_COMPRESSED
-  assign spec_trap = next_pc[0] != 0;
-`else
-  assign spec_trap = next_pc[1:0] != 0;
-`endif
+  assign spec_trap = (ialign16 ? (next_pc[0] != 0) : (next_pc[1:0] != 0)) || !misa_ok;
 
   // default assignments
   assign spec_rd_addr = 0;
