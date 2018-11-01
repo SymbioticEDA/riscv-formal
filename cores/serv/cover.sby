@@ -1,0 +1,61 @@
+[options]
+mode cover
+append 0
+tbtop wrapper.uut
+depth 150
+
+[engines]
+smtbmc boolector
+
+[script]
+read_verilog -sv defines.sv
+read_verilog -sv cover.sv
+read_verilog -sv wrapper.sv
+read_verilog -sv -defer sbram.sv
+read_verilog -sv -defer camd_ram.v
+read_verilog -sv -defer ser_add.v
+read_verilog -sv -defer ser_eq.v
+read_verilog -sv -defer ser_lt.v
+read_verilog -sv -defer ser_shift.v
+read_verilog -sv -defer serv_alu.v
+read_verilog -sv -defer serv_ctrl.v
+read_verilog -sv -defer serv_decode.v
+read_verilog -sv -defer serv_mem_if.v
+read_verilog -sv -defer serv_params.vh
+read_verilog -sv -defer serv_regfile.v
+read_verilog -sv -defer serv_top.v
+read_verilog -sv -defer shift_reg.v
+prep -flatten -nordff -top testbench
+
+[files]
+cover.sv
+wrapper.sv
+sbram.sv
+serv-src/rtl/camd_ram.v
+serv-src/rtl/ser_add.v
+serv-src/rtl/ser_eq.v
+serv-src/rtl/ser_lt.v
+serv-src/rtl/ser_shift.v
+serv-src/rtl/serv_alu.v
+serv-src/rtl/serv_ctrl.v
+serv-src/rtl/serv_decode.v
+serv-src/rtl/serv_mem_if.v
+serv-src/rtl/serv_params.vh
+serv-src/rtl/serv_regfile.v
+serv-src/rtl/serv_top.v
+serv-src/rtl/shift_reg.v
+../../checks/rvfi_macros.vh
+
+[file defines.sv]
+`define RISCV_FORMAL
+`define RISCV_FORMAL_NRET 1
+`define RISCV_FORMAL_XLEN 32
+`define RISCV_FORMAL_ILEN 32
+`define RISCV_FORMAL_RESET_CYCLES 1
+`define RISCV_FORMAL_CHECK_CYCLE 20
+`define RISCV_FORMAL_CHANNEL_IDX 0
+`define RISCV_FORMAL_CHECKER rvfi_insn_check
+`define RISCV_FORMAL_INSN_MODEL rvfi_insn_add
+`define RISCV_FORMAL_ALIGNED_MEM
+`define MEMIO_FAIRNESS
+`include "rvfi_macros.vh"

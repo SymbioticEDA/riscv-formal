@@ -1,0 +1,80 @@
+[*]
+[*] GTKWave Analyzer v3.3.89 (w)1999-2018 BSI
+[*] Thu Nov  1 11:25:45 2018
+[*]
+[dumpfile] "/home/clifford/Work/riscv-formal/cores/serv/cover/engine_0/trace0.vcd"
+[dumpfile_mtime] "Thu Nov  1 11:24:51 2018"
+[dumpfile_size] 121959
+[savefile] "/home/clifford/Work/riscv-formal/cores/serv/cover.gtkw"
+[timestart] 0
+[size] 1394 830
+[pos] -1 -1
+*-5.990967 5 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] testbench.
+[treeopen] testbench.wrapper.
+[sst_width] 225
+[signals_width] 310
+[sst_expanded] 1
+[sst_vpaned_height] 241
+@24
+testbench.cycle[31:0]
+testbench.wrapper.icnt[31:0]
+@25
+testbench.wrapper.dcnt[31:0]
+@200
+-
+@28
+testbench.wrapper.clock
+testbench.wrapper.reset
+@200
+-
+-I-MEM
+@28
+testbench.wrapper.o_i_ca_vld
+testbench.wrapper.i_i_ca_rdy
+@22
+testbench.wrapper.o_i_ca_adr[31:0]
+@200
+-
+@28
+testbench.wrapper.i_i_rd_vld
+testbench.wrapper.o_i_rd_rdy
+@22
+testbench.wrapper.i_i_rd_dat[31:0]
+@200
+-
+-D-MEM
+@28
+testbench.wrapper.o_d_ca_vld
+testbench.wrapper.i_d_ca_rdy
+testbench.wrapper.o_d_ca_cmd
+@22
+testbench.wrapper.o_d_ca_adr[31:0]
+@200
+-
+@28
+testbench.wrapper.o_d_dm_vld
+testbench.wrapper.i_d_dm_rdy
+@22
+testbench.wrapper.o_d_dm_dat[31:0]
+testbench.wrapper.o_d_dm_msk[3:0]
+@200
+-
+@28
+testbench.wrapper.i_d_rd_vld
+testbench.wrapper.o_d_rd_rdy
+@22
+testbench.wrapper.i_d_rd_dat[31:0]
+@200
+-
+-RVFI
+@28
+testbench.wrapper.rvfi_valid
+@22
+testbench.wrapper.rvfi_insn[31:0]
+testbench.wrapper.rvfi_pc_rdata[31:0]
+@200
+-
+-
+[pattern_trace] 1
+[pattern_trace] 0
