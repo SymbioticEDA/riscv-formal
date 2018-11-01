@@ -15,6 +15,5 @@ module testbench (
 	always @(posedge clock) begin
 		assume (reset == (cycle == 0));
 		cover (rvfi_valid);
-		cover (cycle == 16);
 	end
 endmodule

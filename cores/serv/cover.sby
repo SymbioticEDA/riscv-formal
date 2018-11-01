@@ -2,8 +2,7 @@
 mode cover
 append 0
 tbtop wrapper.uut
-depth 21
-skip 20
+depth 150
 
 [engines]
 smtbmc boolector
@@ -58,4 +57,5 @@ serv-src/rtl/shift_reg.v
 `define RISCV_FORMAL_CHECKER rvfi_insn_check
 `define RISCV_FORMAL_INSN_MODEL rvfi_insn_add
 `define RISCV_FORMAL_ALIGNED_MEM
+`define MEMIO_FAIRNESS
 `include "rvfi_macros.vh"

@@ -4,28 +4,28 @@ module rvfi_wrapper (
 	`RVFI_OUTPUTS
 );
 	// I-MEM
-	(* keep *) wire [31:0] o_i_ca_adr;
-	(* keep *) wire        o_i_ca_vld;
-	(* keep *) reg         i_i_ca_rdy;
+	(* keep *)      wire [31:0] o_i_ca_adr;
+	(* keep *)      wire        o_i_ca_vld;
+	(* keep *) rand reg         i_i_ca_rdy;
 
-	(* keep *) reg  [31:0] i_i_rd_dat = 0;
-	(* keep *) reg         i_i_rd_vld = 0;
-	(* keep *) wire        o_i_rd_rdy;
+	(* keep *) rand reg  [31:0] i_i_rd_dat;
+	(* keep *) rand reg         i_i_rd_vld;
+	(* keep *)      wire        o_i_rd_rdy;
 
 	// D-MEM
-	(* keep *) wire        o_d_ca_cmd;
-	(* keep *) wire [31:0] o_d_ca_adr;
-	(* keep *) wire        o_d_ca_vld;
-	(* keep *) reg         i_d_ca_rdy = 0;
+	(* keep *)      wire        o_d_ca_cmd;
+	(* keep *)      wire [31:0] o_d_ca_adr;
+	(* keep *)      wire        o_d_ca_vld;
+	(* keep *) rand reg         i_d_ca_rdy;
 
-	(* keep *) wire [31:0] o_d_dm_dat;
-	(* keep *) wire [3:0]  o_d_dm_msk;
-	(* keep *) wire        o_d_dm_vld;
-	(* keep *) reg         i_d_dm_rdy = 0;
+	(* keep *)      wire [31:0] o_d_dm_dat;
+	(* keep *)      wire [3:0]  o_d_dm_msk;
+	(* keep *)      wire        o_d_dm_vld;
+	(* keep *) rand reg         i_d_dm_rdy;
 
-	(* keep *) reg  [31:0] i_d_rd_dat = 0;
-	(* keep *) reg         i_d_rd_vld = 0;
-	(* keep *) wire        o_d_rd_rdy;
+	(* keep *) rand reg  [31:0] i_d_rd_dat;
+	(* keep *) rand reg         i_d_rd_vld;
+	(* keep *)      wire        o_d_rd_rdy;
 
 	serv_top uut (
 		.clk(clock),
@@ -59,9 +59,10 @@ module rvfi_wrapper (
 
 	// I-MEM
 	always @(posedge clock) begin
-		i_i_ca_rdy <= $anyseq(1);
-		i_i_rd_dat <= 32'h 00000013; // NOP
-		i_i_rd_vld <= $anyseq(1);
+		if (reset) begin
+			assume (i_i_ca_rdy == 0);
+			assume (i_i_rd_vld == 0);
+		end
 
 		// do not "take back" rdy
 		if ($past(i_i_ca_rdy) && !$past(o_i_ca_vld)) begin
@@ -79,10 +80,11 @@ module rvfi_wrapper (
 
 	// D-MEM
 	always @(posedge clock) begin
-		i_d_ca_rdy <= $anyseq(1);
-		i_d_dm_rdy <= $anyseq(1);
-		i_d_rd_dat <= $anyseq(32);
-		i_d_rd_vld <= $anyseq(1);
+		if (reset) begin
+			assume (i_d_ca_rdy == 0);
+			assume (i_d_dm_rdy == 0);
+			assume (i_d_rd_vld == 0);
+		end
 
 		// do not "take back" rdy on ca channel
 		if ($past(i_d_ca_rdy) && !$past(o_d_ca_vld)) begin
@@ -103,26 +105,40 @@ module rvfi_wrapper (
 		dcnt <= dcnt + (i_d_ca_rdy && o_d_ca_vld && !o_d_ca_cmd) - (i_d_rd_vld && o_d_rd_rdy);
 	end
 
-	// Fairness
-	reg [1:0] timeout = 0;
+`ifdef MEMIO_FAIRNESS
+	reg [1:0] timeout_i_ca = 0;
+	reg [1:0] timeout_i_rd = 0;
+	reg [1:0] timeout_d_ca = 0;
+	reg [1:0] timeout_d_dm = 0;
+	reg [1:0] timeout_d_rd = 0;
+
 	always @(posedge clock) begin
-		timeout <= 0;
+		timeout_i_ca <= 0;
+		timeout_i_rd <= 0;
+		timeout_d_ca <= 0;
+		timeout_d_dm <= 0;
+		timeout_d_rd <= 0;
 
 		if (o_i_ca_vld && !i_i_ca_rdy)
-			timeout <= timeout + 1;
+			timeout_i_ca <= timeout_i_ca + 1;
 
 		if (icnt && !i_i_rd_vld)
-			timeout <= timeout + 1;
+			timeout_i_rd <= timeout_i_rd + 1;
 
 		if (o_d_ca_vld && !i_d_ca_rdy)
-			timeout <= timeout + 1;
+			timeout_d_ca <= timeout_d_ca + 1;
 
 		if (o_d_dm_vld && !i_d_dm_rdy)
-			timeout <= timeout + 1;
+			timeout_d_dm <= timeout_d_dm + 1;
 
 		if (dcnt && !i_d_rd_vld)
-			timeout <= timeout + 1;
+			timeout_d_rd <= timeout_d_rd + 1;
 
-		assume (timeout != 3);
+		assume (timeout_i_ca != 3);
+		assume (timeout_i_rd != 3);
+		assume (timeout_d_ca != 3);
+		assume (timeout_d_dm != 3);
+		assume (timeout_d_rd != 3);
 	end
+`endif
 endmodule
