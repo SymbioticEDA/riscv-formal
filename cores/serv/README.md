@@ -16,10 +16,5 @@ Then run the formal checks:
 
 ```
 make -C checks -j$(nproc)
-```
-
-And running the cover check:
-
-```
-sby -f cover.sby
+bash cexdata.sh
 ```
