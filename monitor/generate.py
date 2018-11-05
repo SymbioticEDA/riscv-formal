@@ -596,6 +596,8 @@ def print_rewrite_file(filename):
         flag_compressed_ifndef = False
         flag_aligned_ifdef = False
         flag_aligned_ifndef = False
+        flag_ifdef = False
+        flag_ifndef = False
 
         for line in f:
             if line.startswith("`ifdef RISCV_FORMAL_COMPRESSED"):
@@ -618,9 +620,20 @@ def print_rewrite_file(filename):
                 flag_aligned_ifndef = True
                 continue
 
+            if line.startswith("`ifdef "):
+                flag_ifdef = True
+                flag_ifndef = False
+                continue
+
+            if line.startswith("`ifndef "):
+                flag_ifdef = False
+                flag_ifndef = True
+                continue
+
             if line.startswith("`else"):
                 flag_compressed_ifdef, flag_compressed_ifndef = flag_compressed_ifndef, flag_compressed_ifdef
                 flag_aligned_ifdef, flag_aligned_ifndef = flag_aligned_ifndef, flag_aligned_ifdef
+                flag_ifdef, flag_ifndef = flag_ifndef, flag_ifdef
                 continue
 
             if line.startswith("`endif"):
@@ -628,6 +641,8 @@ def print_rewrite_file(filename):
                 flag_compressed_ifndef = False
                 flag_aligned_ifdef = False
                 flag_aligned_ifndef = False
+                flag_ifdef = False
+                flag_ifndef = False
                 continue
 
             if flag_compressed_ifdef and not compressed:
@@ -640,6 +655,12 @@ def print_rewrite_file(filename):
                 continue
 
             if flag_aligned_ifndef and aligned:
+                continue
+
+            if flag_ifdef and True:
+                continue
+
+            if flag_ifndef and False:
                 continue
 
             for a, b in replace_db:
