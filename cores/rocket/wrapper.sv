@@ -91,15 +91,13 @@ module rvfi_wrapper (
 
 	// Rocket Tile
 
-	RocketTile uut (
+	RocketTileWithRVFI uut (
 		.clock (clock       ),
 		.reset (actual_reset),
 		.constants_hartid(1'b0),
 		.constants_reset_vector(reset_vector),
 
-`ifndef ROCKET_HIER_REF
 		`RVFI_CONN,
-`endif
 
 		.auto_int_xing_in_1_sync_0 (1'b0),
 		.auto_int_xing_in_0_sync_0 (1'b0),
@@ -145,28 +143,6 @@ module rvfi_wrapper (
 		.auto_tl_slave_xing_in_d_bits_source    (io_slave_0_d_bits_source  ),
 		.auto_tl_slave_xing_in_d_bits_data      (io_slave_0_d_bits_data    )
 	);
-
-`ifdef ROCKET_HIER_REF
-	assign rvfi_insn = uut.core.rvfi_mon.rvfi_insn;
-	assign rvfi_mem_addr = uut.core.rvfi_mon.rvfi_mem_addr;
-	assign rvfi_mem_rdata = uut.core.rvfi_mon.rvfi_mem_rdata;
-	assign rvfi_mem_rmask = uut.core.rvfi_mon.rvfi_mem_rmask;
-	assign rvfi_mem_wdata = uut.core.rvfi_mon.rvfi_mem_wdata;
-	assign rvfi_mem_wmask = uut.core.rvfi_mon.rvfi_mem_wmask;
-	assign rvfi_order = uut.core.rvfi_mon.rvfi_order;
-	assign rvfi_pc_rdata = uut.core.rvfi_mon.rvfi_pc_rdata;
-	assign rvfi_pc_wdata = uut.core.rvfi_mon.rvfi_pc_wdata;
-	assign rvfi_rd_addr = uut.core.rvfi_mon.rvfi_rd_addr;
-	assign rvfi_rd_wdata = uut.core.rvfi_mon.rvfi_rd_wdata;
-	assign rvfi_rs1_addr = uut.core.rvfi_mon.rvfi_rs1_addr;
-	assign rvfi_rs1_rdata = uut.core.rvfi_mon.rvfi_rs1_rdata;
-	assign rvfi_rs2_addr = uut.core.rvfi_mon.rvfi_rs2_addr;
-	assign rvfi_rs2_rdata = uut.core.rvfi_mon.rvfi_rs2_rdata;
-	assign rvfi_trap = uut.core.rvfi_mon.rvfi_trap;
-	assign rvfi_halt = uut.core.rvfi_mon.rvfi_halt;
-	assign rvfi_intr = uut.core.rvfi_mon.rvfi_intr;
-	assign rvfi_valid = uut.core.rvfi_mon.rvfi_valid;
-`endif
 
 	(* keep *) rvfi_channel #(.CHANNEL_IDX(0)) rvfi_channel_0 (`RVFI_CONN);
 	(* keep *) rvfi_channel #(.CHANNEL_IDX(1)) rvfi_channel_1 (`RVFI_CONN);
@@ -381,17 +357,6 @@ module tilelink_ad_dummy (
 		end
 	end
 endmodule
-
-`ifdef ROCKET_HIER_REF
-module RVFIMonitor (
-	input clock,
-	input reset,
-	`RVFI_INPUTS,
-	output errcode
-);
-	assign errcode = 0;
-endmodule
-`endif
 
 `ifndef ROCKET_INIT
 module MulDiv (

@@ -63,183 +63,26 @@ rm -rf rocket-syn
 mkdir -p rocket-syn
 
 cat > rocket-syn/rocket-syn.ys << EOT
-read_verilog rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v
-read_verilog rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.behav_srams.v
+verific -sv rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v
+verific -sv rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.behav_srams.v
+verific -sv rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors/plusarg_reader.v
+verific -sv rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors/AsyncResetReg.v
+verific -sv rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors/SimDTM.v
 
-read_verilog <<E
-module plusarg_reader #(
-	parameter [1023:0] FORMAT = "borked=%d",
-	parameter integer DEFAULT = 0
-) (
-	output [31:0] out
-);
-	assign out = DEFAULT;
-endmodule
-E
+verific -vlog-define RISCV_FORMAL
+verific -vlog-define RISCV_FORMAL_NRET=2
+verific -vlog-define RISCV_FORMAL_XLEN=$(if $enable_64bits; then echo 64; else echo 32; fi)
+verific -vlog-define RISCV_FORMAL_ILEN=32
+verific -vlog-define RISCV_FORMAL_EXTAMO
+verific -vlog-define RISCV_FORMAL_CSR_MCYCLE
+verific -vlog-define RISCV_FORMAL_CSR_MINSTRET
+verific -vlog-define RISCV_FORMAL_CSR_MISA
 
-verilog_defines -D RISCV_FORMAL
-verilog_defines -D RISCV_FORMAL_NRET=2
-verilog_defines -D RISCV_FORMAL_XLEN=$(if $enable_64bits; then echo 64; else echo 32; fi)
-verilog_defines -D RISCV_FORMAL_ILEN=32
-verilog_defines -D RISCV_FORMAL_CSR_MCYCLE
-verilog_defines -D RISCV_FORMAL_CSR_MISA
+verific -vlog-define ROCKET_INIT
+$(if $enable_inithack; then echo "verific -vlog-define ROCKET_INITHACK"; fi)
 
-read_verilog -sv ../../checks/rvfi_macros.vh
-read_verilog -sv ../../checks/rvfi_channel.sv
-read_verilog -sv -D ROCKET_INIT $(if $enable_inithack; then echo "-D ROCKET_INITHACK"; fi) wrapper.sv
-
-# ---- Create RVFI on RocketWithRVFI ----
-
-cd RocketWithRVFI
-
-expose rvfi_mon_rvfi_insn
-expose rvfi_mon_rvfi_mem_addr
-expose rvfi_mon_rvfi_mem_rdata
-expose rvfi_mon_rvfi_mem_rmask
-expose rvfi_mon_rvfi_mem_wdata
-expose rvfi_mon_rvfi_mem_wmask
-expose rvfi_mon_rvfi_order
-expose rvfi_mon_rvfi_pc_rdata
-expose rvfi_mon_rvfi_pc_wdata
-expose rvfi_mon_rvfi_rd_addr
-expose rvfi_mon_rvfi_rd_wdata
-expose rvfi_mon_rvfi_rs1_addr
-expose rvfi_mon_rvfi_rs1_rdata
-expose rvfi_mon_rvfi_rs2_addr
-expose rvfi_mon_rvfi_rs2_rdata
-expose rvfi_mon_rvfi_trap
-expose rvfi_mon_rvfi_halt
-expose rvfi_mon_rvfi_intr
-expose rvfi_mon_rvfi_valid
-
-expose rvfi_mon_rvfi_csr_mcycle_rdata
-expose rvfi_mon_rvfi_csr_mcycle_wdata
-expose rvfi_mon_rvfi_csr_mcycle_rmask
-expose rvfi_mon_rvfi_csr_mcycle_wmask
-
-expose rvfi_mon_rvfi_csr_minstret_rdata
-expose rvfi_mon_rvfi_csr_minstret_wdata
-expose rvfi_mon_rvfi_csr_minstret_rmask
-expose rvfi_mon_rvfi_csr_minstret_wmask
-
-expose rvfi_mon_rvfi_csr_misa_rdata
-expose rvfi_mon_rvfi_csr_misa_wdata
-expose rvfi_mon_rvfi_csr_misa_rmask
-expose rvfi_mon_rvfi_csr_misa_wmask
-
-rename rvfi_mon_rvfi_insn      rvfi_insn
-rename rvfi_mon_rvfi_mem_addr  rvfi_mem_addr
-rename rvfi_mon_rvfi_mem_rdata rvfi_mem_rdata
-rename rvfi_mon_rvfi_mem_rmask rvfi_mem_rmask
-rename rvfi_mon_rvfi_mem_wdata rvfi_mem_wdata
-rename rvfi_mon_rvfi_mem_wmask rvfi_mem_wmask
-rename rvfi_mon_rvfi_order     rvfi_order
-rename rvfi_mon_rvfi_pc_rdata  rvfi_pc_rdata
-rename rvfi_mon_rvfi_pc_wdata  rvfi_pc_wdata
-rename rvfi_mon_rvfi_rd_addr   rvfi_rd_addr
-rename rvfi_mon_rvfi_rd_wdata  rvfi_rd_wdata
-rename rvfi_mon_rvfi_rs1_addr  rvfi_rs1_addr
-rename rvfi_mon_rvfi_rs1_rdata rvfi_rs1_rdata
-rename rvfi_mon_rvfi_rs2_addr  rvfi_rs2_addr
-rename rvfi_mon_rvfi_rs2_rdata rvfi_rs2_rdata
-rename rvfi_mon_rvfi_trap      rvfi_trap
-rename rvfi_mon_rvfi_halt      rvfi_halt
-rename rvfi_mon_rvfi_intr      rvfi_intr
-rename rvfi_mon_rvfi_valid     rvfi_valid
-
-rename rvfi_mon_rvfi_csr_mcycle_rdata rvfi_csr_mcycle_rdata
-rename rvfi_mon_rvfi_csr_mcycle_wdata rvfi_csr_mcycle_wdata
-rename rvfi_mon_rvfi_csr_mcycle_rmask rvfi_csr_mcycle_rmask
-rename rvfi_mon_rvfi_csr_mcycle_wmask rvfi_csr_mcycle_wmask
-
-rename rvfi_mon_rvfi_csr_minstret_rdata rvfi_csr_minstret_rdata
-rename rvfi_mon_rvfi_csr_minstret_wdata rvfi_csr_minstret_wdata
-rename rvfi_mon_rvfi_csr_minstret_rmask rvfi_csr_minstret_rmask
-rename rvfi_mon_rvfi_csr_minstret_wmask rvfi_csr_minstret_wmask
-
-rename rvfi_mon_rvfi_csr_misa_rdata rvfi_csr_misa_rdata
-rename rvfi_mon_rvfi_csr_misa_wdata rvfi_csr_misa_wdata
-rename rvfi_mon_rvfi_csr_misa_rmask rvfi_csr_misa_rmask
-rename rvfi_mon_rvfi_csr_misa_wmask rvfi_csr_misa_wmask
-
-delete rvfi_mon
-cd ..
-
-# ---- Create RVFI on RocketTile ----
-
-cd RocketTile
-
-add -output rvfi_insn       $(if $enable_64bits; then echo  64; else echo  64; fi)
-add -output rvfi_mem_addr   $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_mem_rdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_mem_rmask  $(if $enable_64bits; then echo  16; else echo   8; fi)
-add -output rvfi_mem_wdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_mem_wmask  $(if $enable_64bits; then echo  16; else echo   8; fi)
-add -output rvfi_order      $(if $enable_64bits; then echo 128; else echo 128; fi)
-add -output rvfi_pc_rdata   $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_pc_wdata   $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_rd_addr    $(if $enable_64bits; then echo  10; else echo  10; fi)
-add -output rvfi_rd_wdata   $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_rs1_addr   $(if $enable_64bits; then echo  10; else echo  10; fi)
-add -output rvfi_rs1_rdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_rs2_addr   $(if $enable_64bits; then echo  10; else echo  10; fi)
-add -output rvfi_rs2_rdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_trap       $(if $enable_64bits; then echo   2; else echo   2; fi)
-add -output rvfi_halt       $(if $enable_64bits; then echo   2; else echo   2; fi)
-add -output rvfi_intr       $(if $enable_64bits; then echo   2; else echo   2; fi)
-add -output rvfi_valid      $(if $enable_64bits; then echo   2; else echo   2; fi)
-
-add -output rvfi_csr_mcycle_rdata  128
-add -output rvfi_csr_mcycle_wdata  128
-add -output rvfi_csr_mcycle_rmask  128
-add -output rvfi_csr_mcycle_wmask  128
-
-add -output rvfi_csr_minstret_rdata  128
-add -output rvfi_csr_minstret_wdata  128
-add -output rvfi_csr_minstret_rmask  128
-add -output rvfi_csr_minstret_wmask  128
-
-add -output rvfi_csr_misa_rdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_csr_misa_wdata  $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_csr_misa_rmask  $(if $enable_64bits; then echo 128; else echo  64; fi)
-add -output rvfi_csr_misa_wmask  $(if $enable_64bits; then echo 128; else echo  64; fi)
-
-connect -port core rvfi_insn      rvfi_insn
-connect -port core rvfi_mem_addr  rvfi_mem_addr
-connect -port core rvfi_mem_rdata rvfi_mem_rdata
-connect -port core rvfi_mem_rmask rvfi_mem_rmask
-connect -port core rvfi_mem_wdata rvfi_mem_wdata
-connect -port core rvfi_mem_wmask rvfi_mem_wmask
-connect -port core rvfi_order     rvfi_order
-connect -port core rvfi_pc_rdata  rvfi_pc_rdata
-connect -port core rvfi_pc_wdata  rvfi_pc_wdata
-connect -port core rvfi_rd_addr   rvfi_rd_addr
-connect -port core rvfi_rd_wdata  rvfi_rd_wdata
-connect -port core rvfi_rs1_addr  rvfi_rs1_addr
-connect -port core rvfi_rs1_rdata rvfi_rs1_rdata
-connect -port core rvfi_rs2_addr  rvfi_rs2_addr
-connect -port core rvfi_rs2_rdata rvfi_rs2_rdata
-connect -port core rvfi_trap      rvfi_trap
-connect -port core rvfi_halt      rvfi_halt
-connect -port core rvfi_intr      rvfi_intr
-connect -port core rvfi_valid     rvfi_valid
-
-connect -port core rvfi_csr_mcycle_rdata rvfi_csr_mcycle_rdata
-connect -port core rvfi_csr_mcycle_wdata rvfi_csr_mcycle_wdata
-connect -port core rvfi_csr_mcycle_rmask rvfi_csr_mcycle_rmask
-connect -port core rvfi_csr_mcycle_wmask rvfi_csr_mcycle_wmask
-
-connect -port core rvfi_csr_minstret_rdata rvfi_csr_minstret_rdata
-connect -port core rvfi_csr_minstret_wdata rvfi_csr_minstret_wdata
-connect -port core rvfi_csr_minstret_rmask rvfi_csr_minstret_rmask
-connect -port core rvfi_csr_minstret_wmask rvfi_csr_minstret_wmask
-
-connect -port core rvfi_csr_misa_rdata rvfi_csr_misa_rdata
-connect -port core rvfi_csr_misa_wdata rvfi_csr_misa_wdata
-connect -port core rvfi_csr_misa_rmask rvfi_csr_misa_rmask
-connect -port core rvfi_csr_misa_wmask rvfi_csr_misa_wmask
-
-cd ..
+verific -sv ../../checks/rvfi_macros.vh ../../checks/rvfi_channel.sv wrapper.sv rocketrvfi.sv
+verific -import -extnets rvfi_wrapper
 
 # ---- Simulate init sequence ----
 
@@ -256,8 +99,8 @@ sim -clock clock -reset reset -rstlen 10 -zinit -w -vcd rocket-syn/init.vcd -n 3
 
 # ---- Generate netlists ----
 
-rename rvfi_wrapper.uut RocketTile
-hierarchy -top RocketTile
+rename rvfi_wrapper.uut RocketTileWithRVFI
+hierarchy -top RocketTileWithRVFI
 uniquify
 chtype -set MulDiv RocketTile.core/div
 hierarchy
@@ -266,22 +109,6 @@ hierarchy
 
 $(if ! $enable_inithack; then echo "# "; fi)setparam -set INIT 16384'bx RocketTile.frontend.icache.data_arrays_*/ram
 write_ilang rocket-syn/rocket-hier.il
-
-# flatten
-# opt -fast
-#
-# write_ilang rocket-syn/rocket-flat.il
-#
-# opt -full
-# memory_map
-# opt -fast
-# techmap
-# opt -fast
-# abc -fast
-# opt_clean
-# stat
-#
-# write_ilang rocket-syn/rocket-gates.il
 EOT
 
 yosys -v2 -l rocket-syn/rocket-syn.log rocket-syn/rocket-syn.ys
@@ -317,7 +144,9 @@ reg_ch0
 \`define ROCKET_NORESET
 \`define RISCV_FORMAL_VALIDADDR(addr) ({31{addr[32]}} == addr[63:33])
 \`define RISCV_FORMAL_PMA_MAP rocket_pma_map
+\`define RISCV_FORMAL_EXTAMO
 \`define RISCV_FORMAL_CSR_MCYCLE
+\`define RISCV_FORMAL_CSR_MINSTRET
 \`define RISCV_FORMAL_CSR_MISA
 \`define RISCV_FORMAL_ALTOPS
 
