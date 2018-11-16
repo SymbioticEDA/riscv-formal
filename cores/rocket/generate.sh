@@ -13,11 +13,71 @@ enable_muldiv=true
 enable_misa=true
 
 if [ ! -d rocket-chip ]; then
-	git clone https://github.com/freechipsproject/rocket-chip
+	# git clone https://github.com/freechipsproject/rocket-chip
+	git clone git@github.com:sifive/rocket-chip-grand-central.git rocket-chip
 	cd rocket-chip
 
-	git checkout RVFI
+	# git checkout RVFI
 	git submodule update --init
+
+	cat >> src/main/scala/subsystem/Configs.scala << EOT
+class WithoutDebug extends Config((site, here, up) => {
+  case RocketTilesKey => up(RocketTilesKey, site) map { r =>
+    r.copy(core = r.core.copy(useDebug = false))
+  }
+})
+
+class WithNPMP(num_pmp: Int) extends Config((site, here, up) => {
+  case RocketTilesKey => up(RocketTilesKey, site) map { r =>
+    r.copy(core = r.core.copy(nPMPs = num_pmp))
+  }
+})
+
+class WithoutMISAWrite extends Config((site, here, up) => {
+  case RocketTilesKey => up(RocketTilesKey, site) map { r =>
+    r.copy(core = r.core.copy(misaWritable = false))
+  }
+})
+
+class WithoutmtvecWrite extends Config((site, here, up) => {
+  case RocketTilesKey => up(RocketTilesKey, site) map { r =>
+    r.copy(core = r.core.copy(mtvecWritable = false))
+  }
+})
+
+class WithoutCounters extends Config((site, here, up) => {
+  case RocketTilesKey => up(RocketTilesKey, site) map { r =>
+    r.copy(core = r.core.copy(haveBasicCounters = false))
+  }
+})
+
+class WithoutAtomics extends Config((site, here, up) => {
+  case RocketTilesKey => up(RocketTilesKey, site) map { r =>
+    r.copy(core = r.core.copy(useAtomics = false))
+  }
+})
+EOT
+
+	cat >> src/main/scala/system/Configs.scala << EOT
+class DefaultConfigWithRVFIMonitors extends Config(
+  (
+    new WithoutAtomics ++
+    new WithoutDebug ++
+    new WithNBreakpoints(0) ++
+    new WithNPMP(0) ++
+    new WithoutMISAWrite ++
+    new WithoutMulDiv ++
+    new WithoutFPU ++
+    new WithNoMemPort ++
+    new WithNMemoryChannels(0) ++
+    new WithNBanks(0) ++
+    new With1TinyCore ++
+//  new WithNSmallCores(1) ++
+  new BaseConfig()).alter((site, here, up) => {
+    case freechips.rocketchip.tile.XLen => 32
+  })
+)
+EOT
 
 	sed -i -e 's/rvfi_csr_instret_/rvfi_csr_minstret_/g;' src/main/scala/rocket/RocketCore.scala
 
