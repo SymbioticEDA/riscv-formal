@@ -5,20 +5,18 @@ from os import system
 from sys import argv, exit
 from getopt import getopt
 
-mode_64 = False
-
 def usage():
-    print("Usage: %s [--64] <vcd-file>" % argv[0])
+    print("Usage: %s <vcd-file>" % argv[0])
     exit(1)
 
 try:
-    opts, args = getopt(argv[1:], "", ["64"])
+    opts, args = getopt(argv[1:], "", [])
 except:
     usage()
 
 for o, a in opts:
     if o == "--64":
-        mode_64 = True
+        pass
     else:
         usage()
 
@@ -55,10 +53,6 @@ with open("disasm.s", "w") as f:
         else:
             print(".word 0x%08x # %d" % (tv_insn, tv_order), file=f)
 
-if mode_64:
-    system("riscv64-unknown-elf-gcc -c disasm.s")
-    system("riscv64-unknown-elf-objdump -d -M numeric,no-aliases disasm.o")
-else:
-    system("riscv32-unknown-elf-gcc -c disasm.s")
-    system("riscv32-unknown-elf-objdump -d -M numeric,no-aliases disasm.o")
+system("/opt/riscv32imc/bin/riscv32-unknown-elf-gcc -c disasm.s")
+system("/opt/riscv32imc/bin/riscv32-unknown-elf-objdump -d -M numeric,no-aliases disasm.o")
 
