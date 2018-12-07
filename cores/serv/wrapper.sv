@@ -41,14 +41,20 @@ module rvfi_wrapper (
 	// I-MEM
 	always @(posedge clock) begin
 		if (reset) begin
-			assume (ibus_ack == 0);
+			assume (!ibus_ack);
+		end
+		if (!ibus_cyc) begin
+			assume (!ibus_ack);
 		end
 	end
 
 	// D-MEM
 	always @(posedge clock) begin
 		if (reset) begin
-			assume (dbus_ack == 0);
+			assume (!dbus_ack);
+		end
+		if (!dbus_cyc) begin
+			assume (!dbus_ack);
 		end
 	end
 
