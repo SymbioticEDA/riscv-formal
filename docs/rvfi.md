@@ -168,6 +168,51 @@ Since `f0` is not a zero register, additional `*_[rw]valid` signals are required
 
 Alternative arithmetic operations (`RISCV_FORMAL_ALTOPS`) will be defined for all non-trivial floating point operations.
 
+### Modelling of Virtual Memory
+
+For processors with support for S-mode and virtual memory we define the following additional RVFI signals:
+
+    output [NRET *   64 - 1 : 0] rvfi_mem_paddr
+    output [NRET * XLEN - 1 : 0] rvfi_mem_pte0
+    output [NRET * XLEN - 1 : 0] rvfi_mem_pte1
+    output [NRET * XLEN - 1 : 0] rvfi_mem_pte2
+    output [NRET * XLEN - 1 : 0] rvfi_mem_pte3
+
+And we require that the `satp` CSR is observable through RVFI:
+
+    output [NRET * XLEN - 1 : 0] rvfi_csr_satp_rmask
+    output [NRET * XLEN - 1 : 0] rvfi_csr_satp_wmask
+    output [NRET * XLEN - 1 : 0] rvfi_csr_satp_rdata
+    output [NRET * XLEN - 1 : 0] rvfi_csr_satp_wdata
+
+The `rvfi_mem_paddr` field carries the physical address of the memory access. The `rvfi_mem_pte[0123]` fields carry the values of the page table entries used to convert `rvfi_mem_addr` to `rvfi_mem_paddr`. Unused `rvfi_mem_pte[0123]` fields must always be set to zero.
+
+For memory accesses in M-mode, or with `satp.MODE=0`, `rvfi_mem_paddr` must have the same value as `rvfi_mem_addr` and all four `rvfi_mem_pte[0123]` fields must be set to zero.
+
+For example in Sv32 mode, modulo missing fences, `rvfi_mem_pte1` must carry the value of the 32-bit word at the following memory location:
+
+```
+pt1 = rvfi_csr_satp_rdata & 0x003fffff
+vpn1 = (rvfi_mem_addr >> 22) & 0x3ff
+pte1_addr = (pt1 << 12) | (vpn1 << 2)
+```
+
+And `rvfi_mem_pte0` must carry the value of the 32-bit word at the following memory location (or zero if `pte1.X` or `pte1.R` or `!pte1.V`):
+
+```
+pt0 = rvfi_mem_pte1 >> 10
+vpn0 = (rvfi_mem_addr >> 12) & 0x3ff
+pte0_addr = (pt0 << 12) | (vpn0 << 2)
+```
+
+Finally, `rvfi_mem_paddr` must be set to the following address:
+
+```
+ppn = rvfi_mem_pte0 >> 10
+offset = rvfi_mem_addr & 0xfff
+rvfi_mem_paddr = (ppn << 12) | offset
+```
+
 ### Modelling of Atomic Memory Operations
 
 AMO instructions (`AMOSWAP.W`, etc.) can be modelled using the existing `rvfi_mem_*` interface by asserting bits in both `rvfi_mem_rmask` and `rvfi_mem_wmask`.
