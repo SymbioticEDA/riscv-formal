@@ -1,14 +1,9 @@
 /riscv-tools
+/riscv-tools-build
 /rocket-chip
 /rocket-syn
-/rocketio-cover
-/rocketio-bmc
 /cover
 /coverage
-/pc_check_fwd0
-/pc_check_fwd1
-/pc_check_bwd0
-/pc_check_bwd1
 /checks
 /checks.cfg
 /testbench

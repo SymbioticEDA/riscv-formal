@@ -170,7 +170,7 @@ hierarchy
 
 # rename -hide w:_*
 
-$(if ! $enable_inithack; then echo "# "; fi)setparam -set INIT 16384'bx RocketTile.frontend.icache.data_arrays_*/ram
+$(if ! $enable_inithack; then echo "# "; fi)setparam -set INIT 16384'bx RocketTileWithRVFI.rocket_tile.frontend.icache.data_arrays_*/ram
 write_ilang rocket-syn/rocket-hier.il
 EOT
 
