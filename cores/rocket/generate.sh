@@ -109,12 +109,15 @@ fi
 
 if [ ! -d riscv-tools ]; then
 	mkdir riscv-tools
-	cd rocket-chip/riscv-tools
+	rm -rf riscv-tools-build
+	git clone https://github.com/riscv/riscv-tools riscv-tools-build
+	cd riscv-tools-build
+	git checkout $(cat ../rocket-chip/riscv-tools.hash)
 	git submodule update --init --recursive
 	# sed -i 's/rv32ima/rv32i/g' build-rv32ima.sh
 	./build.sh
 	./build-rv32ima.sh
-	cd ../..
+	cd ..
 fi
 
 make -C rocket-chip/vsim verilog
@@ -159,7 +162,7 @@ sim -clock clock -reset reset -rstlen 10 -zinit -w -vcd rocket-syn/init.vcd -n 3
 
 # ---- Generate netlists ----
 
-rename rvfi_wrapper.uut RocketTileWithRVFI
+rename rvfi_wrapper.rocket_rvfi_tile RocketTileWithRVFI
 hierarchy -top RocketTileWithRVFI
 uniquify
 chtype -set MulDiv RocketTile.core/div

@@ -12,136 +12,143 @@ module rvfi_wrapper (
 	wire actual_reset = reset || |reset_cnt;
 
 	always @(posedge clock) begin
-		reset_cnt <= reset ? 5 : reset_cnt - |reset_cnt;
+		reset_cnt <= reset ? 4'd 5 : reset_cnt - |reset_cnt;
 	end
 `endif
 
-	(* keep *) wire  [                  31:0] reset_vector = 32'h10040;
+	(* keep *) wire  [31:0] reset_vector = 32'h10040;
 
-	// Rocket Tile Inputs
+	// Rocket TileLink Slave
 
-	(* keep *) wire                           io_master_0_a_ready;
-	(* keep *) wire                           io_master_0_d_valid;
-	(* keep *) wire  [                   2:0] io_master_0_d_bits_opcode;
-	(* keep *) wire  [                   1:0] io_master_0_d_bits_param;
-	(* keep *) wire  [                   3:0] io_master_0_d_bits_size;
-	(* keep *) wire                           io_master_0_d_bits_source;
-	(* keep *) wire                           io_master_0_d_bits_sink;
-	(* keep *) wire                           io_master_0_d_bits_denied;
-	(* keep *) wire  [`RISCV_FORMAL_XLEN-1:0] io_master_0_d_bits_data;
-	(* keep *) wire                           io_master_0_d_bits_corrupt;
+	(* keep *) wire        tl_slave_a_ready;
+	(* keep *) wire        tl_slave_a_valid = 0;
+	(* keep *) wire [2:0]  tl_slave_a_bits_opcode = 0;
+	(* keep *) wire [2:0]  tl_slave_a_bits_param = 0;
+	(* keep *) wire [2:0]  tl_slave_a_bits_size = 0;
+	(* keep *) wire [4:0]  tl_slave_a_bits_source = 0;
+	(* keep *) wire [31:0] tl_slave_a_bits_address = 0;
+	(* keep *) wire [7:0]  tl_slave_a_bits_mask = 0;
+	(* keep *) wire [63:0] tl_slave_a_bits_data = 0;
 
-	(* keep *) wire                           io_slave_0_a_valid = 0;
-	(* keep *) wire  [                   2:0] io_slave_0_a_bits_opcode = 0;
-	(* keep *) wire  [                   2:0] io_slave_0_a_bits_param = 0;
-	(* keep *) wire  [                   2:0] io_slave_0_a_bits_size = 0;
-	(* keep *) wire  [                   4:0] io_slave_0_a_bits_source = 0;
-	(* keep *) wire  [                  31:0] io_slave_0_a_bits_address = 0;
-	(* keep *) wire  [       `XLEN_BYTES-1:0] io_slave_0_a_bits_mask = 0;
-	(* keep *) wire  [`RISCV_FORMAL_XLEN-1:0] io_slave_0_a_bits_data = 0;
-	(* keep *) wire                           io_slave_0_d_ready = 0;
+	(* keep *) wire        tl_slave_d_ready = 0;
+	(* keep *) wire        tl_slave_d_valid;
+	(* keep *) wire [2:0]  tl_slave_d_bits_opcode;
+	(* keep *) wire [1:0]  tl_slave_d_bits_param;
+	(* keep *) wire [2:0]  tl_slave_d_bits_size;
+	(* keep *) wire [4:0]  tl_slave_d_bits_source;
+	(* keep *) wire        tl_slave_d_bits_sink;
+	(* keep *) wire        tl_slave_d_bits_denied;
+	(* keep *) wire [63:0] tl_slave_d_bits_data;
+	(* keep *) wire        tl_slave_d_bits_corrupt;
 
-	// Rocket Tile Outputs
+	// Rocket TileLink Master
 
-	(* keep *) wire                          io_master_0_a_valid;
-	(* keep *) wire [                   2:0] io_master_0_a_bits_opcode;
-	(* keep *) wire [                   2:0] io_master_0_a_bits_param;
-	(* keep *) wire [                   3:0] io_master_0_a_bits_size;
-	(* keep *) wire                          io_master_0_a_bits_source;
-	(* keep *) wire [                  31:0] io_master_0_a_bits_address;
-	(* keep *) wire [       `XLEN_BYTES-1:0] io_master_0_a_bits_mask;
-	(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] io_master_0_a_bits_data;
-	(* keep *) wire                          io_master_0_a_bits_corrupt;
-	(* keep *) wire                          io_master_0_d_ready;
+	(* keep *) wire        tl_master_a_ready;
+	(* keep *) wire        tl_master_a_valid;
+	(* keep *) wire [2:0]  tl_master_a_bits_opcode;
+	(* keep *) wire [2:0]  tl_master_a_bits_param;
+	(* keep *) wire [3:0]  tl_master_a_bits_size;
+	(* keep *) wire        tl_master_a_bits_source;
+	(* keep *) wire [31:0] tl_master_a_bits_address;
+	(* keep *) wire [7:0]  tl_master_a_bits_mask;
+	(* keep *) wire [63:0] tl_master_a_bits_data;
+	(* keep *) wire        tl_master_a_bits_corrupt;
 
-	(* keep *) wire                          io_slave_0_a_ready;
-	(* keep *) wire                          io_slave_0_d_valid;
-	(* keep *) wire [                   2:0] io_slave_0_d_bits_opcode;
-	(* keep *) wire [                   2:0] io_slave_0_d_bits_size;
-	(* keep *) wire [                   4:0] io_slave_0_d_bits_source;
-	(* keep *) wire [`RISCV_FORMAL_XLEN-1:0] io_slave_0_d_bits_data;
+	(* keep *) wire        tl_master_d_ready;
+	(* keep *) wire        tl_master_d_valid;
+	(* keep *) wire [2:0]  tl_master_d_bits_opcode;
+	(* keep *) wire [1:0]  tl_master_d_bits_param;
+	(* keep *) wire [3:0]  tl_master_d_bits_size;
+	(* keep *) wire        tl_master_d_bits_source;
+	(* keep *) wire        tl_master_d_bits_sink;
+	(* keep *) wire        tl_master_d_bits_denied;
+	(* keep *) wire [63:0] tl_master_d_bits_data;
+	(* keep *) wire        tl_master_d_bits_corrupt;
 
-	// TileLink A-D Dummy Slave
+	// TileLink Master A-D Dummy Slave
 
 	tilelink_ad_dummy tilelink_slave (
-		.clock                  (clock                     ),
-		.reset                  (actual_reset              ),
+		.clock                  (clock                   ),
+		.reset                  (actual_reset            ),
 
-		.channel_a_ready        (io_master_0_a_ready       ),
-		.channel_a_valid        (io_master_0_a_valid       ),
-		.channel_a_bits_address (io_master_0_a_bits_address),
-		.channel_a_bits_data    (io_master_0_a_bits_data   ),
-		.channel_a_bits_mask    (io_master_0_a_bits_mask   ),
-		.channel_a_bits_opcode  (io_master_0_a_bits_opcode ),
-		.channel_a_bits_param   (io_master_0_a_bits_param  ),
-		.channel_a_bits_size    (io_master_0_a_bits_size   ),
-		.channel_a_bits_source  (io_master_0_a_bits_source ),
+		.channel_a_ready        (tl_master_a_ready       ),
+		.channel_a_valid        (tl_master_a_valid       ),
+		.channel_a_bits_address (tl_master_a_bits_address),
+		.channel_a_bits_data    (tl_master_a_bits_data   ),
+		.channel_a_bits_mask    (tl_master_a_bits_mask   ),
+		.channel_a_bits_opcode  (tl_master_a_bits_opcode ),
+		.channel_a_bits_param   (tl_master_a_bits_param  ),
+		.channel_a_bits_size    (tl_master_a_bits_size   ),
+		.channel_a_bits_source  (tl_master_a_bits_source ),
 
-		.channel_d_ready        (io_master_0_d_ready       ),
-		.channel_d_valid        (io_master_0_d_valid       ),
-		.channel_d_bits_data    (io_master_0_d_bits_data   ),
-		.channel_d_bits_denied  (io_master_0_d_bits_denied ),
-		.channel_d_bits_corrupt (io_master_0_d_bits_corrupt),
-		.channel_d_bits_opcode  (io_master_0_d_bits_opcode ),
-		.channel_d_bits_param   (io_master_0_d_bits_param  ),
-		.channel_d_bits_sink    (io_master_0_d_bits_sink   ),
-		.channel_d_bits_size    (io_master_0_d_bits_size   ),
-		.channel_d_bits_source  (io_master_0_d_bits_source )
+		.channel_d_ready        (tl_master_d_ready       ),
+		.channel_d_valid        (tl_master_d_valid       ),
+		.channel_d_bits_data    (tl_master_d_bits_data   ),
+		.channel_d_bits_denied  (tl_master_d_bits_denied ),
+		.channel_d_bits_corrupt (tl_master_d_bits_corrupt),
+		.channel_d_bits_opcode  (tl_master_d_bits_opcode ),
+		.channel_d_bits_param   (tl_master_d_bits_param  ),
+		.channel_d_bits_sink    (tl_master_d_bits_sink   ),
+		.channel_d_bits_size    (tl_master_d_bits_size   ),
+		.channel_d_bits_source  (tl_master_d_bits_source )
 	);
 
 	// Rocket Tile
 
-	RocketTileWithRVFI uut (
-		.clock (clock       ),
-		.reset (actual_reset),
-		.constants_hartid(1'b0),
-		.constants_reset_vector(reset_vector),
+	RocketTileWithRVFI rocket_rvfi_tile (
+		.clock                  (clock                    ),
+		.reset                  (actual_reset             ),
+
+		.constants_hartid       (1'b0                     ),
+		.constants_reset_vector (32'h10040                ),
 
 		`RVFI_CONN,
 
-		.auto_int_xing_in_1_sync_0 (1'b0),
-		.auto_int_xing_in_0_sync_0 (1'b0),
-		.auto_int_xing_in_0_sync_1 (1'b0),
-		.auto_intsink_in_sync_0 (1'b0),
+		.intsink_sync_0          (1'b0                    ),
+		.int_1_sync_0            (1'b0                    ),
+		.int_0_sync_0            (1'b0                    ),
+		.int_0_sync_1            (1'b0                    ),
 
-		.auto_tl_master_xing_out_a_ready        (io_master_0_a_ready       ),
-		.auto_tl_master_xing_out_a_valid        (io_master_0_a_valid       ),
-		.auto_tl_master_xing_out_a_bits_opcode  (io_master_0_a_bits_opcode ),
-		.auto_tl_master_xing_out_a_bits_param   (io_master_0_a_bits_param  ),
-		.auto_tl_master_xing_out_a_bits_size    (io_master_0_a_bits_size   ),
-		.auto_tl_master_xing_out_a_bits_source  (io_master_0_a_bits_source ),
-		.auto_tl_master_xing_out_a_bits_address (io_master_0_a_bits_address),
-		.auto_tl_master_xing_out_a_bits_mask    (io_master_0_a_bits_mask   ),
-		.auto_tl_master_xing_out_a_bits_data    (io_master_0_a_bits_data   ),
-		.auto_tl_master_xing_out_a_bits_corrupt (io_master_0_a_bits_corrupt),
+		.tl_slave_a_ready        (tl_slave_a_ready        ),
+		.tl_slave_a_valid        (tl_slave_a_valid        ),
+		.tl_slave_a_bits_opcode  (tl_slave_a_bits_opcode  ),
+		.tl_slave_a_bits_param   (tl_slave_a_bits_param   ),
+		.tl_slave_a_bits_size    (tl_slave_a_bits_size    ),
+		.tl_slave_a_bits_source  (tl_slave_a_bits_source  ),
+		.tl_slave_a_bits_address (tl_slave_a_bits_address ),
+		.tl_slave_a_bits_mask    (tl_slave_a_bits_mask    ),
+		.tl_slave_a_bits_data    (tl_slave_a_bits_data    ),
+		.tl_slave_d_ready        (tl_slave_d_ready        ),
+		.tl_slave_d_valid        (tl_slave_d_valid        ),
+		.tl_slave_d_bits_opcode  (tl_slave_d_bits_opcode  ),
+		.tl_slave_d_bits_param   (tl_slave_d_bits_param   ),
+		.tl_slave_d_bits_size    (tl_slave_d_bits_size    ),
+		.tl_slave_d_bits_source  (tl_slave_d_bits_source  ),
+		.tl_slave_d_bits_sink    (tl_slave_d_bits_sink    ),
+		.tl_slave_d_bits_denied  (tl_slave_d_bits_denied  ),
+		.tl_slave_d_bits_data    (tl_slave_d_bits_data    ),
+		.tl_slave_d_bits_corrupt (tl_slave_d_bits_corrupt ),
 
-		.auto_tl_master_xing_out_d_ready        (io_master_0_d_ready       ),
-		.auto_tl_master_xing_out_d_valid        (io_master_0_d_valid       ),
-		.auto_tl_master_xing_out_d_bits_opcode  (io_master_0_d_bits_opcode ),
-		.auto_tl_master_xing_out_d_bits_param   (io_master_0_d_bits_param  ),
-		.auto_tl_master_xing_out_d_bits_size    (io_master_0_d_bits_size   ),
-		.auto_tl_master_xing_out_d_bits_source  (io_master_0_d_bits_source ),
-		.auto_tl_master_xing_out_d_bits_sink    (io_master_0_d_bits_sink   ),
-		.auto_tl_master_xing_out_d_bits_denied  (io_master_0_d_bits_denied ),
-		.auto_tl_master_xing_out_d_bits_data    (io_master_0_d_bits_data   ),
-		.auto_tl_master_xing_out_d_bits_corrupt (io_master_0_d_bits_corrupt),
-
-		.auto_tl_slave_xing_in_a_ready          (io_slave_0_a_ready        ),
-		.auto_tl_slave_xing_in_a_valid          (io_slave_0_a_valid        ),
-		.auto_tl_slave_xing_in_a_bits_opcode    (io_slave_0_a_bits_opcode  ),
-		.auto_tl_slave_xing_in_a_bits_param     (io_slave_0_a_bits_param   ),
-		.auto_tl_slave_xing_in_a_bits_size      (io_slave_0_a_bits_size    ),
-		.auto_tl_slave_xing_in_a_bits_source    (io_slave_0_a_bits_source  ),
-		.auto_tl_slave_xing_in_a_bits_address   (io_slave_0_a_bits_address ),
-		.auto_tl_slave_xing_in_a_bits_mask      (io_slave_0_a_bits_mask    ),
-		.auto_tl_slave_xing_in_a_bits_data      (io_slave_0_a_bits_data    ),
-
-		.auto_tl_slave_xing_in_d_ready          (io_slave_0_d_ready        ),
-		.auto_tl_slave_xing_in_d_valid          (io_slave_0_d_valid        ),
-		.auto_tl_slave_xing_in_d_bits_opcode    (io_slave_0_d_bits_opcode  ),
-		.auto_tl_slave_xing_in_d_bits_size      (io_slave_0_d_bits_size    ),
-		.auto_tl_slave_xing_in_d_bits_source    (io_slave_0_d_bits_source  ),
-		.auto_tl_slave_xing_in_d_bits_data      (io_slave_0_d_bits_data    )
+		.tl_master_a_ready       (tl_master_a_ready       ),
+		.tl_master_a_valid       (tl_master_a_valid       ),
+		.tl_master_a_bits_opcode (tl_master_a_bits_opcode ),
+		.tl_master_a_bits_param  (tl_master_a_bits_param  ),
+		.tl_master_a_bits_size   (tl_master_a_bits_size   ),
+		.tl_master_a_bits_source (tl_master_a_bits_source ),
+		.tl_master_a_bits_address(tl_master_a_bits_address),
+		.tl_master_a_bits_mask   (tl_master_a_bits_mask   ),
+		.tl_master_a_bits_data   (tl_master_a_bits_data   ),
+		.tl_master_a_bits_corrupt(tl_master_a_bits_corrupt),
+		.tl_master_d_ready       (tl_master_d_ready       ),
+		.tl_master_d_valid       (tl_master_d_valid       ),
+		.tl_master_d_bits_opcode (tl_master_d_bits_opcode ),
+		.tl_master_d_bits_param  (tl_master_d_bits_param  ),
+		.tl_master_d_bits_size   (tl_master_d_bits_size   ),
+		.tl_master_d_bits_source (tl_master_d_bits_source ),
+		.tl_master_d_bits_sink   (tl_master_d_bits_sink   ),
+		.tl_master_d_bits_denied (tl_master_d_bits_denied ),
+		.tl_master_d_bits_data   (tl_master_d_bits_data   ),
+		.tl_master_d_bits_corrupt(tl_master_d_bits_corrupt)
 	);
 
 	(* keep *) rvfi_channel #(.CHANNEL_IDX(0)) rvfi_channel_0 (`RVFI_CONN);
@@ -309,7 +316,7 @@ module tilelink_ad_dummy (
 				channel_d_bits_source = op_source;
 				channel_d_bits_denied = 0;
 				channel_d_bits_corrupt = 0;
-				next_count = count + (`RISCV_FORMAL_XLEN / 8);
+				next_count = (count + (`RISCV_FORMAL_XLEN / 8)) & 16'hffff;
 				last = next_count >= (1 << op_size);
 				ready = 1;
 			end
