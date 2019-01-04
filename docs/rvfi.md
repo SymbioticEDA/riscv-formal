@@ -170,13 +170,21 @@ Alternative arithmetic operations (`RISCV_FORMAL_ALTOPS`) will be defined for al
 
 ### Modelling of Virtual Memory
 
-For processors with support for S-mode and virtual memory we define the following additional RVFI signals:
+For processors with support for S-mode and virtual memory we define the following additional RVFI signals for data load/stores:
 
     output [NRET *   64 - 1 : 0] rvfi_mem_paddr
     output [NRET * XLEN - 1 : 0] rvfi_mem_pte0
     output [NRET * XLEN - 1 : 0] rvfi_mem_pte1
     output [NRET * XLEN - 1 : 0] rvfi_mem_pte2
     output [NRET * XLEN - 1 : 0] rvfi_mem_pte3
+
+And the following additional RVFI signals for instruction fetches:
+
+    output [NRET *   64 - 1 : 0] rvfi_pc_paddr
+    output [NRET * XLEN - 1 : 0] rvfi_pc_pte0
+    output [NRET * XLEN - 1 : 0] rvfi_pc_pte1
+    output [NRET * XLEN - 1 : 0] rvfi_pc_pte2
+    output [NRET * XLEN - 1 : 0] rvfi_pc_pte3
 
 And we require that the `satp` CSR is observable through RVFI:
 
