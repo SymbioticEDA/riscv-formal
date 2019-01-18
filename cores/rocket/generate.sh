@@ -17,7 +17,7 @@ if [ ! -d rocket-chip ]; then
 	git clone git@github.com:sifive/rocket-chip-grand-central.git rocket-chip
 	cd rocket-chip
 
-	# git checkout RVFI
+	git checkout rvfi_devel
 	git submodule update --init
 
 	cat >> src/main/scala/subsystem/Configs.scala << EOT
@@ -165,7 +165,7 @@ sim -clock clock -reset reset -rstlen 10 -zinit -w -vcd rocket-syn/init.vcd -n 3
 rename rvfi_wrapper.rocket_rvfi_tile RocketTileWithRVFI
 hierarchy -top RocketTileWithRVFI
 uniquify
-chtype -set MulDiv RocketTile.core/div
+chtype -set MulDiv RocketTileWithRVFI.rocket_tile.core/div
 hierarchy
 
 # rename -hide w:_*

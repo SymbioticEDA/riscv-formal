@@ -369,18 +369,20 @@ endmodule
 module MulDiv (
 	input         clock,
 	input         reset,
-	output        io_req_ready,
-	input         io_req_valid,
-	input  [3:0]  io_req_bits_fn,
-	input         io_req_bits_dw,
-	input  [63:0] io_req_bits_in1,
-	input  [63:0] io_req_bits_in2,
-	input  [4:0]  io_req_bits_tag,
-	input         io_kill,
-	input         io_resp_ready,
+	output        io__req_ready,
+	input         io__req_valid,
+	input  [ 3:0] io__req_bits_fn,
+	input         io__req_bits_dw,
+	input  [63:0] io__req_bits_in1,
+	input  [63:0] io__req_bits_in2,
+	input  [ 4:0] io__req_bits_tag,
+	input         io__kill,
+	input         io__resp_ready,
+	output        io__resp_valid,
+	output [63:0] io__resp_bits_data,
+	output [ 4:0] io__resp_bits_tag,
 	output        io_resp_valid,
-	output [63:0] io_resp_bits_data,
-	output [4:0]  io_resp_bits_tag
+	output        io_resp_ready
 );
 	reg [63:0] internal_data;
 	reg [ 4:0] internal_tag;
@@ -391,39 +393,42 @@ module MulDiv (
 
 	always @* begin
 		result = 123456789;
-		case (io_req_bits_fn)
-			0: result = (io_req_bits_in1 + io_req_bits_in2) ^ 64'h 2cdf52a55876063e; // MUL
-			1: result = (io_req_bits_in1 + io_req_bits_in2) ^ 64'h 15d01651f6583fb7; // MULH
-			2: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h ea3969edecfbe137; // MULHSU
-			3: result = (io_req_bits_in1 + io_req_bits_in2) ^ 64'h d13db50d949ce5e8; // MULHU
-			4: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h 29bbf66f7f8529ec; // DIV
-			5: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h 8c629acb10e8fd70; // DIVU
-			6: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h f5b7d8538da68fa5; // REM
-			7: result = (io_req_bits_in1 - io_req_bits_in2) ^ 64'h bc4402413138d0e1; // REMU
+		case (io__req_bits_fn)
+			0: result = (io__req_bits_in1 + io__req_bits_in2) ^ 64'h 2cdf52a55876063e; // MUL
+			1: result = (io__req_bits_in1 + io__req_bits_in2) ^ 64'h 15d01651f6583fb7; // MULH
+			2: result = (io__req_bits_in1 - io__req_bits_in2) ^ 64'h ea3969edecfbe137; // MULHSU
+			3: result = (io__req_bits_in1 + io__req_bits_in2) ^ 64'h d13db50d949ce5e8; // MULHU
+			4: result = (io__req_bits_in1 - io__req_bits_in2) ^ 64'h 29bbf66f7f8529ec; // DIV
+			5: result = (io__req_bits_in1 - io__req_bits_in2) ^ 64'h 8c629acb10e8fd70; // DIVU
+			6: result = (io__req_bits_in1 - io__req_bits_in2) ^ 64'h f5b7d8538da68fa5; // REM
+			7: result = (io__req_bits_in1 - io__req_bits_in2) ^ 64'h bc4402413138d0e1; // REMU
 		endcase
-		if (!io_req_bits_dw) begin
+		if (!io__req_bits_dw) begin
 			result = $signed(result << 32) >>> 32;
 		end
 	end
 
 `ifdef RISCV_FORMAL_FAIRNESS
-	assign io_req_ready = !internal_busy;
+	assign io__req_ready = !internal_busy;
 `else
-	assign io_req_ready = $anyseq(1) && !internal_busy;
+	assign io__req_ready = $anyseq(1) && !internal_busy;
 `endif
 
-	assign io_resp_valid = internal_done;
-	assign io_resp_bits_data = internal_done ? internal_data : $anyseq(64);
-	assign io_resp_bits_tag = internal_done ? internal_tag : $anyseq(5);
+	assign io__resp_valid = internal_done;
+	assign io__resp_bits_data = internal_done ? internal_data : $anyseq(64);
+	assign io__resp_bits_tag = internal_done ? internal_tag : $anyseq(5);
+
+	assign io_resp_valid = io__resp_valid;
+	assign io_resp_ready = io__resp_ready;
 
 	always @(posedge clock) begin
-		if (reset || io_kill) begin
+		if (reset || io__kill) begin
 			internal_busy <= 0;
 			internal_done <= 0;
 		end else begin
-			if (io_req_ready && io_req_valid) begin
+			if (io__req_ready && io__req_valid) begin
 				internal_data <= result;
-				internal_tag <= io_req_bits_tag;
+				internal_tag <= io__req_bits_tag;
 				internal_busy <= 1;
 			end
 
@@ -437,7 +442,7 @@ module MulDiv (
 			end
 `endif
 
-			if (io_resp_ready && io_resp_valid) begin
+			if (io__resp_ready && io__resp_valid) begin
 				internal_busy <= 0;
 				internal_done <= 0;
 			end
