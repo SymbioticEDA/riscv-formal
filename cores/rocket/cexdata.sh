@@ -1,32 +1,33 @@
 #!/bin/bash
 
 set -ex
+cexdata="cexdata-$(date '+%Y%m%d')"
 
-rm -rf cexdata
-mkdir cexdata
+rm -rf $cexdata
+mkdir $cexdata
 
 while read dir; do echo "$dir	$(git -C $dir log -n1 --oneline)"; \
 	done < <( echo .; find rocket-chip -name '.git' -printf '%h\n'; ) | \
-	expand -t30 > cexdata/version.txt
+	expand -t30 > $cexdata/version.txt
 
-cp rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v cexdata/rocketchip.v
-cp rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.fir cexdata/rocketchip.fir
-cp rocket-chip/src/main/scala/system/Configs.scala cexdata/Configs.scala
-git -C rocket-chip diff src/main/scala/system/Configs.scala > cexdata/Configs.scala.diff
-cp rocket-syn/init.vcd cexdata/init.vcd
+cp rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.v $cexdata/rocketchip.v
+cp rocket-chip/vsim/generated-src/freechips.rocketchip.system.DefaultConfigWithRVFIMonitors.fir $cexdata/rocketchip.fir
+cp rocket-chip/src/main/scala/system/Configs.scala $cexdata/Configs.scala
+git -C rocket-chip diff src/main/scala/system/Configs.scala > $cexdata/Configs.scala.diff
+cp rocket-syn/init.vcd $cexdata/init.vcd
 
 for x in checks/*/FAIL coverage/FAIL; do
 	test -f $x || continue
 	x=${x%/FAIL}
 	y=${x#checks/}
-	cp $x/logfile.txt cexdata/$y.log
+	cp $x/logfile.txt $cexdata/$y.log
 	if test -f $x/engine_*/trace.vcd; then
-		cp $x/engine_*/trace.vcd cexdata/$y.vcd
+		cp $x/engine_*/trace.vcd $cexdata/$y.vcd
 		if grep -q "^isa rv64" checks.cfg; then
-			python3 disasm.py --64 cexdata/$y.vcd > cexdata/$y.asm
+			python3 disasm.py --64 $cexdata/$y.vcd > $cexdata/$y.asm
 		fi
 		if grep -q "^isa rv32" checks.cfg; then
-			python3 disasm.py cexdata/$y.vcd > cexdata/$y.asm
+			python3 disasm.py $cexdata/$y.vcd > $cexdata/$y.asm
 		fi
 	fi
 done
@@ -41,8 +42,8 @@ for x in checks/*.sby; do
 	else
 		printf "%-20s %s\n" $x unknown
 	fi
-done | awk '{ print gensub(":", "", "g", $3), $0; }' | sort -n | cut -f2- -d' ' > cexdata/status.txt
+done | awk '{ print gensub(":", "", "g", $3), $0; }' | sort -n | cut -f2- -d' ' > $cexdata/status.txt
 
-rm -f cexdata.zip
-zip -r cexdata.zip cexdata/
+rm -f $cexdata.zip
+zip -r $cexdata.zip $cexdata/
 

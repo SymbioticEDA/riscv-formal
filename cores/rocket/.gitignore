@@ -12,7 +12,7 @@
 /obj_dir
 /disasm.s
 /disasm.o
-/cexdata
-/cexdata.zip
+/cexdata-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+/cexdata-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].zip
 /muldivlen_cover
 /muldivlen_check
