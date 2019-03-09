@@ -168,6 +168,19 @@ Since `f0` is not a zero register, additional `*_[rw]valid` signals are required
 
 Alternative arithmetic operations (`RISCV_FORMAL_ALTOPS`) will be defined for all non-trivial floating point operations.
 
+### Handling of Speculative Execution
+
+Out-of-order cores that execute specilatively can commit speculative instructions on RVFI.
+
+Rollbacks must be output via a special rollback interface:
+
+    output [ 0 : 0] rvfi_rollback_valid
+    output [63 : 0] rvfi_rollback_order
+
+All RVFI packets output _prior_ to the cycle with asserted `rvfi_rollback_valid` with a `rvfi_order` field of _greater or equal_ to `rvfi_rollback_order` are invalidated by a rollback event.
+
+RVFI packets output in the same cycle as `rvfi_rollback_valid` are already part of the new instruction stream re-starting at the instruction number indicated in `rvfi_rollback_order`.
+
 ### Modelling of Virtual Memory
 
 For processors with support for S-mode and virtual memory we define the following additional RVFI signals for data load/stores:
