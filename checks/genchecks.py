@@ -174,6 +174,7 @@ def check_insn(insn, chanidx, csr_mode=False):
         print_hfmt(sby_file, """
                 : [options]
                 : mode bmc
+                : expect pass,fail
                 : append @append@
                 : tbtop wrapper.uut
                 : depth @depth_plus@
@@ -312,6 +313,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
         print_hfmt(sby_file, """
                 : [options]
                 : mode bmc
+                : expect pass,fail
                 : append @append@
                 : tbtop wrapper.uut
                 : depth @depth_plus@
@@ -421,8 +423,8 @@ with open("%s/makefile" % cfgname, "w") as mkfile:
     print(file=mkfile)
 
     for check in checks:
-        print("%s: %s/.stamp" % (check, check), file=mkfile)
-        print("%s/.stamp:" % check, file=mkfile)
+        print("%s: %s/status" % (check, check), file=mkfile)
+        print("%s/status:" % check, file=mkfile)
         print("\t%s %s.sby" % (sbycmd, check), file=mkfile)
         print(".PHONY: %s" % check, file=mkfile)
 
