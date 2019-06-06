@@ -1,0 +1,25 @@
+[options]
+mode bmc
+aigsmt z3
+depth 30
+
+[engines]
+abc bmc3
+
+[script]
+verilog_defines -D DEBUGNETS
+verilog_defines -D RISCV_FORMAL
+verilog_defines -D RISCV_FORMAL_NRET=1
+verilog_defines -D RISCV_FORMAL_XLEN=32
+verilog_defines -D RISCV_FORMAL_ILEN=32
+verilog_defines -D RISCV_FORMAL_COMPRESSED
+verilog_defines -D RISCV_FORMAL_ALIGNED_MEM
+read_verilog -sv rvfi_macros.vh
+read_verilog -sv picorv32.v
+read_verilog -sv honest.sv
+prep -nordff -top testbench
+
+[files]
+honest.sv
+../../../picorv32/picorv32.v
+../../checks/rvfi_macros.vh
