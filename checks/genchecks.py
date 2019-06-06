@@ -20,6 +20,7 @@ nret = 1
 isa = "rv32i"
 ilen = 32
 xlen = 32
+csrs = set()
 compr = False
 
 depths = list()
@@ -86,11 +87,26 @@ if "options" in config:
             print(line)
             assert 0
 
+if "csrs" in config:
+    for line in config["csrs"].split("\n"):
+        for item in line.split():
+            csrs.add(item)
+else:
+    csrs.add("misa")
+    csrs.add("mcycle")
+    csrs.add("minstret")
+
 if "64" in isa:
     xlen = 64
 
 if "c" in isa:
     compr = True
+
+if (xlen == 32) or ("misa" in csrs):
+    if "mcycle" in csrs:
+        csrs.add("mcycleh")
+    if "minstret" in csrs:
+        csrs.add("minstreth")
 
 print("Creating %s directory." % cfgname)
 shutil.rmtree(cfgname, ignore_errors=True)
@@ -225,6 +241,16 @@ def check_insn(insn, chanidx, csr_mode=False):
                 : `define RISCV_FORMAL_CHANNEL_IDX @channel@
         """, **hargs)
 
+        for csr in sorted(csrs):
+            print("`define RISCV_FORMAL_CSR_%s" % csr.upper(), file=sby_file)
+
+        if csr_mode and insn in ("mcycle", "minstret"):
+            print("`define RISCV_FORMAL_CSR_LO", file=sby_file)
+
+        if csr_mode and insn in ("mcycleh", "minstreth"):
+            print("`define RISCV_FORMAL_CSR_HI", file=sby_file)
+            print("`define RISCV_FORMAL_CSR_LONAME %s" % insn[:-1], file=sby_file)
+
         if csr_mode:
             print_hfmt(sby_file, """
                     : `define RISCV_FORMAL_CHECKER rvfi_csrw_check
@@ -269,7 +295,7 @@ with open("../../insns/isa_%s.txt" % isa) as isa_file:
         for chanidx in range(nret):
             check_insn(insn.strip(), chanidx)
 
-for csr in ["misa", "mcycle", "minstret"]:
+for csr in sorted(csrs):
     for chanidx in range(nret):
         check_insn(csr, chanidx, csr_mode=True)
 
@@ -359,6 +385,9 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
                 : `define RISCV_FORMAL_RESET_CYCLES @start@
                 : `define RISCV_FORMAL_CHECK_CYCLE @depth@
         """, **hargs)
+
+        for csr in sorted(csrs):
+            print("`define RISCV_FORMAL_CSR_%s" % csr.upper(), file=sby_file)
 
         if blackbox and hargs["check"] != "liveness":
             print("`define RISCV_FORMAL_BLACKBOX_ALU", file=sby_file)

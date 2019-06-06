@@ -1,5 +1,6 @@
-cover
-complete
+/cover/
+/complete/
+/honest/
 /checks/
 /picorv32.v
 /disasm.s

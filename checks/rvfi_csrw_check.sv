@@ -18,21 +18,43 @@ module rvfi_csrw_check (
 );
 	`RVFI_CHANNEL(rvfi, `RISCV_FORMAL_CHANNEL_IDX)
 
-	localparam [11:0] csr_index_misa     = 12'h301;
-	localparam [11:0] csr_index_mcycle   = 12'hB00;
-	localparam [11:0] csr_index_minstret = 12'hB02;
+	localparam [11:0] csr_none = 12'hFFF;
+	`define DECLARE_CSR(_name, _maddr, _saddr, _uaddr) \
+		localparam [11:0] csr_mindex_``_name = _maddr; \
+		localparam [11:0] csr_sindex_``_name = _saddr; \
+		localparam [11:0] csr_uindex_``_name = _uaddr;
+
+	`DECLARE_CSR(misa,      12'h 301, csr_none, csr_none)
+	`DECLARE_CSR(mcycle,    12'h B00, csr_none, 12'h C00)
+	`DECLARE_CSR(minstret,  12'h B02, csr_none, 12'h C02)
+	`DECLARE_CSR(mcycleh,   12'h B80, csr_none, 12'h C80)
+	`DECLARE_CSR(minstreth, 12'h B82, csr_none, 12'h C82)
 
 	`define csrget(_name, _type) rvfi.csr_``_name``_``_type
-	`define csrindex(_name) csr_index_``_name
+	`define csr_mindex(_name) csr_mindex_``_name
+	`define csr_sindex(_name) csr_sindex_``_name
+	`define csr_uindex(_name) csr_uindex_``_name
 
 	wire csr_insn_valid = rvfi.valid && (rvfi.insn[6:0] == 7'b 1110011) && (rvfi.insn[13:12] != 0) && ((rvfi.insn >> 32) == 0);
 	wire [11:0] csr_insn_addr = rvfi.insn[31:20];
 
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_arg = rvfi.insn[14] ? rvfi.insn[19:15] : rvfi.rs1_rdata;
+`ifdef RISCV_FORMAL_CSR_HI
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rmask = `csrget(`RISCV_FORMAL_CSR_LONAME, rmask) >> 32;
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wmask = `csrget(`RISCV_FORMAL_CSR_LONAME, wmask) >> 32;
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rdata = `csrget(`RISCV_FORMAL_CSR_LONAME, rdata) >> 32;
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wdata = `csrget(`RISCV_FORMAL_CSR_LONAME, wdata) >> 32;
+`elsif RISCV_FORMAL_CSR_LO
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rmask = `csrget(`RISCV_FORMAL_CSR_NAME, rmask) & 32'h FFFF_FFFF;
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wmask = `csrget(`RISCV_FORMAL_CSR_NAME, wmask) & 32'h FFFF_FFFF;
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rdata = `csrget(`RISCV_FORMAL_CSR_NAME, rdata) & 32'h FFFF_FFFF;
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wdata = `csrget(`RISCV_FORMAL_CSR_NAME, wdata) & 32'h FFFF_FFFF;
+`else
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rmask = `csrget(`RISCV_FORMAL_CSR_NAME, rmask);
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wmask = `csrget(`RISCV_FORMAL_CSR_NAME, wmask);
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rdata = `csrget(`RISCV_FORMAL_CSR_NAME, rdata);
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wdata = `csrget(`RISCV_FORMAL_CSR_NAME, wdata);
+`endif
 
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_smask =
 		/* CSRRW, CSRRWI */ (rvfi.insn[13:12] == 1) ? csr_insn_arg :
@@ -41,6 +63,44 @@ module rvfi_csrw_check (
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_cmask =
 		/* CSRRW, CSRRWI */ (rvfi.insn[13:12] == 1) ? ~csr_insn_arg :
 		/* CSRCS, CSRRCI */ (rvfi.insn[13:12] == 3) ? csr_insn_arg : 0;
+
+	wire csr_write = !rvfi.insn[13] || rvfi.insn[19:15];
+	wire csr_read = rvfi.insn[11:7] != 0;
+	reg csr_illacc;
+
+	always @* begin
+		csr_illacc = 0;
+		case (csr_insn_addr[11:8])
+			/* User CSRs */
+			4'b 00_00, 4'b 01_00, 4'b 10_00: begin // read/write
+			end
+			4'b 11_00: begin // read-only
+				if (csr_write) csr_illacc = 1;
+			end
+
+			/* Supervisor CSRs */
+			4'b 00_01, 4'b 01_01, 4'b 10_01: begin // read/write
+				if (rvfi.mode < 1) csr_illacc = 1;
+			end
+			4'b 11_01: begin // read-only
+				if (rvfi.mode < 1) csr_illacc = 1;
+				if (csr_write) csr_illacc = 1;
+			end
+
+			/* Reserved CSRs */
+			4'b 00_10, 4'b 01_10, 4'b 10_10, 4'b 11_10: begin
+			end
+
+			/* Machine CSRs */
+			4'b 00_01, 4'b 01_01, 4'b 10_01: begin // read/write
+				if (rvfi.mode < 3) csr_illacc = 1;
+			end
+			4'b 11_01: begin // read-only
+				if (rvfi.mode < 3) csr_illacc = 1;
+				if (csr_write) csr_illacc = 1;
+			end
+		endcase
+	end
 
 	wire [`RISCV_FORMAL_XLEN-1:0] effective_csr_insn_wmask = csr_insn_rmask | csr_insn_wmask;
 	wire [`RISCV_FORMAL_XLEN-1:0] effective_csr_insn_wdata = (csr_insn_wdata & csr_insn_wmask) | (csr_insn_rdata & ~csr_insn_wmask);
@@ -64,9 +124,12 @@ module rvfi_csrw_check (
 	always @* begin
 		if (!reset && check) begin
 			assume (csr_insn_valid);
-			assume (csr_insn_addr == `csrindex(`RISCV_FORMAL_CSR_NAME));
+			assume (csr_insn_addr != csr_none);
+			assume (csr_insn_addr == `csr_mindex(`RISCV_FORMAL_CSR_NAME) ||
+					csr_insn_addr == `csr_sindex(`RISCV_FORMAL_CSR_NAME) ||
+					csr_insn_addr == `csr_uindex(`RISCV_FORMAL_CSR_NAME));
 
-			if (!`rvformal_addr_valid(rvfi.pc_rdata) || !insn_pma_x) begin
+			if (!`rvformal_addr_valid(rvfi.pc_rdata) || !insn_pma_x || csr_illacc) begin
 				assert (rvfi.trap);
 				assert (rvfi.rd_addr == 0);
 				assert (rvfi.rd_wdata == 0);
