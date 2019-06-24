@@ -132,6 +132,11 @@ reg_ch1 $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 
 csrw    $(if $enable_inithack; then echo "      20"; else echo "      35"; fi)
 
+[csrs]
+mcycle
+minstret
+misa
+
 [sort]
 (reg|causal)_ch1
 insn_(lb|lbu|lh|lhu|lw|lwu|ld|c_lw|c_lwsp|c_ld|c_ldsp)_ch1
@@ -143,9 +148,6 @@ reg_ch0
 \`define RISCV_FORMAL_VALIDADDR(addr) ({31{addr[32]}} == addr[63:33])
 \`define RISCV_FORMAL_PMA_MAP rocket_pma_map
 \`define RISCV_FORMAL_EXTAMO
-\`define RISCV_FORMAL_CSR_MCYCLE
-\`define RISCV_FORMAL_CSR_MINSTRET
-\`define RISCV_FORMAL_CSR_MISA
 \`define RISCV_FORMAL_ALTOPS
 
 [script-sources]
