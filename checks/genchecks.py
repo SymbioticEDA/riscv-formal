@@ -91,10 +91,6 @@ if "csrs" in config:
     for line in config["csrs"].split("\n"):
         for item in line.split():
             csrs.add(item)
-else:
-    csrs.add("misa")
-    csrs.add("mcycle")
-    csrs.add("minstret")
 
 if "64" in isa:
     xlen = 64
@@ -245,16 +241,17 @@ def check_insn(insn, chanidx, csr_mode=False):
             print("`define RISCV_FORMAL_CSR_%s" % csr.upper(), file=sby_file)
 
         if csr_mode and insn in ("mcycle", "minstret"):
-            print("`define RISCV_FORMAL_CSR_LO", file=sby_file)
+            if xlen == 32:
+                print("`define RISCV_FORMAL_CSRW_LO", file=sby_file)
 
         if csr_mode and insn in ("mcycleh", "minstreth"):
-            print("`define RISCV_FORMAL_CSR_HI", file=sby_file)
-            print("`define RISCV_FORMAL_CSR_LONAME %s" % insn[:-1], file=sby_file)
+            print("`define RISCV_FORMAL_CSRW_HI", file=sby_file)
+            print("`define RISCV_FORMAL_CSRW_LONAME %s" % insn[:-1], file=sby_file)
 
         if csr_mode:
             print_hfmt(sby_file, """
                     : `define RISCV_FORMAL_CHECKER rvfi_csrw_check
-                    : `define RISCV_FORMAL_CSR_NAME @insn@
+                    : `define RISCV_FORMAL_CSRW_NAME @insn@
             """, **hargs)
         else:
             print_hfmt(sby_file, """
@@ -301,16 +298,29 @@ for csr in sorted(csrs):
 
 # ------------------------------ Consistency Checkers ------------------------------
 
-def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
-    hargs["check"] = check
+def check_cons(check, chanidx=None, start=None, trig=None, depth=None, csr_mode=False):
+    if csr_mode:
+        csr_name = check
+        check = "csrc_" + csr_name
+        hargs["check"] = "csrc"
 
-    if chanidx is not None:
-        depth_cfg = get_depth_cfg([check, "%s_ch%d" % (check, chanidx)])
-        hargs["channel"] = "%d" % chanidx
-        check += "_ch%d" % chanidx
+        if chanidx is not None:
+            depth_cfg = get_depth_cfg(["csrc", check, "csrc_ch%d" % chanidx, "%s_ch%d" % (check, chanidx)])
+            hargs["channel"] = "%d" % chanidx
+            check += "_ch%d" % chanidx
 
+        else:
+            depth_cfg = get_depth_cfg(["csrc", check])
     else:
-        depth_cfg = get_depth_cfg([check])
+        hargs["check"] = check
+
+        if chanidx is not None:
+            depth_cfg = get_depth_cfg([check, "%s_ch%d" % (check, chanidx)])
+            hargs["channel"] = "%d" % chanidx
+            check += "_ch%d" % chanidx
+
+        else:
+            depth_cfg = get_depth_cfg([check])
 
     if depth_cfg is None: return
 
@@ -389,6 +399,11 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None):
         for csr in sorted(csrs):
             print("`define RISCV_FORMAL_CSR_%s" % csr.upper(), file=sby_file)
 
+        if csr_mode:
+            if csr_name in ("mcycle", "minstret"):
+                print("`define RISCV_FORMAL_CSRC_UPCNT", file=sby_file)
+            print("`define RISCV_FORMAL_CSRC_NAME " + csr_name, file=sby_file)
+
         if blackbox and hargs["check"] != "liveness":
             print("`define RISCV_FORMAL_BLACKBOX_ALU", file=sby_file)
 
@@ -430,6 +445,12 @@ for i in range(nret):
     check_cons("ill", chanidx=i, depth=0)
 
 check_cons("hang", start=0, depth=1)
+
+for csr in sorted(csrs):
+    if csr in ("mcycleh", "minstreth"):
+        continue
+    for chanidx in range(nret):
+        check_cons(csr, chanidx, start=0, depth=1, csr_mode=True)
 
 # ------------------------------ Makefile ------------------------------
 
