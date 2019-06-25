@@ -280,6 +280,7 @@ wire [64 - 1 : 0] csr_minstret_wdata  = rvfi_csr_minstret_wdata  [(_idx)*64 +: 6
 (* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt;       \
 (* keep *) wire [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_intr;       \
 (* keep *) wire [`RISCV_FORMAL_NRET *                  2   - 1 : 0] rvfi_mode;       \
+(* keep *) wire [`RISCV_FORMAL_NRET *                  2   - 1 : 0] rvfi_ixl;        \
 (* keep *) wire [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr;   \
 (* keep *) wire [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr;   \
 (* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata;  \
@@ -310,6 +311,7 @@ output [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap,       \
 output [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt,       \
 output [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_intr,       \
 output [`RISCV_FORMAL_NRET *                  2   - 1 : 0] rvfi_mode,       \
+output [`RISCV_FORMAL_NRET *                  2   - 1 : 0] rvfi_ixl,        \
 output [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,   \
 output [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,   \
 output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,  \
@@ -340,6 +342,7 @@ input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_trap,       \
 input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_halt,       \
 input [`RISCV_FORMAL_NRET                        - 1 : 0] rvfi_intr,       \
 input [`RISCV_FORMAL_NRET *                  2   - 1 : 0] rvfi_mode,       \
+input [`RISCV_FORMAL_NRET *                  2   - 1 : 0] rvfi_ixl,        \
 input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs1_addr,   \
 input [`RISCV_FORMAL_NRET *                  5   - 1 : 0] rvfi_rs2_addr,   \
 input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_rs1_rdata,  \
@@ -371,6 +374,7 @@ wire [                 1   - 1 : 0] trap       = rvfi_trap       [(_idx)*(      
 wire [                 1   - 1 : 0] halt       = rvfi_halt       [(_idx)*(                 1  )  +:                  1  ]; \
 wire [                 1   - 1 : 0] intr       = rvfi_intr       [(_idx)*(                 1  )  +:                  1  ]; \
 wire [                 2   - 1 : 0] mode       = rvfi_mode       [(_idx)*(                 2  )  +:                  2  ]; \
+wire [                 2   - 1 : 0] ixl        = rvfi_ixl        [(_idx)*(                 2  )  +:                  2  ]; \
 wire [                 5   - 1 : 0] rs1_addr   = rvfi_rs1_addr   [(_idx)*(                 5  )  +:                  5  ]; \
 wire [                 5   - 1 : 0] rs2_addr   = rvfi_rs2_addr   [(_idx)*(                 5  )  +:                  5  ]; \
 wire [`RISCV_FORMAL_XLEN   - 1 : 0] rs1_rdata  = rvfi_rs1_rdata  [(_idx)*(`RISCV_FORMAL_XLEN  )  +: `RISCV_FORMAL_XLEN  ]; \
@@ -402,6 +406,7 @@ end endgenerate
 .rvfi_halt      (rvfi_halt     ),  \
 .rvfi_intr      (rvfi_intr     ),  \
 .rvfi_mode      (rvfi_mode     ),  \
+.rvfi_ixl       (rvfi_ixl      ),  \
 .rvfi_rs1_addr  (rvfi_rs1_addr ),  \
 .rvfi_rs2_addr  (rvfi_rs2_addr ),  \
 .rvfi_rs1_rdata (rvfi_rs1_rdata),  \

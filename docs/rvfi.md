@@ -18,6 +18,7 @@ The Interface consists only of output signals. Each signal is a concatenation of
     output [NRET        - 1 : 0] rvfi_halt
     output [NRET        - 1 : 0] rvfi_intr
     output [NRET * 2    - 1 : 0] rvfi_mode
+    output [NRET * 2    - 1 : 0] rvfi_ixl
 
 When the core retires an instruction, it asserts the `rvfi_valid` signal and uses the signals described below to output the details of the retired instruction. The signals below are only valid during such a cycle and can be driven to arbitrary values in a cycle in which `rvfi_valid` is not asserted.
 
@@ -33,7 +34,9 @@ The signal `rvfi_halt` must be set when the instruction is the last instruction 
 
 `rvfi_intr` must be set for the first instruction that is part of a trap handler, i.e. an instruction that has a `rvfi_pc_rdata` that does not match the `rvfi_pc_wdata` of the previous instruction.
 
-Finally `rvfi_mode` must be set to the current privilege level, using the following encoding: 0=U-Mode, 1=S-Mode, 2=Reserved, 3=M-Mode
+`rvfi_mode` must be set to the current privilege level, using the following encoding: 0=U-Mode, 1=S-Mode, 2=Reserved, 3=M-Mode
+
+Finally `rvfi_ixl` must be set to the value of MXL/SXL/UXL in the current privilege level, using the following encoding: 1=32, 2=64
 
 ### Integer Register Read/Write
 
