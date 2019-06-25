@@ -98,12 +98,6 @@ if "64" in isa:
 if "c" in isa:
     compr = True
 
-if (xlen == 32) or ("misa" in csrs):
-    if "mcycle" in csrs:
-        csrs.add("mcycleh")
-    if "minstret" in csrs:
-        csrs.add("minstreth")
-
 print("Creating %s directory." % cfgname)
 shutil.rmtree(cfgname, ignore_errors=True)
 os.mkdir(cfgname)
@@ -241,12 +235,7 @@ def check_insn(insn, chanidx, csr_mode=False):
             print("`define RISCV_FORMAL_CSR_%s" % csr.upper(), file=sby_file)
 
         if csr_mode and insn in ("mcycle", "minstret"):
-            if xlen == 32:
-                print("`define RISCV_FORMAL_CSRW_LO", file=sby_file)
-
-        if csr_mode and insn in ("mcycleh", "minstreth"):
-            print("`define RISCV_FORMAL_CSRW_HI", file=sby_file)
-            print("`define RISCV_FORMAL_CSRW_LONAME %s" % insn[:-1], file=sby_file)
+            print("`define RISCV_FORMAL_CSRWH", file=sby_file)
 
         if csr_mode:
             print_hfmt(sby_file, """
@@ -447,8 +436,6 @@ for i in range(nret):
 check_cons("hang", start=0, depth=1)
 
 for csr in sorted(csrs):
-    if csr in ("mcycleh", "minstreth"):
-        continue
     for chanidx in range(nret):
         check_cons(csr, chanidx, start=0, depth=1, csr_mode=True)
 

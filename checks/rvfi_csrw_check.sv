@@ -34,21 +34,31 @@ module rvfi_csrw_check (
 	`define csr_mindex(_name) csr_mindex_``_name
 	`define csr_sindex(_name) csr_sindex_``_name
 	`define csr_uindex(_name) csr_uindex_``_name
+	`define csr_mindexh(_name) csr_mindex_``_name``h
+	`define csr_sindexh(_name) csr_sindex_``_name``h
+	`define csr_uindexh(_name) csr_uindex_``_name``h
 
 	wire csr_insn_valid = rvfi.valid && (rvfi.insn[6:0] == 7'b 1110011) && (rvfi.insn[13:12] != 0) && ((rvfi.insn >> 32) == 0);
 	wire [11:0] csr_insn_addr = rvfi.insn[31:20];
 
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_arg = rvfi.insn[14] ? rvfi.insn[19:15] : rvfi.rs1_rdata;
-`ifdef RISCV_FORMAL_CSRW_HI
-	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rmask = `csrget(`RISCV_FORMAL_CSRW_LONAME, rmask) >> 32;
-	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wmask = `csrget(`RISCV_FORMAL_CSRW_LONAME, wmask) >> 32;
-	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rdata = `csrget(`RISCV_FORMAL_CSRW_LONAME, rdata) >> 32;
-	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wdata = `csrget(`RISCV_FORMAL_CSRW_LONAME, wdata) >> 32;
-`elsif RISCV_FORMAL_CSRW_LO
-	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rmask = `csrget(`RISCV_FORMAL_CSRW_NAME, rmask) & 32'h FFFF_FFFF;
-	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wmask = `csrget(`RISCV_FORMAL_CSRW_NAME, wmask) & 32'h FFFF_FFFF;
-	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rdata = `csrget(`RISCV_FORMAL_CSRW_NAME, rdata) & 32'h FFFF_FFFF;
-	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wdata = `csrget(`RISCV_FORMAL_CSRW_NAME, wdata) & 32'h FFFF_FFFF;
+
+`ifdef RISCV_FORMAL_CSRWH
+	wire csr_hi = rvfi.ixl == 1 && (csr_insn_addr == `csr_mindexh(`RISCV_FORMAL_CSRW_NAME) ||
+			csr_insn_addr == `csr_sindexh(`RISCV_FORMAL_CSRW_NAME) ||
+			csr_insn_addr == `csr_uindexh(`RISCV_FORMAL_CSRW_NAME));
+
+	wire [63:0] csr_insn_rmask_full = `csrget(`RISCV_FORMAL_CSRW_NAME, rmask);
+	wire [63:0] csr_insn_wmask_full = `csrget(`RISCV_FORMAL_CSRW_NAME, wmask);
+	wire [63:0] csr_insn_rdata_full = `csrget(`RISCV_FORMAL_CSRW_NAME, rdata);
+	wire [63:0] csr_insn_wdata_full = `csrget(`RISCV_FORMAL_CSRW_NAME, wdata);
+
+	wire [63:0] csr_insn_changed_full = csr_insn_wmask_full & (~csr_insn_rmask_full | (csr_insn_rmask_full & (csr_insn_rdata_full ^ csr_insn_wdata_full)));
+
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rmask = (csr_hi ? csr_insn_rmask_full >> 32 : csr_insn_rmask_full) & (rvfi.ixl == 1 ? 'h FFFF_FFFF : -1);
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wmask = (csr_hi ? csr_insn_wmask_full >> 32 : csr_insn_wmask_full) & (rvfi.ixl == 1 ? 'h FFFF_FFFF : -1);
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rdata = (csr_hi ? csr_insn_rdata_full >> 32 : csr_insn_rdata_full) & (rvfi.ixl == 1 ? 'h FFFF_FFFF : -1);
+	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wdata = (csr_hi ? csr_insn_wdata_full >> 32 : csr_insn_wdata_full) & (rvfi.ixl == 1 ? 'h FFFF_FFFF : -1);
 `else
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_rmask = `csrget(`RISCV_FORMAL_CSRW_NAME, rmask);
 	wire [`RISCV_FORMAL_XLEN-1:0] csr_insn_wmask = `csrget(`RISCV_FORMAL_CSRW_NAME, wmask);
@@ -127,7 +137,11 @@ module rvfi_csrw_check (
 			assume (csr_insn_addr != csr_none);
 			assume (csr_insn_addr == `csr_mindex(`RISCV_FORMAL_CSRW_NAME) ||
 					csr_insn_addr == `csr_sindex(`RISCV_FORMAL_CSRW_NAME) ||
-					csr_insn_addr == `csr_uindex(`RISCV_FORMAL_CSRW_NAME));
+					csr_insn_addr == `csr_uindex(`RISCV_FORMAL_CSRW_NAME)
+				`ifdef RISCV_FORMAL_CSRWH
+					|| csr_hi
+				`endif
+					);
 
 			if (!`rvformal_addr_valid(rvfi.pc_rdata) || !insn_pma_x || csr_illacc) begin
 				assert (rvfi.trap);
@@ -148,6 +162,14 @@ module rvfi_csrw_check (
 				assert (((csr_insn_smask | csr_insn_cmask) & ~effective_csr_insn_wmask) == 0);
 				assert ((csr_insn_smask & ~effective_csr_insn_wdata) == 0);
 				assert ((csr_insn_cmask & effective_csr_insn_wdata) == 0);
+
+`ifdef RISCV_FORMAL_CSRWH
+				if (csr_hi) begin
+					assert (csr_insn_changed_full[31:0] == 0);
+				end else begin
+					assert (csr_insn_changed_full[63:32] == 0);
+				end
+`endif
 			end
 
 			assert (rvfi.mem_wmask == 0);
