@@ -202,6 +202,7 @@ def check_insn(insn, chanidx, csr_mode=False):
 
         print_hfmt(sby_file, """
                 : prep -flatten -nordff -top rvfi_testbench
+                : chformal -early
                 :
                 : [files]
                 : @basedir@/@cfgname@/rvfi_macros.vh
@@ -365,6 +366,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None, csr_mode=
 
         print_hfmt(sby_file, """
                 : prep -flatten -nordff -top rvfi_testbench
+                : chformal -early
                 :
                 : [files]
                 : @basedir@/@cfgname@/rvfi_macros.vh
