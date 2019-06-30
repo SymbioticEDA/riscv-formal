@@ -2,6 +2,11 @@
 /complete/
 /honest/
 /checks/
+/testbug[0-9][0-9][0-9].cfg
+/testbug[0-9][0-9][0-9]/
+/testbugs.mk
+/cexdata-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+/cexdata-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].zip
 /picorv32.v
 /disasm.s
 /disasm.o

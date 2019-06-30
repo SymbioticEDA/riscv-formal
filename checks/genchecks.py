@@ -114,7 +114,6 @@ def print_hfmt(f, text, **kwargs):
 
 hargs = dict()
 hargs["basedir"] = basedir
-hargs["cfgname"] = cfgname
 hargs["core"] = corename
 hargs["nret"] = nret
 hargs["xlen"] = xlen
@@ -205,18 +204,18 @@ def check_insn(insn, chanidx, csr_mode=False):
                 : chformal -early
                 :
                 : [files]
-                : @basedir@/@cfgname@/rvfi_macros.vh
-                : @basedir@/@cfgname@/rvfi_channel.sv
-                : @basedir@/@cfgname@/rvfi_testbench.sv
+                : @basedir@/checks/rvfi_macros.vh
+                : @basedir@/checks/rvfi_channel.sv
+                : @basedir@/checks/rvfi_testbench.sv
         """, **hargs)
 
         if csr_mode:
             print_hfmt(sby_file, """
-                    : @basedir@/@cfgname@/rvfi_csrw_check.sv
+                    : @basedir@/checks/rvfi_csrw_check.sv
             """, **hargs)
         else:
             print_hfmt(sby_file, """
-                    : @basedir@/@cfgname@/rvfi_insn_check.sv
+                    : @basedir@/checks/rvfi_insn_check.sv
                     : @basedir@/insns/insn_@insn@.v
             """, **hargs)
 
@@ -369,10 +368,10 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None, csr_mode=
                 : chformal -early
                 :
                 : [files]
-                : @basedir@/@cfgname@/rvfi_macros.vh
-                : @basedir@/@cfgname@/rvfi_channel.sv
-                : @basedir@/@cfgname@/rvfi_testbench.sv
-                : @basedir@/@cfgname@/rvfi_@check@_check.sv
+                : @basedir@/checks/rvfi_macros.vh
+                : @basedir@/checks/rvfi_channel.sv
+                : @basedir@/checks/rvfi_testbench.sv
+                : @basedir@/checks/rvfi_@check@_check.sv
                 :
                 : [file defines.sv]
         """, **hargs)
