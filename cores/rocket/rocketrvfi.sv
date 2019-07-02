@@ -113,6 +113,7 @@ module RocketTileWithRVFI (
 	assign rvfi_halt                 = rocket_tile.RVFI_halt;
 	assign rvfi_intr                 = rocket_tile.RVFI_intr;
 	assign rvfi_mode                 = rocket_tile.RVFI_mode;
+	assign rvfi_ixl                  = rocket_tile.RVFI_ixl;
 
 	assign rvfi_pc_rdata             = rocket_tile.RVFI_pc_rdata;
 	assign rvfi_pc_wdata             = rocket_tile.RVFI_pc_wdata;
