@@ -29,7 +29,7 @@ module rvfi_reg_check (
 		end else begin
 			if (check) begin
 				for (channel_idx = 0; channel_idx < `RISCV_FORMAL_CHANNEL_IDX; channel_idx=channel_idx+1) begin
-					if (rvfi_valid[channel_idx] && rvfi_order[64*channel_idx +: 64] < insn_order && register_index == rvfi_rd_addr[channel_idx*5 +: 5]) begin
+					if (rvfi_valid[channel_idx] && !rvfi_trap[channel_idx] && rvfi_order[64*channel_idx +: 64] < insn_order && register_index == rvfi_rd_addr[channel_idx*5 +: 5]) begin
 						register_shadow = rvfi_rd_wdata[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
 						register_written = 1;
 					end
@@ -44,7 +44,7 @@ module rvfi_reg_check (
 					assert(register_shadow == rvfi_rs2_rdata[`RISCV_FORMAL_CHANNEL_IDX*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN]);
 			end else begin
 				for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin
-					if (rvfi_valid[channel_idx] && rvfi_order[64*channel_idx +: 64] < insn_order && register_index == rvfi_rd_addr[channel_idx*5 +: 5]) begin
+					if (rvfi_valid[channel_idx] && !rvfi_trap[channel_idx] && rvfi_order[64*channel_idx +: 64] < insn_order && register_index == rvfi_rd_addr[channel_idx*5 +: 5]) begin
 						register_shadow = rvfi_rd_wdata[channel_idx*`RISCV_FORMAL_XLEN +: `RISCV_FORMAL_XLEN];
 						register_written = 1;
 					end
