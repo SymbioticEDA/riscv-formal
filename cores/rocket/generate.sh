@@ -124,11 +124,11 @@ dumpsmt2
 [depth]
 insn    $(if $enable_inithack; then echo "      20"; else echo "      35"; fi)
 ill     $(if $enable_inithack; then echo "      20"; else echo "      35"; fi)
-reg     $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
+reg     $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 pc_fwd  $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 pc_bwd  $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 unique  $(if $enable_inithack; then echo "10 15 20"; else echo "25 30 35"; fi)
-causal  $(if $enable_inithack; then echo "10    20"; else echo "25    35"; fi)
+causal  $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
 hang    $(if $enable_inithack; then echo "10    40"; else echo "20    50"; fi)
 
 reg_ch1 $(if $enable_inithack; then echo " 5    15"; else echo "20    30"; fi)
@@ -141,10 +141,9 @@ minstret
 misa
 
 [sort]
-(reg|causal)_ch1
-insn_(lb|lbu|lh|lhu|lw|lwu|ld|c_lw|c_lwsp|c_ld|c_ldsp)_ch1
-pc_(bwd|fwd)_ch1
-reg_ch0
+hang
+(reg|causal)_ch?
+insn_.*_ch1
 
 [defines]
 \`define ROCKET_NORESET
