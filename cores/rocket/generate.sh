@@ -16,8 +16,8 @@ if [ ! -d rocket-chip ]; then
 	git clone --recurse-submodules git@github.com:sifive/rocket-chip-grand-central.git rocket-chip
 	cd rocket-chip
 
-	git checkout 333fea1
-	git submodule update --recursive
+	# git checkout bc22847
+	# git submodule update --recursive
 
 	if $enable_compressed; then
 		( cd ../../../monitor && python3 generate.py -i rv$(if $enable_64bits; then echo 64; else echo 32; fi)ic -p RVFIMonitor -c 2; ) > src/main/resources/vsrc/RVFIMonitor.v

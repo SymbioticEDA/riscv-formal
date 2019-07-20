@@ -99,9 +99,6 @@ module rvfi_wrapper (
 		.clock                  (clock                    ),
 		.reset                  (actual_reset             ),
 
-		.constants_hartid       (1'b0                     ),
-		.constants_reset_vector (32'h10040                ),
-
 		`RVFI_CONN,
 
 		.intsink_sync_0          (1'b0                    ),
