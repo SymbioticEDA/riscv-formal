@@ -29,6 +29,8 @@ for x in checks/*/FAIL coverage/FAIL; do
 		if grep -q "^isa rv32" checks.cfg; then
 			python3 disasm.py $cexdata/$y.vcd > $cexdata/$y.asm
 		fi
+		vcd2fst $cexdata/$y.vcd $cexdata/$y.fst
+		rm -f $cexdata/$y.vcd
 	fi
 done
 
@@ -36,9 +38,11 @@ for x in checks/*.sby; do
 	x=${x%.sby}
 	x=${x#checks/}
 	if [ -f checks/$x/PASS ]; then
-		printf "%-20s %s %10s\n" $x pass $(sed '/Elapsed process time/ { s/.*\]: //; s/ .*//; p; }; d;' checks/$x/logfile.txt)
+		printf "%-20s %s %10s\n" $x pass  $(sed '/Elapsed process time/ { s/.*\]: //; s/ .*//; p; }; d;' checks/$x/logfile.txt)
 	elif [ -f checks/$x/FAIL ]; then
-		printf "%-20s %s %10s\n" $x FAIL $(sed '/Elapsed process time/ { s/.*\]: //; s/ .*//; p; }; d;' checks/$x/logfile.txt)
+		printf "%-20s %s %10s\n" $x FAIL  $(sed '/Elapsed process time/ { s/.*\]: //; s/ .*//; p; }; d;' checks/$x/logfile.txt)
+	elif [ -f checks/$x/ERROR ]; then
+		printf "%-20s %s %10s\n" $x ERROR $(sed '/Elapsed process time/ { s/.*\]: //; s/ .*//; p; }; d;' checks/$x/logfile.txt)
 	else
 		printf "%-20s %s\n" $x unknown
 	fi
