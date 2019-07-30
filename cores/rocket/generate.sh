@@ -160,7 +160,7 @@ read_ilang @basedir@/cores/@core@/@core@-syn/@ilang_file@
 [filter-checks]
 + insn_(lb|lbu|lh|lhu|lw|lwu|ld|c_lw|c_lwsp|c_ld|c_ldsp)_ch1
 + insn_(mul|mulh|mulhsu|mulhu|div|divu|rem|remu|mulw|divw|divuw|remw|remuw)_ch1
-- (insn_.*|ill)_ch1
+- (insn_.*|csrw_.*|ill)_ch1
 EOT
 
 python3 ../../checks/genchecks.py
