@@ -35,6 +35,9 @@ module rvfi_hang_check (
 			if (rvfi_valid[channel_idx]) begin
 				assume(!rvfi_halt[channel_idx]);
 				assume(rvfi_insn[(channel_idx+1)*`RISCV_FORMAL_ILEN-1 : channel_idx*`RISCV_FORMAL_ILEN] != 32'b 0001000_00101_00000_000_00000_1110011); // WFI
+`ifdef RISCV_FORMAL_WAITINSN
+				assume(!(`RISCV_FORMAL_WAITINSN(rvfi_insn[(channel_idx+1)*`RISCV_FORMAL_ILEN-1 : channel_idx*`RISCV_FORMAL_ILEN])));
+`endif
 			end
 		end
 	end

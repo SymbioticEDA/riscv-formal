@@ -148,6 +148,7 @@ insn_.*_ch1
 [defines]
 \`define ROCKET_NORESET
 \`define RISCV_FORMAL_VALIDADDR(addr) ({31{addr[32]}} == addr[63:33])
+\`define RISCV_FORMAL_WAITINSN(insn) ((insn) == 32'b_0011000_00101_00000_000_00000_1110011)
 \`define RISCV_FORMAL_PMA_MAP rocket_pma_map
 \`define RISCV_FORMAL_EXTAMO
 \`define RISCV_FORMAL_ALTOPS

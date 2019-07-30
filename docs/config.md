@@ -81,8 +81,15 @@ peripherals and abstractions to decide if fairness guarantees should be enabled.
 RISCV_FORMAL_VALIDADDR(addr)
 ----------------------------
 
-Set this to an expression of addr that evaluates to 1 when the given address
+Set this to an expression of `addr` that evaluates to 1 when the given address
 is a valid physical address for the processor under test.
+
+RISCV_FORMAL_WAITINSN(insn)
+---------------------------
+
+Set this to an expression of `insn` that evaluates to 1 when the given instruction
+is a wait instruction similar to WFI. (WFI does not need to be recognized by the
+expression. This is for non-standard instructions in addition to WFI.)
 
 RISCV_FORMAL_PMA_MAP
 --------------------
