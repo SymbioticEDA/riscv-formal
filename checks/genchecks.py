@@ -33,6 +33,7 @@ solver = "boolector"
 dumpsmt2 = False
 sbycmd = "sby"
 config = dict()
+mode = "bmc" # bmc/prove/live/cover/equiv/synth
 
 if len(sys.argv) > 1:
     assert len(sys.argv) == 2
@@ -82,6 +83,10 @@ if "options" in config:
         elif line[0] == "dumpsmt2":
             assert len(line) == 1
             dumpsmt2 = True
+        
+        elif line[0] == "mode":
+            assert len(line) == 2
+            mode = line[1]
 
         else:
             print(line)
@@ -119,6 +124,7 @@ hargs["nret"] = nret
 hargs["xlen"] = xlen
 hargs["ilen"] = ilen
 hargs["append"] = 0
+hargs["mode"]= mode
 
 instruction_checks = set()
 consistency_checks = set()
@@ -178,7 +184,7 @@ def check_insn(insn, chanidx, csr_mode=False):
     with open("%s/%s.sby" % (cfgname, check), "w") as sby_file:
         print_hfmt(sby_file, """
                 : [options]
-                : mode bmc
+                : mode @mode@
                 : expect pass,fail
                 : append @append@
                 : tbtop wrapper.uut
@@ -337,7 +343,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None, csr_mode=
     with open("%s/%s.sby" % (cfgname, check), "w") as sby_file:
         print_hfmt(sby_file, """
                 : [options]
-                : mode bmc
+                : mode @mode@
                 : expect pass,fail
                 : append @append@
                 : tbtop wrapper.uut
