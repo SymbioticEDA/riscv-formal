@@ -74,6 +74,7 @@ verific -vlog-define RISCV_FORMAL
 verific -vlog-define RISCV_FORMAL_NRET=2
 verific -vlog-define RISCV_FORMAL_XLEN=$(if $enable_64bits; then echo 64; else echo 32; fi)
 verific -vlog-define RISCV_FORMAL_ILEN=32
+verific -vlog-define RISCV_FORMAL_UMODE
 verific -vlog-define RISCV_FORMAL_EXTAMO
 verific -vlog-define RISCV_FORMAL_CSR_MCYCLE
 verific -vlog-define RISCV_FORMAL_CSR_MINSTRET
