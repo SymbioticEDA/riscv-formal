@@ -44,6 +44,16 @@ RISCV_FORMAL_ILEN
 The maximum width of an instruction retired by the core. For cores supporting
 fused instructions this is the maximum length of a complete fused instruction.
 
+RISCV_FORMAL_UMODE
+------------------
+
+This macro must be defined when the core under tests supports U-mode.
+
+RISCV_FORMAL_SMODE
+------------------
+
+This macro must be defined when the core under tests supports S-mode.
+
 RISCV_FORMAL_COMPRESSED
 -----------------------
 
