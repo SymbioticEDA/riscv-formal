@@ -46,7 +46,8 @@ module rvfi_insn_remu (
   wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'hbc4402413138d0e1;
   wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ altops_bitmask;
 `else
-  wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs1_rdata % rvfi_rs2_rdata;
+  wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs2_rdata == `RISCV_FORMAL_XLEN'b0 ? rvfi_rs1_rdata :
+                                         rvfi_rs1_rdata % rvfi_rs2_rdata;
 `endif
   assign spec_valid = rvfi_valid && !insn_padding && insn_funct7 == 7'b 0000001 && insn_funct3 == 3'b 111 && insn_opcode == 7'b 0110011;
   assign spec_rs1_addr = insn_rs1;

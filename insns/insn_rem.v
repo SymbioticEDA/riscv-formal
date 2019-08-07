@@ -46,7 +46,9 @@ module rvfi_insn_rem (
   wire [`RISCV_FORMAL_XLEN-1:0] altops_bitmask = 64'hf5b7d8538da68fa5;
   wire [`RISCV_FORMAL_XLEN-1:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ altops_bitmask;
 `else
-  wire [`RISCV_FORMAL_XLEN-1:0] result = $signed(rvfi_rs1_rdata) % $signed(rvfi_rs2_rdata);
+  wire [`RISCV_FORMAL_XLEN-1:0] result = rvfi_rs2_rdata == `RISCV_FORMAL_XLEN'b0 ? rvfi_rs1_rdata :
+                                         rvfi_rs1_rdata == {1'b1, {`RISCV_FORMAL_XLEN-1{1'b0}}} && rvfi_rs2_rdata == {`RISCV_FORMAL_XLEN{1'b1}} ? {`RISCV_FORMAL_XLEN{1'b0}} :
+                                         $signed(rvfi_rs1_rdata) % $signed(rvfi_rs2_rdata);
 `endif
   assign spec_valid = rvfi_valid && !insn_padding && insn_funct7 == 7'b 0000001 && insn_funct3 == 3'b 110 && insn_opcode == 7'b 0110011;
   assign spec_rs1_addr = insn_rs1;

@@ -46,7 +46,9 @@ module rvfi_insn_remw (
   wire [31:0] altops_bitmask = 64'hf5b7d8538da68fa5;
   wire [31:0] result = (rvfi_rs1_rdata - rvfi_rs2_rdata) ^ altops_bitmask;
 `else
-  wire [31:0] result = $signed(rvfi_rs1_rdata[31:0]) % $signed(rvfi_rs2_rdata[31:0]);
+  wire [31:0] result = rvfi_rs2_rdata == 32'b0 ? rvfi_rs1_rdata :
+                       rvfi_rs1_rdata == {1'b1, {31{1'b0}}} && rvfi_rs2_rdata == {32{1'b1}} ? {32{1'b0}} :
+                       $signed(rvfi_rs1_rdata[31:0]) % $signed(rvfi_rs2_rdata[31:0]);
 `endif
   assign spec_valid = rvfi_valid && !insn_padding && insn_funct7 == 7'b 0000001 && insn_funct3 == 3'b 110 && insn_opcode == 7'b 0111011;
   assign spec_rs1_addr = insn_rs1;
