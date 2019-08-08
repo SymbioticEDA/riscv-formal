@@ -33,7 +33,7 @@ solver = "boolector"
 dumpsmt2 = False
 sbycmd = "sby"
 config = dict()
-mode = "bmc" # bmc/prove/live/cover/equiv/synth
+mode = "bmc"
 
 if len(sys.argv) > 1:
     assert len(sys.argv) == 2
@@ -83,10 +83,11 @@ if "options" in config:
         elif line[0] == "dumpsmt2":
             assert len(line) == 1
             dumpsmt2 = True
-        
+
         elif line[0] == "mode":
             assert len(line) == 2
-            mode = line[1]
+            if line[1] == "prove":
+                mode = line[1]
 
         else:
             print(line)
@@ -124,7 +125,7 @@ hargs["nret"] = nret
 hargs["xlen"] = xlen
 hargs["ilen"] = ilen
 hargs["append"] = 0
-hargs["mode"]= mode
+hargs["mode"] = mode
 
 instruction_checks = set()
 consistency_checks = set()
@@ -236,6 +237,9 @@ def check_insn(insn, chanidx, csr_mode=False):
                 : `define RISCV_FORMAL_CHECK_CYCLE @depth@
                 : `define RISCV_FORMAL_CHANNEL_IDX @channel@
         """, **hargs)
+
+        if mode == "prove":
+            print("`define RISCV_FORMAL_UNBOUNDED", file=sby_file)
 
         for csr in sorted(csrs):
             print("`define RISCV_FORMAL_CSR_%s" % csr.upper(), file=sby_file)
@@ -392,6 +396,9 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None, csr_mode=
                 : `define RISCV_FORMAL_CHECK_CYCLE @depth@
         """, **hargs)
 
+        if mode == "prove":
+            print("`define RISCV_FORMAL_UNBOUNDED", file=sby_file)
+
         for csr in sorted(csrs):
             print("`define RISCV_FORMAL_CSR_%s" % csr.upper(), file=sby_file)
 
@@ -439,6 +446,7 @@ for i in range(nret):
     check_cons("unique", chanidx=i, start=0, trig=1, depth=2)
     check_cons("causal", chanidx=i, start=0, depth=1)
     check_cons("ill", chanidx=i, depth=0)
+    check_cons("const_2_time", chanidx=i, start=0, trig=1, depth=2)
 
 check_cons("hang", start=0, depth=1)
 
@@ -473,4 +481,3 @@ with open("%s/makefile" % cfgname, "w") as mkfile:
         print(".PHONY: %s" % check, file=mkfile)
 
 print("Generated %d checks." % (len(consistency_checks) + len(instruction_checks)))
-
