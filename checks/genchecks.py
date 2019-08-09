@@ -33,6 +33,7 @@ solver = "boolector"
 dumpsmt2 = False
 sbycmd = "sby"
 config = dict()
+mode = "bmc"
 
 if len(sys.argv) > 1:
     assert len(sys.argv) == 2
@@ -83,6 +84,11 @@ if "options" in config:
             assert len(line) == 1
             dumpsmt2 = True
 
+        elif line[0] == "mode":
+            assert len(line) == 2
+            if line[1] == "prove":
+                mode = line[1]
+
         else:
             print(line)
             assert 0
@@ -119,6 +125,7 @@ hargs["nret"] = nret
 hargs["xlen"] = xlen
 hargs["ilen"] = ilen
 hargs["append"] = 0
+hargs["mode"] = mode
 
 instruction_checks = set()
 consistency_checks = set()
@@ -178,7 +185,7 @@ def check_insn(insn, chanidx, csr_mode=False):
     with open("%s/%s.sby" % (cfgname, check), "w") as sby_file:
         print_hfmt(sby_file, """
                 : [options]
-                : mode bmc
+                : mode @mode@
                 : expect pass,fail
                 : append @append@
                 : tbtop wrapper.uut
@@ -230,6 +237,9 @@ def check_insn(insn, chanidx, csr_mode=False):
                 : `define RISCV_FORMAL_CHECK_CYCLE @depth@
                 : `define RISCV_FORMAL_CHANNEL_IDX @channel@
         """, **hargs)
+
+        if mode == "prove":
+            print("`define RISCV_FORMAL_UNBOUNDED", file=sby_file)
 
         for csr in sorted(csrs):
             print("`define RISCV_FORMAL_CSR_%s" % csr.upper(), file=sby_file)
@@ -337,7 +347,7 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None, csr_mode=
     with open("%s/%s.sby" % (cfgname, check), "w") as sby_file:
         print_hfmt(sby_file, """
                 : [options]
-                : mode bmc
+                : mode @mode@
                 : expect pass,fail
                 : append @append@
                 : tbtop wrapper.uut
@@ -385,6 +395,9 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None, csr_mode=
                 : `define RISCV_FORMAL_RESET_CYCLES @start@
                 : `define RISCV_FORMAL_CHECK_CYCLE @depth@
         """, **hargs)
+
+        if mode == "prove":
+            print("`define RISCV_FORMAL_UNBOUNDED", file=sby_file)
 
         for csr in sorted(csrs):
             print("`define RISCV_FORMAL_CSR_%s" % csr.upper(), file=sby_file)
@@ -467,4 +480,3 @@ with open("%s/makefile" % cfgname, "w") as mkfile:
         print(".PHONY: %s" % check, file=mkfile)
 
 print("Generated %d checks." % (len(consistency_checks) + len(instruction_checks)))
-

@@ -13,6 +13,14 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 module rvfi_testbench (
+	`ifdef RISCV_FORMAL_UNBOUNDED
+	`ifdef RISCV_FORMAL_TRIG_CYCLE
+		input trig,
+	`endif
+	`ifdef RISCV_FORMAL_CHECK_CYCLE
+		input check,
+	`endif
+	`endif
 	input clock, reset
 );
 	`RVFI_WIRES
@@ -32,10 +40,18 @@ module rvfi_testbench (
 		.clock  (clock),
 		.reset  (cycle < `RISCV_FORMAL_RESET_CYCLES),
 `ifdef RISCV_FORMAL_TRIG_CYCLE
+`ifdef RISCV_FORMAL_UNBOUNDED
+		.trig   (trig),
+`else
 		.trig   (cycle == `RISCV_FORMAL_TRIG_CYCLE),
 `endif
+`endif
 `ifdef RISCV_FORMAL_CHECK_CYCLE
+`ifdef RISCV_FORMAL_UNBOUNDED
+		.check   (check),
+`else
 		.check  (cycle == `RISCV_FORMAL_CHECK_CYCLE),
+`endif
 `endif
 		`RVFI_CONN
 	);
