@@ -86,8 +86,8 @@ if "options" in config:
 
         elif line[0] == "mode":
             assert len(line) == 2
-            if line[1] == "prove":
-                mode = line[1]
+            assert(line[1] in ("bmc", "prove"))
+            mode = line[1]
 
         else:
             print(line)
