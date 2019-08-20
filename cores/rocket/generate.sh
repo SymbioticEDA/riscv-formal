@@ -11,6 +11,7 @@ enable_inithack=true
 enable_64bits=true
 enable_muldiv=true
 enable_misa=true
+enable_pmp=false
 
 if [ ! -d rocket-chip ]; then
 	git clone --recurse-submodules git@github.com:sifive/rocket-chip-grand-central.git rocket-chip
@@ -38,6 +39,10 @@ if [ ! -d rocket-chip ]; then
 		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /freechips.rocketchip.tile.XLen/ s,32,64,; }' src/main/scala/system/Configs.scala
 	else
 		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /freechips.rocketchip.tile.XLen/ s,64,32,; }' src/main/scala/system/Configs.scala
+	fi
+
+	if ! $enable_pmp; then
+		sed -i -e '/DefaultConfigWithRVFIMonitors/,/^)/ { /new WithNPMP/ s/[0-9]\+/0/; };' src/main/scala/system/Configs.scala
 	fi
 
 	sed -i 's/--top-module/-Wno-fatal &/' emulator/Makefrag-verilator
