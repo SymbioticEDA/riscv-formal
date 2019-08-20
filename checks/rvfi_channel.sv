@@ -23,8 +23,8 @@ module rvfi_channel (
 	(* keep *) wire                                trap      = rvfi_trap     [CHANNEL_IDX];
 	(* keep *) wire                                halt      = rvfi_halt     [CHANNEL_IDX];
 	(* keep *) wire                                intr      = rvfi_intr     [CHANNEL_IDX];
-	(* keep *) wire                                mode      = rvfi_mode     [CHANNEL_IDX*2                    +:  2];
-	(* keep *) wire                                ixl       = rvfi_ixl      [CHANNEL_IDX*2                    +:  2];
+	(* keep *) wire [                       1 : 0] mode      = rvfi_mode     [CHANNEL_IDX*2                    +:  2];
+	(* keep *) wire [                       1 : 0] ixl       = rvfi_ixl      [CHANNEL_IDX*2                    +:  2];
 
 	(* keep *) wire [                       4 : 0] rs1_addr  = rvfi_rs1_addr [CHANNEL_IDX*5                    +:  5];
 	(* keep *) wire [                       4 : 0] rs2_addr  = rvfi_rs2_addr [CHANNEL_IDX*5                    +:  5];

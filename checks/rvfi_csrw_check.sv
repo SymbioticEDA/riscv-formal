@@ -107,10 +107,10 @@ module rvfi_csrw_check (
 			end
 
 			/* Machine CSRs */
-			4'b 00_01, 4'b 01_01, 4'b 10_01: begin // read/write
+			4'b 00_11, 4'b 01_11, 4'b 10_11: begin // read/write
 				if (rvfi.mode < 3) csr_illacc = 1;
 			end
-			4'b 11_01: begin // read-only
+			4'b 11_11: begin // read-only
 				if (rvfi.mode < 3) csr_illacc = 1;
 				if (csr_write) csr_illacc = 1;
 			end
