@@ -133,10 +133,10 @@ module RocketTileWithRVFI (
 	assign rvfi_csr_misa_wdata       = rocket_tile.RVFI_csr_misa_wdata;
 	assign rvfi_csr_misa_rdata       = rocket_tile.RVFI_csr_misa_rdata;
 
-	assign rvfi_csr_minstret_wmask   = rocket_tile.RVFI_csr_instret_wmask;
-	assign rvfi_csr_minstret_rmask   = rocket_tile.RVFI_csr_instret_rmask;
-	assign rvfi_csr_minstret_wdata   = rocket_tile.RVFI_csr_instret_wdata;
-	assign rvfi_csr_minstret_rdata   = rocket_tile.RVFI_csr_instret_rdata;
+	assign rvfi_csr_minstret_wmask   = rocket_tile.RVFI_csr_minstret_wmask;
+	assign rvfi_csr_minstret_rmask   = rocket_tile.RVFI_csr_minstret_rmask;
+	assign rvfi_csr_minstret_wdata   = rocket_tile.RVFI_csr_minstret_wdata;
+	assign rvfi_csr_minstret_rdata   = rocket_tile.RVFI_csr_minstret_rdata;
 
 	assign rvfi_csr_mcycle_wmask     = rocket_tile.RVFI_csr_mcycle_wmask;
 	assign rvfi_csr_mcycle_rmask     = rocket_tile.RVFI_csr_mcycle_rmask;
