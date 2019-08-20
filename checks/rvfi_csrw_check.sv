@@ -175,7 +175,7 @@ module rvfi_csrw_check (
 `ifdef RISCV_FORMAL_CSRWH
 				if (csr_hi) begin
 					assert (csr_insn_changed_full[31:0] == 0);
-				end else begin
+				end else if (rvfi.ixl == 1) begin
 					assert (csr_insn_changed_full[63:32] == 0);
 				end
 `endif
