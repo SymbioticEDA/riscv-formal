@@ -172,7 +172,7 @@ module rocket_pma_map (
 		//  80000000 - 80004000 ARWX  dtim@80000000
 
 		modes_first = 5'b 00000;
-		if (64'h 00000000 <= address_first && address_first < 64'h 00001000) modes_first = 5'b 11110;
+		// if (64'h 00000000 <= address_first && address_first < 64'h 00001000) modes_first = 5'b 11110;
 		if (64'h 00003000 <= address_first && address_first < 64'h 00004000) modes_first = 5'b 11110;
 		if (64'h 00010000 <= address_first && address_first < 64'h 00020000) modes_first = 5'b 01010;
 		if (64'h 02000000 <= address_first && address_first < 64'h 02010000) modes_first = 5'b 11100;
@@ -181,7 +181,7 @@ module rocket_pma_map (
 		if (64'h 80000000 <= address_first && address_first < 64'h 80004000) modes_first = 5'b 11110;
 
 		modes_last = 5'b 00000;
-		if (64'h 00000000 <= address_last && address_last < 64'h 00001000) modes_last = 5'b 11110;
+		// if (64'h 00000000 <= address_last && address_last < 64'h 00001000) modes_last = 5'b 11110;
 		if (64'h 00003000 <= address_last && address_last < 64'h 00004000) modes_last = 5'b 11110;
 		if (64'h 00010000 <= address_last && address_last < 64'h 00020000) modes_last = 5'b 01010;
 		if (64'h 02000000 <= address_last && address_last < 64'h 02010000) modes_last = 5'b 11100;
