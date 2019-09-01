@@ -19,9 +19,10 @@ git -C rocket-chip diff src/main/scala/system/Configs.scala > $cexdata/Configs.s
 
 vcd2fst rocket-syn/init.vcd $cexdata/init.fst
 
-for x in checks/*/FAIL coverage/FAIL; do
+for x in checks/*/{FAIL,ERROR} coverage/{FAIL,ERROR}; do
 	test -f $x || continue
 	x=${x%/FAIL}
+	x=${x%/ERROR}
 	y=${x#checks/}
 	cp $x/logfile.txt $cexdata/$y.log
 	if test -f $x/engine_*/trace.vcd; then
@@ -45,7 +46,7 @@ for x in checks/*.sby; do
 	elif [ -f checks/$x/FAIL ]; then
 		printf "%-20s %s %10s\n" $x FAIL  $(sed '/Elapsed process time/ { s/.*\]: //; s/ .*//; p; }; d;' checks/$x/logfile.txt)
 	elif [ -f checks/$x/ERROR ]; then
-		printf "%-20s %s %10s\n" $x ERROR $(sed '/Elapsed process time/ { s/.*\]: //; s/ .*//; p; }; d;' checks/$x/logfile.txt)
+		printf "%-20s %s\n" $x ERROR
 	else
 		printf "%-20s %s\n" $x unknown
 	fi
