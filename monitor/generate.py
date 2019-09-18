@@ -522,7 +522,10 @@ if not nopccheck or not noregscheck:
         print("    output reg o%d_valid," % (chidx))
         print("    output reg [63:0] o%d_order," % (chidx))
         print("    output reg [%d:0] o%d_data," % (rob_data_width-1, chidx))
-    print("  output reg [15:0] errcode")
+    if robdepth == 0:
+        print("  output wire [15:0] errcode")
+    else:
+        print("  output reg [15:0] errcode")
     print(");")
 
     if robdepth == 0:
@@ -530,7 +533,7 @@ if not nopccheck or not noregscheck:
             print("  always @* o%d_valid = i%d_valid;" % (chidx, chidx))
             print("  always @* o%d_order = i%d_order;" % (chidx, chidx))
             print("  always @* o%d_data = i%d_data;" % (chidx, chidx))
-        print("  always @* errcode = 0;")
+        print("  assign errcode = 0;")
 
     else:
         orderbits = ceil(log2(robdepth))
