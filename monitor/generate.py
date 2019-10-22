@@ -522,7 +522,10 @@ if not nopccheck or not noregscheck:
         print("    output reg o%d_valid," % (chidx))
         print("    output reg [63:0] o%d_order," % (chidx))
         print("    output reg [%d:0] o%d_data," % (rob_data_width-1, chidx))
-    print("  output reg [15:0] errcode")
+    if robdepth == 0:
+        print("  output wire [15:0] errcode")
+    else:
+        print("  output reg [15:0] errcode")
     print(");")
 
     if robdepth == 0:
@@ -530,7 +533,7 @@ if not nopccheck or not noregscheck:
             print("  always @* o%d_valid = i%d_valid;" % (chidx, chidx))
             print("  always @* o%d_order = i%d_order;" % (chidx, chidx))
             print("  always @* o%d_data = i%d_data;" % (chidx, chidx))
-        print("  always @* errcode = 0;")
+        print("  assign errcode = 0;")
 
     else:
         orderbits = ceil(log2(robdepth))
@@ -590,77 +593,42 @@ with open("../insns/isa_%s.txt" % isa) as f:
         insn_list.append(insn)
         replace_db.append((" rvfi_insn_%s " % insn, " %s_insn_%s " % (prefix, insn)))
 
+expected_flags = {
+    "RISCV_FORMAL_COMPRESSED": compressed,
+    "RISCV_FORMAL_ALIGNED_MEM": aligned,
+}
+
 def print_rewrite_file(filename):
     with open(filename) as f:
-        flag_compressed_ifdef = False
-        flag_compressed_ifndef = False
-        flag_aligned_ifdef = False
-        flag_aligned_ifndef = False
-        flag_ifdef = False
-        flag_ifndef = False
+        flag_stack = []
+        flags = {}
 
         for line in f:
-            if line.startswith("`ifdef RISCV_FORMAL_COMPRESSED"):
-                flag_compressed_ifdef = True
-                flag_compressed_ifndef = False
-                continue
-
-            if line.startswith("`ifndef RISCV_FORMAL_COMPRESSED"):
-                flag_compressed_ifdef = False
-                flag_compressed_ifndef = True
-                continue
-
-            if line.startswith("`ifdef RISCV_FORMAL_ALIGNED_MEM"):
-                flag_aligned_ifdef = True
-                flag_aligned_ifndef = False
-                continue
-
-            if line.startswith("`ifndef RISCV_FORMAL_ALIGNED_MEM"):
-                flag_aligned_ifdef = False
-                flag_aligned_ifndef = True
-                continue
-
             if line.startswith("`ifdef "):
-                flag_ifdef = True
-                flag_ifndef = False
+                flag_name = line.split()[1]
+                assert flag_name not in flags, (filename, flag_name, flags)
+                flag_stack.append(flag_name)
+                flags[flag_name] = True
                 continue
 
             if line.startswith("`ifndef "):
-                flag_ifdef = False
-                flag_ifndef = True
+                flag_name = line.split()[1]
+                assert flag_name not in flags
+                flag_stack.append(flag_name)
+                flags[flag_name] = False
                 continue
 
             if line.startswith("`else"):
-                flag_compressed_ifdef, flag_compressed_ifndef = flag_compressed_ifndef, flag_compressed_ifdef
-                flag_aligned_ifdef, flag_aligned_ifndef = flag_aligned_ifndef, flag_aligned_ifdef
-                flag_ifdef, flag_ifndef = flag_ifndef, flag_ifdef
+                flag_name = flag_stack[-1]
+                flags[flag_name] = not flags[flag_name]
                 continue
 
             if line.startswith("`endif"):
-                flag_compressed_ifdef = False
-                flag_compressed_ifndef = False
-                flag_aligned_ifdef = False
-                flag_aligned_ifndef = False
-                flag_ifdef = False
-                flag_ifndef = False
+                flag_name = flag_stack.pop()
+                del flags[flag_name]
                 continue
 
-            if flag_compressed_ifdef and not compressed:
-                continue
-
-            if flag_compressed_ifndef and compressed:
-                continue
-
-            if flag_aligned_ifdef and not aligned:
-                continue
-
-            if flag_aligned_ifndef and aligned:
-                continue
-
-            if flag_ifdef and True:
-                continue
-
-            if flag_ifndef and False:
+            if any(expected_flags.get(name, False) != val for name, val in flags.items()):
                 continue
 
             for a, b in replace_db:
