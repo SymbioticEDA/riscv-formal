@@ -208,6 +208,12 @@ def check_insn(insn, chanidx, csr_mode=False):
 
         print_hfmt(sby_file, """
                 : prep -flatten -nordff -top rvfi_testbench
+        """, **hargs)
+
+        if "script-link" in config:
+            print_hfmt(sby_file, config["script-link"], **hargs)
+
+        print_hfmt(sby_file, """
                 : chformal -early
                 :
                 : [files]
@@ -375,6 +381,12 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None, csr_mode=
 
         print_hfmt(sby_file, """
                 : prep -flatten -nordff -top rvfi_testbench
+        """, **hargs)
+
+        if "script-link" in config:
+            print_hfmt(sby_file, config["script-link"], **hargs)
+
+        print_hfmt(sby_file, """
                 : chformal -early
                 :
                 : [files]
