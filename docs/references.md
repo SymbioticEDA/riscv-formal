@@ -12,6 +12,7 @@ Other RISC-V formal verification projects and related materials:
 - [RISC-V ISA Model in Haskell by Adam Chlipala and group (MIT)](https://github.com/mit-plv/riscv-semantics)
 - [RISC-V ISA specification work in Sail 2](https://github.com/rems-project/sail/tree/sail2/riscv)
 - [Sail: a language for describing instruction semantics](http://www.cl.cam.ac.uk/~pes20/sail/)
+- [riscv-fs: F# RISC-V Instruction Set formal specification](https://github.com/mrLSD/riscv-fs)
 
 Please [open an issue](https://github.com/cliffordwolf/riscv-formal/issues/new) if you know of other RISC-V formal verification projects I should link to in this section.
 
