@@ -72,6 +72,12 @@ to retire memory load/store operations for smaller units (half-words, bytes)
 word aligned with the appropiate `rmask/wmask` values to select the correct
 bytes. In this case the `RISCV_FORMAL_ALIGNED_MEM` macro must be defined.
 
+RISCV_FORMAL_IGNORE_RMASK
+-------------------------
+
+This can be defined for cores that do not have read mask support for memory
+accesses.
+
 RISCV_FORMAL_BLACKBOX_REGS
 --------------------------
 

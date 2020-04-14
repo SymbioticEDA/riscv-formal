@@ -48,7 +48,11 @@ module rvfi_insn_lw (
   assign spec_rs1_addr = insn_rs1;
   assign spec_rd_addr = insn_rd;
   assign spec_mem_addr = addr & ~(`RISCV_FORMAL_XLEN/8-1);
+`ifdef RISCV_FORMAL_IGNORE_RMASK
+  assign spec_mem_rmask = 0;
+`else
   assign spec_mem_rmask = ((1 << 4)-1) << (addr-spec_mem_addr);
+`endif
   assign spec_rd_wdata = spec_rd_addr ? $signed(result) : 0;
   assign spec_pc_wdata = rvfi_pc_rdata + 4;
   assign spec_trap = ((addr & (4-1)) != 0) || !misa_ok;
@@ -59,7 +63,11 @@ module rvfi_insn_lw (
   assign spec_rs1_addr = insn_rs1;
   assign spec_rd_addr = insn_rd;
   assign spec_mem_addr = addr;
+`ifdef RISCV_FORMAL_IGNORE_RMASK
+  assign spec_mem_rmask = 0;
+`else
   assign spec_mem_rmask = ((1 << 4)-1);
+`endif
   assign spec_rd_wdata = spec_rd_addr ? $signed(result) : 0;
   assign spec_pc_wdata = rvfi_pc_rdata + 4;
   assign spec_trap = !misa_ok;

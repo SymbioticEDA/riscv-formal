@@ -83,7 +83,7 @@ When the define `RISCV_FORMAL_ALIGNED_MEM` is set, the address must have a 4-byt
 
 `rvfi_mem_wdata` is the post-state data written to `rvfi_mem_addr`. `rvfi_mem_wmask` specifies which bytes are valid.
 
-When `RISCV_FORMAL_ALIGNED_MEM` is set then `riscv-formal` assumes that unaligned memory access causes a trap.
+When `RISCV_FORMAL_ALIGNED_MEM` is set then `riscv-formal` assumes that unaligned memory access causes a trap. Finally, when `RISCV_FORMAL_IGNORE_RMASK` is set, `rvfi_mem_rmask` has to be set to zero.
 
 ### Alternative Arithmetic Operations
 

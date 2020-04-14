@@ -17,6 +17,7 @@ quiet_mode = False
 verbose_mode = False
 noregscheck = False
 nopccheck = False
+normaskcheck = False
 
 def usage():
     print("""
@@ -49,6 +50,9 @@ Usage: %s [options] > outfile.v
   -P
       do not check consistency of pc reads and writes
 
+  -K
+      do not check the memory read mask
+
   -A
       add assert(0) statements to the error handlers
 
@@ -61,7 +65,7 @@ Usage: %s [options] > outfile.v
     sys.exit(1)
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "i:p:c:r:aMRPAQV")
+    opts, args = getopt.getopt(sys.argv[1:], "i:p:c:r:aMRPAQVK")
 except:
     usage()
 
@@ -82,6 +86,8 @@ for o, a in opts:
         noregscheck = True
     elif o == "-P":
         nopccheck = True
+    elif o == "-K":
+        normaskcheck = True
     elif o == "-U":
         nocausality = True
     elif o == "-O":
@@ -596,6 +602,7 @@ with open("../insns/isa_%s.txt" % isa) as f:
 expected_flags = {
     "RISCV_FORMAL_COMPRESSED": compressed,
     "RISCV_FORMAL_ALIGNED_MEM": aligned,
+    "RISCV_FORMAL_IGNORE_RMASK": normaskcheck,
 }
 
 def print_rewrite_file(filename):

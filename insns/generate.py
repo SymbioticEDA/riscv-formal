@@ -488,7 +488,11 @@ def insn_l(insn, funct3, numbytes, signext, misa=0):
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rd_addr", "insn_rd")
         assign(f, "spec_mem_addr", "addr & ~(`RISCV_FORMAL_XLEN/8-1)")
+        print("`ifdef RISCV_FORMAL_IGNORE_RMASK", file=f)
+        assign(f, "spec_mem_rmask", "0")
+        print("`else", file=f)
         assign(f, "spec_mem_rmask", "((1 << %d)-1) << (addr-spec_mem_addr)" % numbytes)
+        print("`endif", file=f)
         if signext:
             assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(result) : 0")
         else:
@@ -504,7 +508,11 @@ def insn_l(insn, funct3, numbytes, signext, misa=0):
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rd_addr", "insn_rd")
         assign(f, "spec_mem_addr", "addr")
+        print("`ifdef RISCV_FORMAL_IGNORE_RMASK", file=f)
+        assign(f, "spec_mem_rmask", "0")
+        print("`else", file=f)
         assign(f, "spec_mem_rmask", "((1 << %d)-1)" % numbytes)
+        print("`endif", file=f)
         if signext:
             assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(result) : 0")
         else:
@@ -735,7 +743,11 @@ def insn_c_l(insn, funct3, numbytes, signext, misa=MISA_C):
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rd_addr", "insn_rd")
         assign(f, "spec_mem_addr", "addr & ~(`RISCV_FORMAL_XLEN/8-1)")
+        print("`ifdef RISCV_FORMAL_IGNORE_RMASK", file=f)
+        assign(f, "spec_mem_rmask", "0")
+        print("`else", file=f)
         assign(f, "spec_mem_rmask", "((1 << %d)-1) << (addr-spec_mem_addr)" % numbytes)
+        print("`endif", file=f)
         if signext:
             assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(result) : 0")
         else:
@@ -751,7 +763,11 @@ def insn_c_l(insn, funct3, numbytes, signext, misa=MISA_C):
         assign(f, "spec_rs1_addr", "insn_rs1")
         assign(f, "spec_rd_addr", "insn_rd")
         assign(f, "spec_mem_addr", "addr")
+        print("`ifdef RISCV_FORMAL_IGNORE_RMASK", file=f)
+        assign(f, "spec_mem_rmask", "0")
+        print("`else", file=f)
         assign(f, "spec_mem_rmask", "((1 << %d)-1)" % numbytes)
+        print("`endif", file=f)
         if signext:
             assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(result) : 0")
         else:
@@ -996,7 +1012,11 @@ def insn_c_lsp(insn, funct3, numbytes, signext, misa=MISA_C):
         assign(f, "spec_rs1_addr", "2")
         assign(f, "spec_rd_addr", "insn_rd")
         assign(f, "spec_mem_addr", "addr & ~(`RISCV_FORMAL_XLEN/8-1)")
+        print("`ifdef RISCV_FORMAL_IGNORE_RMASK", file=f)
+        assign(f, "spec_mem_rmask", "0")
+        print("`else", file=f)
         assign(f, "spec_mem_rmask", "((1 << %d)-1) << (addr-spec_mem_addr)" % numbytes)
+        print("`endif", file=f)
         if signext:
             assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(result) : 0")
         else:
@@ -1012,7 +1032,11 @@ def insn_c_lsp(insn, funct3, numbytes, signext, misa=MISA_C):
         assign(f, "spec_rs1_addr", "2")
         assign(f, "spec_rd_addr", "insn_rd")
         assign(f, "spec_mem_addr", "addr")
+        print("`ifdef RISCV_FORMAL_IGNORE_RMASK", file=f)
+        assign(f, "spec_mem_rmask", "0")
+        print("`else", file=f)
         assign(f, "spec_mem_rmask", "((1 << %d)-1)" % numbytes)
+        print("`endif", file=f)
         if signext:
             assign(f, "spec_rd_wdata", "spec_rd_addr ? $signed(result) : 0")
         else:
