@@ -127,6 +127,12 @@ hargs["ilen"] = ilen
 hargs["append"] = 0
 hargs["mode"] = mode
 
+if "cover" in config:
+    hargs["cover"] = config["cover"]
+
+if "assume" in config:
+    hargs["assume"] = config["assume"]
+
 instruction_checks = set()
 consistency_checks = set()
 
@@ -188,7 +194,6 @@ def check_insn(insn, chanidx, csr_mode=False):
                 : mode @mode@
                 : expect pass,fail
                 : append @append@
-                : tbtop wrapper.uut
                 : depth @depth_plus@
                 : skip @skip@
                 :
@@ -244,6 +249,9 @@ def check_insn(insn, chanidx, csr_mode=False):
                 : `define RISCV_FORMAL_CHANNEL_IDX @channel@
         """, **hargs)
 
+        if "assume" in config:
+            print("`define RISCV_FORMAL_ASSUME", file=sby_file)
+
         if mode == "prove":
             print("`define RISCV_FORMAL_UNBOUNDED", file=sby_file)
 
@@ -290,6 +298,13 @@ def check_insn(insn, chanidx, csr_mode=False):
             print_hfmt(sby_file, """
                     : `include "rvfi_insn_check.sv"
                     : `include "insn_@insn@.v"
+            """, **hargs)
+
+        if "assume" in config:
+            print_hfmt(sby_file, """
+                    :
+                    : [file assume_stmts.vh]
+                    : @assume@
             """, **hargs)
 
 with open("../../insns/isa_%s.txt" % isa) as isa_file:
@@ -347,16 +362,18 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None, csr_mode=
 
     hargs["checkch"] = check
 
+    hargs["xmode"] = hargs["mode"]
+    if check == "cover": hargs["xmode"] = "cover"
+
     if test_disabled(check): return
     consistency_checks.add(check)
 
     with open("%s/%s.sby" % (cfgname, check), "w") as sby_file:
         print_hfmt(sby_file, """
                 : [options]
-                : mode @mode@
+                : mode @xmode@
                 : expect pass,fail
                 : append @append@
-                : tbtop wrapper.uut
                 : depth @depth_plus@
                 : skip @skip@
                 :
@@ -408,6 +425,9 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None, csr_mode=
                 : `define RISCV_FORMAL_CHECK_CYCLE @depth@
         """, **hargs)
 
+        if "assume" in config:
+            print("`define RISCV_FORMAL_ASSUME", file=sby_file)
+
         if mode == "prove":
             print("`define RISCV_FORMAL_UNBOUNDED", file=sby_file)
 
@@ -450,6 +470,20 @@ def check_cons(check, chanidx=None, start=None, trig=None, depth=None, csr_mode=
                 : `include "rvfi_@check@_check.sv"
         """, **hargs)
 
+        if check == "cover":
+            print_hfmt(sby_file, """
+                    :
+                    : [file cover_stmts.vh]
+                    : @cover@
+            """, **hargs)
+
+        if "assume" in config:
+            print_hfmt(sby_file, """
+                    :
+                    : [file assume_stmts.vh]
+                    : @assume@
+            """, **hargs)
+
 for i in range(nret):
     check_cons("reg", chanidx=i, start=0, depth=1)
     check_cons("pc_fwd", chanidx=i, start=0, depth=1)
@@ -460,6 +494,7 @@ for i in range(nret):
     check_cons("ill", chanidx=i, depth=0)
 
 check_cons("hang", start=0, depth=1)
+check_cons("cover", start=0, depth=1)
 
 for csr in sorted(csrs):
     for chanidx in range(nret):
