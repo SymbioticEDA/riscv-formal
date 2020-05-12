@@ -132,6 +132,19 @@ via RVFI by the core under test.
 See [RISC-V Formal CSR Sematics](csrs.md) for the exact semantics of CSR values
 output via RVFI.
 
+### Handling of Speculative Execution
+
+Out-of-order cores that execute speculatively can commit speculative instructions on RVFI.
+
+Rollbacks must be output via the rollback interface, that is enabled when `RISCV_FORMAL_ROLLBACK` is defined:
+
+    output [ 0 : 0] rvfi_rollback_valid
+    output [63 : 0] rvfi_rollback_order
+
+All RVFI packets output _prior_ to the cycle with asserted `rvfi_rollback_valid` with a `rvfi_order` field of _greater or equal_ to `rvfi_rollback_order` are invalidated by a rollback event.
+
+RVFI packets output in the same cycle as `rvfi_rollback_valid` are already part of the new instruction stream re-starting at the instruction number indicated in `rvfi_rollback_order`.
+
 
 RVFI TODOs and Requests for Comments
 ------------------------------------
@@ -170,19 +183,6 @@ The following is the proposed RVFI extension for floating point ISAs:
 Since `f0` is not a zero register, additional `*_[rw]valid` signals are required to indicate if `frs1`, `frs2`, `frs3`, and `frd` and their corresponding pre- or post-values are valid.
 
 Alternative arithmetic operations (`RISCV_FORMAL_ALTOPS`) will be defined for all non-trivial floating point operations.
-
-### Handling of Speculative Execution
-
-Out-of-order cores that execute specilatively can commit speculative instructions on RVFI.
-
-Rollbacks must be output via a special rollback interface:
-
-    output [ 0 : 0] rvfi_rollback_valid
-    output [63 : 0] rvfi_rollback_order
-
-All RVFI packets output _prior_ to the cycle with asserted `rvfi_rollback_valid` with a `rvfi_order` field of _greater or equal_ to `rvfi_rollback_order` are invalidated by a rollback event.
-
-RVFI packets output in the same cycle as `rvfi_rollback_valid` are already part of the new instruction stream re-starting at the instruction number indicated in `rvfi_rollback_order`.
 
 ### Modelling of Virtual Memory
 

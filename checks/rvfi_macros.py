@@ -130,6 +130,19 @@ for csr in csrs_64:
     print("`endif")
 
 print("")
+print("`ifdef RISCV_FORMAL_ROLLBACK")
+print("`define rvformal_rollback_wires          (* keep *) wire [0:0] rvfi_rollback_valid; (* keep *) wire [63:0] rvfi_rollback_order;")
+print("`define rvformal_rollback_outputs        , output [0:0] rvfi_rollback_valid, output [63:0] rvfi_rollback_order")
+print("`define rvformal_rollback_inputs         , input [0:0] rvfi_rollback_valid, input [63:0] rvfi_rollback_order")
+print("`define rvformal_rollback_conn           , .rvfi_rollback_valid(rvfi_rollback_valid), .rvfi_rollback_order(rvfi_rollback_order)")
+print("`else")
+print("`define rvformal_rollback_wires")
+print("`define rvformal_rollback_outputs")
+print("`define rvformal_rollback_inputs")
+print("`define rvformal_rollback_conn")
+print("`endif")
+
+print("")
 print("`ifdef RISCV_FORMAL_EXTAMO")
 print("`define rvformal_extamo_wires          (* keep *) wire [`RISCV_FORMAL_NRET-1:0] rvfi_mem_extamo;")
 print("`define rvformal_extamo_outputs        , output [`RISCV_FORMAL_NRET-1:0] rvfi_mem_extamo")
@@ -167,6 +180,7 @@ print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_
 print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_wmask;  \\")
 print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata;  \\")
 print("(* keep *) wire [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata;  \\")
+print("`rvformal_rollback_wires \\")
 print("`rvformal_extamo_wires \\")
 for csr in all_csrs:
     print("`rvformal_csr_%s_wires%s" % (csr, "" if csr == all_csrs[-1] else " \\"))
@@ -194,6 +208,7 @@ print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_rmask
 print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_wmask,  \\")
 print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,  \\")
 print("output [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata   \\")
+print("`rvformal_rollback_outputs \\")
 print("`rvformal_extamo_outputs \\")
 for csr in all_csrs:
     print("`rvformal_csr_%s_outputs%s" % (csr, "" if csr == all_csrs[-1] else " \\"))
@@ -221,13 +236,13 @@ print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_rmask,
 print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN/8 - 1 : 0] rvfi_mem_wmask,  \\")
 print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_rdata,  \\")
 print("input [`RISCV_FORMAL_NRET * `RISCV_FORMAL_XLEN   - 1 : 0] rvfi_mem_wdata   \\")
+print("`rvformal_rollback_inputs \\")
 print("`rvformal_extamo_inputs \\")
 for csr in all_csrs:
     print("`rvformal_csr_%s_inputs%s" % (csr, "" if csr == all_csrs[-1] else " \\"))
 
 print("")
-print("`define RVFI_CHANNEL(_name, _idx) \\")
-print("generate if(1) begin:_name \\")
+print("`define RVFI_GETCHANNEL(_idx) \\")
 print("wire [                 1   - 1 : 0] valid      = rvfi_valid      [(_idx)*(                 1  )  +:                  1  ]; \\")
 print("wire [                64   - 1 : 0] order      = rvfi_order      [(_idx)*(                64  )  +:                 64  ]; \\")
 print("wire [`RISCV_FORMAL_ILEN   - 1 : 0] insn       = rvfi_insn       [(_idx)*(`RISCV_FORMAL_ILEN  )  +: `RISCV_FORMAL_ILEN  ]; \\")
@@ -252,6 +267,11 @@ print("wire [`RISCV_FORMAL_XLEN   - 1 : 0] mem_wdata  = rvfi_mem_wdata  [(_idx)*
 print("`rvformal_extamo_channel(_idx) \\")
 for csr in all_csrs:
     print("`rvformal_csr_%s_channel(_idx) \\" % csr)
+
+print("")
+print("`define RVFI_CHANNEL(_name, _idx) \\")
+print("generate if(1) begin:_name \\")
+print("  `RVFI_GETCHANNEL(_idx) \\")
 print("end endgenerate")
 
 print("")
@@ -277,6 +297,7 @@ print(".rvfi_mem_rmask (rvfi_mem_rmask),  \\")
 print(".rvfi_mem_wmask (rvfi_mem_wmask),  \\")
 print(".rvfi_mem_rdata (rvfi_mem_rdata),  \\")
 print(".rvfi_mem_wdata (rvfi_mem_wdata)   \\")
+print("`rvformal_rollback_conn \\")
 print("`rvformal_extamo_conn \\")
 for csr in all_csrs:
     print("`rvformal_csr_%s_conn%s" % (csr, "" if csr == all_csrs[-1] else " \\"))
