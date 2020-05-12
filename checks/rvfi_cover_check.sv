@@ -16,6 +16,7 @@ module rvfi_cover_check (
 	input clock, reset, check,
 	`RVFI_INPUTS
 );
+`ifdef RISCV_FORMAL_ROLLBACK
 	(* keep *) integer cnt_rollback;
 	integer cnt_rollback_q;
 
@@ -29,35 +30,36 @@ module rvfi_cover_check (
 		else
 			cnt_rollback = cnt_rollback_q + rvfi_rollback_valid;
 	end
+`endif
 
 	genvar channel_idx;
 	generate for (channel_idx = 0; channel_idx < `RISCV_FORMAL_NRET; channel_idx=channel_idx+1) begin:channel
-		(* keep *) wire valid = !reset && rvfi_valid[channel_idx];
-		(* keep *) wire [`RISCV_FORMAL_ILEN   - 1 : 0] insn      = rvfi_insn     [channel_idx*`RISCV_FORMAL_ILEN   +: `RISCV_FORMAL_ILEN];
-		(* keep *) wire [                64   - 1 : 0] order     = rvfi_order    [channel_idx*                64   +:                 64];
-		(* keep *) wire                                trap      = rvfi_trap     [channel_idx];
-		(* keep *) wire                                intr      = rvfi_intr     [channel_idx];
+		`RVFI_GETCHANNEL(channel_idx)
 
 		(* keep *) integer cnt_insns;
 		(* keep *) integer cnt_trap_insns;
 		(* keep *) integer cnt_intr_insns;
 		(* keep *) integer cnt_norm_insns;
 
+`ifdef RISCV_FORMAL_ROLLBACK
 		// "arb" = after rollback
 		(* keep *) integer arb_cnt_insns;
 		(* keep *) integer arb_cnt_trap_insns;
 		(* keep *) integer arb_cnt_intr_insns;
 		(* keep *) integer arb_cnt_norm_insns;
+`endif
 
 		integer cnt_insns_q;
 		integer cnt_trap_insns_q;
 		integer cnt_intr_insns_q;
 		integer cnt_norm_insns_q;
 
+`ifdef RISCV_FORMAL_ROLLBACK
 		integer arb_cnt_insns_q;
 		integer arb_cnt_trap_insns_q;
 		integer arb_cnt_intr_insns_q;
 		integer arb_cnt_norm_insns_q;
+`endif
 
 		always @(posedge clock) begin
 			cnt_insns_q <= cnt_insns;
@@ -65,10 +67,12 @@ module rvfi_cover_check (
 			cnt_intr_insns_q <= cnt_intr_insns;
 			cnt_norm_insns_q <= cnt_norm_insns;
 
+`ifdef RISCV_FORMAL_ROLLBACK
 			arb_cnt_insns_q <= arb_cnt_insns;
 			arb_cnt_trap_insns_q <= arb_cnt_trap_insns;
 			arb_cnt_intr_insns_q <= arb_cnt_intr_insns;
 			arb_cnt_norm_insns_q <= arb_cnt_norm_insns;
+`endif
 		end
 
 		always @* begin
@@ -78,20 +82,24 @@ module rvfi_cover_check (
 				cnt_intr_insns = 0;
 				cnt_norm_insns = 0;
 
+`ifdef RISCV_FORMAL_ROLLBACK
 				arb_cnt_insns = 0;
 				arb_cnt_trap_insns = 0;
 				arb_cnt_intr_insns = 0;
 				arb_cnt_norm_insns = 0;
+`endif
 			end else begin
 				cnt_insns = cnt_insns_q + valid;
 				cnt_trap_insns = cnt_trap_insns_q + (valid && trap);
 				cnt_intr_insns = cnt_intr_insns_q + (valid && intr);
 				cnt_norm_insns = cnt_norm_insns_q + (valid && !{trap,intr});
 
+`ifdef RISCV_FORMAL_ROLLBACK
 				arb_cnt_insns = arb_cnt_insns_q + (valid && cnt_rollback);
 				arb_cnt_trap_insns = arb_cnt_trap_insns_q + (valid && cnt_rollback && trap);
 				arb_cnt_intr_insns = arb_cnt_intr_insns_q + (valid && cnt_rollback && intr);
 				arb_cnt_norm_insns = arb_cnt_norm_insns_q + (valid && cnt_rollback && !{trap,intr});
+`endif
 			end
 		end
 	end endgenerate
