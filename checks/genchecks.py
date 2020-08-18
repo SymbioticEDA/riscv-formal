@@ -562,7 +562,7 @@ with open("%s/makefile" % cfgname, "w") as mkfile:
     for check in checks:
         print("%s: %s/status" % (check, check), file=mkfile)
         print("%s/status:" % check, file=mkfile)
-        print("\t%s %s.sby" % (sbycmd, check), file=mkfile)
+        print("\t%s --nopresat %s.sby" % (sbycmd, check), file=mkfile)
         print(".PHONY: %s" % check, file=mkfile)
 
 print("Generated %d checks." % (len(consistency_checks) + len(instruction_checks)))
