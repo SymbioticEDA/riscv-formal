@@ -154,7 +154,7 @@ elif solver == "btormc":
     hargs["engine"] = "btor btormc"
     hargs["ilang_file"] = corename + "-hier.il"
 else:
-    hargs["engine"] = "smtbmc %s%s" % ("--dumpsmt2 " if dumpsmt2 else "", solver)
+    hargs["engine"] = "smtbmc --nopresat %s%s" % ("--dumpsmt2 " if dumpsmt2 else "", solver)
     hargs["ilang_file"] = corename + "-hier.il"
 
 def test_disabled(check):
