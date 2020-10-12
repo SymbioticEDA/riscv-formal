@@ -44,6 +44,8 @@ module VexRiscv (
       output reg  rvfi_trap,
       output  rvfi_halt,
       output  rvfi_intr,
+      output [1:0] rvfi_mode,
+      output [1:0] rvfi_ixl,
       output [4:0] rvfi_rs1_addr,
       output [31:0] rvfi_rs1_rdata,
       output [4:0] rvfi_rs2_addr,
@@ -863,6 +865,8 @@ module VexRiscv (
   assign rvfi_order = writeBack_FomalPlugin_order;
   assign rvfi_insn = zz_80;
   assign rvfi_intr = 1'b0;
+  assign rvfi_mode = 2'd3;
+  assign rvfi_ixl = 2'd1;
   assign rvfi_rs1_addr = (zz_79 ? zz_80[19 : 15] : (5'b00000));
   assign rvfi_rs2_addr = (zz_78 ? zz_80[24 : 20] : (5'b00000));
   assign rvfi_rs1_rdata = (zz_79 ? writeBack_RS1 : (32'b00000000000000000000000000000000));
