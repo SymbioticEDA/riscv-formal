@@ -141,7 +141,7 @@ For formal verification with Yosys (i.e. when `YOSYS` is defined), this will be
 converted to the following code:
 
     rand reg [7:0] anyseq;
-    const rand reg [7:0] anyconst;
+    rand const reg [7:0] anyconst;
 
 For simulation (i.e. when `SIMULATION` is defined), this will be converted to:
 
