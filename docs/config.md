@@ -126,16 +126,16 @@ Macros to declare wires, output ports, or input ports for all `rvfi_*` signals. 
 macro is for creating the proper connections on module instances. This macros can be
 useful for routing the `rvfi_*` signals through the design hierarchy.
 
-rvformal_rand_reg and rvformal_const_rand_reg
+rvformal_rand_reg and rvformal_rand_const_reg
 ---------------------------------------------
 
 Macros for defining unconstrained signals (`rvformal_rand_reg`) or constant signals with
-an unconstrained initial value (`rvformal_const_rand_reg`).
+an unconstrained initial value (`rvformal_rand_const_reg`).
 
 Usage example:
 
     `rvformal_rand_reg [7:0] anyseq;
-    `rvformal_const_rand_reg [7:0] anyconst;
+    `rvformal_rand_const_reg [7:0] anyconst;
 
 For formal verification with Yosys (i.e. when `YOSYS` is defined), this will be
 converted to the following code:

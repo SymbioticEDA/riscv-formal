@@ -16,8 +16,8 @@ module rvfi_causal_check (
 	input clock, reset, check,
 	`RVFI_INPUTS
 );
-	`rvformal_const_rand_reg [63:0] insn_order;
-	`rvformal_const_rand_reg [4:0] register_index;
+	`rvformal_rand_const_reg [63:0] insn_order;
+	`rvformal_rand_const_reg [4:0] register_index;
 	reg found_non_causal = 0;
 
 	integer channel_idx;
