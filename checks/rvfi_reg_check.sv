@@ -16,10 +16,15 @@ module rvfi_reg_check (
 	input clock, reset, check,
 	`RVFI_INPUTS
 );
-	`rvformal_const_rand_reg [63:0] insn_order;
-	`rvformal_const_rand_reg [4:0] register_index;
+	reg [63:0] insn_order;
+	reg [4:0] register_index;
 	reg [`RISCV_FORMAL_XLEN-1:0] register_shadow = 0;
 	reg register_written = 0;
+
+	always @(posedge clock) begin
+		insn_order <= insn_order;
+		register_index <= register_index;
+	end
 
 	integer channel_idx;
 	always @(posedge clock) begin
