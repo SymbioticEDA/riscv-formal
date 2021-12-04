@@ -129,7 +129,7 @@ If reading a CSR has side effects, those side effects are not triggered by raise
 The Verilog define `RISCV_FORMAL_CSR_<CSRNAME>` must be set for each CSR traced
 via RVFI by the core under test.
 
-See [RISC-V Formal CSR Sematics](csrs.md) for the exact semantics of CSR values
+See [RISC-V Formal CSR Semantics](csrs.md) for the exact semantics of CSR values
 output via RVFI.
 
 ### Handling of Speculative Execution
