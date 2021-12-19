@@ -16,7 +16,7 @@ module rvfi_pc_fwd_check (
 	input clock, reset, check,
 	`RVFI_INPUTS
 );
-	`rvformal_const_rand_reg [63:0] insn_order;
+	`rvformal_rand_const_reg [63:0] insn_order;
 	reg [`RISCV_FORMAL_XLEN-1:0] expect_pc;
 	reg expect_pc_valid = 0;
 

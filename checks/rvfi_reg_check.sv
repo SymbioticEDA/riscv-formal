@@ -16,8 +16,8 @@ module rvfi_reg_check (
 	input clock, reset, check,
 	`RVFI_INPUTS
 );
-	`rvformal_const_rand_reg [63:0] insn_order;
-	`rvformal_const_rand_reg [4:0] register_index;
+	`rvformal_rand_const_reg [63:0] insn_order;
+	`rvformal_rand_const_reg [4:0] register_index;
 	reg [`RISCV_FORMAL_XLEN-1:0] register_shadow = 0;
 	reg register_written = 0;
 

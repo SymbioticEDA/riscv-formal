@@ -2,14 +2,14 @@
 
 `ifdef YOSYS
 `define rvformal_rand_reg rand reg
-`define rvformal_const_rand_reg const rand reg
+`define rvformal_rand_const_reg rand const reg
 `else
 `ifdef SIMULATION
 `define rvformal_rand_reg reg
-`define rvformal_const_rand_reg reg
+`define rvformal_rand_const_reg reg
 `else
 `define rvformal_rand_reg wire
-`define rvformal_const_rand_reg reg
+`define rvformal_rand_const_reg reg
 `endif
 `endif
 

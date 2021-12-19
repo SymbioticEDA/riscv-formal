@@ -16,7 +16,7 @@ module rvfi_liveness_check (
 	input clock, reset, trig, check,
 	`RVFI_INPUTS
 );
-	`rvformal_const_rand_reg [63:0] insn_order;
+	`rvformal_rand_const_reg [63:0] insn_order;
 	reg found_next_insn = 0;
 
 	integer channel_idx;

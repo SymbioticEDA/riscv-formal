@@ -17,7 +17,7 @@ module rvfi_dmem_check (
 	output [`RISCV_FORMAL_XLEN-1:0] dmem_addr,
 	`RVFI_INPUTS
 );
-	`rvformal_const_rand_reg [`RISCV_FORMAL_XLEN-1:0] dmem_addr_randval;
+	`rvformal_rand_const_reg [`RISCV_FORMAL_XLEN-1:0] dmem_addr_randval;
 	assign dmem_addr = dmem_addr_randval;
 
 	reg [`RISCV_FORMAL_XLEN-1:0] dmem_shadow;
