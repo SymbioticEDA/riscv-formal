@@ -32,7 +32,7 @@ In addition, `rvfi_trap` must be set for a misaligned memory read or write in PM
 
 The signal `rvfi_halt` must be set when the instruction is the last instruction that the core retires before halting execution. It should not be set for an instruction that triggers a trap condition if the CPU reacts to the trap by executing a trap handler. This signal enables verification of liveness properties.
 
-`rvfi_intr` must be set for the first instruction that is part of a trap handler, i.e. an instruction that has a `rvfi_pc_rdata` that does not match the `rvfi_pc_wdata` of the previous instruction.
+`rvfi_intr` must be set for the first instruction that is part of a trap handler, i.e. an instruction that has a `rvfi_pc_rdata` that does not match the `rvfi_pc_wdata` of the previous instruction. *This signal is currently not checked.*
 
 `rvfi_mode` must be set to the current privilege level, using the following encoding: 0=U-Mode, 1=S-Mode, 2=Reserved, 3=M-Mode
 
