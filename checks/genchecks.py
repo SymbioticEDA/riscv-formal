@@ -29,6 +29,7 @@ blackbox = False
 
 cfgname = "checks"
 basedir = "%s/../.." % os.getcwd()
+incdir = basedir
 corename = os.getcwd().split("/")[-1]
 solver = "boolector"
 dumpsmt2 = False
@@ -37,8 +38,12 @@ config = dict()
 mode = "bmc"
 
 if len(sys.argv) > 1:
-    assert len(sys.argv) == 2
+    assert 2 <= len(sys.argv) <= 4
     cfgname = sys.argv[1]
+    if len(sys.argv) > 2:
+        basedir = sys.argv[2]
+    if len(sys.argv) > 3:
+        incdir = sys.argv[3]
 
 print("Reading %s.cfg." % cfgname)
 with open("%s.cfg" % cfgname, "r") as f:
@@ -134,6 +139,7 @@ def print_hfmt(f, text, **kwargs):
 
 hargs = dict()
 hargs["basedir"] = basedir
+hargs["incdir"] = incdir
 hargs["core"] = corename
 hargs["nret"] = nret
 hargs["xlen"] = xlen
@@ -333,7 +339,7 @@ def check_insn(grp, insn, chanidx, csr_mode=False):
                     print(line, file=sby_file)
 
 for grp in groups:
-    with open("../../insns/isa_%s.txt" % isa) as isa_file:
+    with open("%s/insns/isa_%s.txt" % (basedir, isa)) as isa_file:
         for insn in isa_file:
             for chanidx in range(nret):
                 check_insn(grp, insn.strip(), chanidx)
