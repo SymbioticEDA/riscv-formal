@@ -45,7 +45,7 @@ Finally `rvfi_ixl` must be set to the value of MXL/SXL/UXL in the current privil
     output [NRET * XLEN - 1 : 0] rvfi_rs1_rdata
     output [NRET * XLEN - 1 : 0] rvfi_rs2_rdata
 
-`rvfi_rs1_addr` and `rvfi_rs2_addr` are the decoded `rs1` and `rs1` register addresses for the retired instruction. For an instruction that reads no `rs1`/`rs2` register, this output can have an arbitrary value. However, if this output is nonzero then `rvfi_rs1_rdata` must carry the value stored in that register in the pre-state.
+`rvfi_rs1_addr` and `rvfi_rs2_addr` are the decoded `rs1` and `rs2` register addresses for the retired instruction. For an instruction that reads no `rs1`/`rs2` register, this output can have an arbitrary value. However, if this output is nonzero then `rvfi_rs1_rdata` must carry the value stored in that register in the pre-state.
 
 `rvfi_rs1_rdata`/`rvfi_rs2_rdata` is the value of the `x` register addressed by `rs1`/`rs2` before execution of this instruction. This output must be zero when `rs1`/`rs2` is zero.
 
